@@ -12,8 +12,9 @@ public class PandaMain {
 	public static void main(String[] args) {
 		showToUser(MESSAGE_WELCOME);
 		while(true) {
-			String feedback = readUserCommand();
-			showToUser(feedback);
+			String userInput = readUserInput();
+			Parser parser = new Parser();
+			parser.parseUserInput(userInput);
 		}
 	}
 	
@@ -21,7 +22,7 @@ public class PandaMain {
 		System.out.println(outputString);
 	}
 	
-	private static String readUserCommand() {
+	private static String readUserInput() {
 		Scanner sc = new Scanner(System.in);
 		return sc.nextLine();
 	}
