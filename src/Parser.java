@@ -5,7 +5,12 @@
 
 public class Parser {
 	
-	private static String MESSAGE_ERROR_INVALID_INPUT = "An error has occured. Please try again.";
+	private final static String MESSAGE_ERROR_INVALID_INPUT = "An error has occured. Please try again.";
+	private final static String COMMAND_ADD = "add";
+	private final static String COMMAND_DELETE = "delete";
+	private final static String COMMAND_EDIT = "edit";
+	private final static String COMMAND_LIST = "list";
+	private final static String COMMAND_UNDO = "undo";
 	
 	private static Integer NUMBER_COMMAND_INDEX = 0;
 	
@@ -31,19 +36,19 @@ public class Parser {
 	 */
 	private void executeCommand(String userCommand, String userInput) {
 		switch(userCommand) {
-			case("add"):
+			case(COMMAND_ADD):
 				executeAdd(userInput);
-			break;
-			case("delete"):
+				break;
+			case(COMMAND_DELETE):
 				executeDelete(userInput);
 				break;
-			case("edit"):
+			case(COMMAND_EDIT):
 				executeEdit(userInput);
 				break;
-			case("list"):
+			case(COMMAND_LIST):
 				executeList(userInput);
 				break;
-			case("undo"):
+			case(COMMAND_UNDO):
 				executeUndo(userInput);
 				break;
 			default:
