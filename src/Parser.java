@@ -51,15 +51,19 @@ public class Parser {
 		}
 	}
 	
-	
-	// To be coded by Matthew
+	 /*  
+	 * Process of coding.
+	 * Note to Htet: This is roughly how I envision it to be. Feel free to change if this practice/method is bad 
+	 */
 	private void executeAdd(String userInput) {
-		
+		//PandaAdd addTask = new PandaAdd();
+		//addTask.run(userInput);
 	}
 
 	// To be coded by Matthew
 	private void executeUndo(String userInput) {
-		
+		//PandaUndo undoTask = new PandaUndo();
+		//undoTask.run(userInput);
 	}
 	
 	// To be coded by Clement
