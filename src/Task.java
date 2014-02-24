@@ -1,3 +1,7 @@
+/*
+ * Task class that will be used for creation of task objects.
+ * Task objects will be converted into GSON objects which will be handled by storage
+ */
 
 public class Task {
 
@@ -6,6 +10,7 @@ public class Task {
 	//private Date time;
 	//private String priority;
 	
+	// Constructor method
 	public Task(String tName, String tDesc){
 		this.taskName = tName;
 		this.taskDescription = tDesc;
@@ -26,15 +31,10 @@ public class Task {
 	public String getTaskDescription(){
 		return this.taskDescription;
 	}
-	public String toString() {
-		
-		        return new StringBuffer(" Task Name : ").append(this.taskName)
-		
-		                .append(" Task Description : ").append(this.taskDescription).
-		
-		               toString();
-		
-		    }
-
 	
+	// Override method for toString
+	public String toString() {
+		return new StringBuffer(" Task Name : ").append(this.taskName)
+		                .append(" Task Description : ").append(this.taskDescription).toString();
+	}
 }
