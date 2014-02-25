@@ -11,4 +11,10 @@ public class ParamParser {
 	@Parameter (names = "-priority", description = "priority of tasks")
 	private String priority = null;
 	
+	@Parameter (names = "by", description = "getting deadline date")
+	private String endDate = null;
+	
+	public String getEndDate() {
+		return endDate;
+	}
 }
