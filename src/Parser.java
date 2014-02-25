@@ -6,6 +6,7 @@
 public class Parser {
 	
 	private final static String MESSAGE_ERROR_INVALID_INPUT = "An error has occured. Please try again.";
+	private final static String MESSAGE_ERROR_INVALID_KEYWORD = "Invalid Keyword. Please try again";
 	private final static String COMMAND_ADD = "add";
 	private final static String COMMAND_DELETE = "delete";
 	private final static String COMMAND_EDIT = "edit";
@@ -52,6 +53,7 @@ public class Parser {
 				executeUndo(userInput);
 				break;
 			default:
+				showToUser(MESSAGE_ERROR_INVALID_KEYWORD);
 				break;
 		}
 	}
@@ -61,14 +63,16 @@ public class Parser {
 	 * Note to Htet: This is roughly how I envision it to be. Feel free to change if this practice/method is bad 
 	 */
 	private void executeAdd(String userInput) {
-		//PandaAdd addTask = new PandaAdd();
-		//addTask.run(userInput);
+		TaskAdder taskAdder = new TaskAdder();
+		taskAdder.run(userInput);
 	}
 
-	// To be coded by Matthew
+	/*
+	 *  Process of coding.
+	 */
 	private void executeUndo(String userInput) {
-		//PandaUndo undoTask = new PandaUndo();
-		//undoTask.run(userInput);
+		TaskUndo taskUndo = new TaskUndo();
+		taskUndo.run();
 	}
 	
 	// To be coded by Clement
@@ -86,7 +90,7 @@ public class Parser {
 		
 	}
 	
-	// Method will print out given argument
+	// Method will print out given string argument
 	private void showToUser(String outputString) {
 		System.out.println(outputString);
 	}
