@@ -27,7 +27,7 @@ public class Parser {
 		// Still not sure what to pass here, array or string
 		executeCommand(userCommand, userInput);
 		} catch (Exception e) {
-			showToUser(MESSAGE_ERROR_INVALID_INPUT);
+			e.printStackTrace();
 		}
 	}
 	
