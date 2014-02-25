@@ -11,10 +11,25 @@ public class ParamParser {
 	@Parameter (names = "-priority", description = "priority of tasks")
 	private String priority = null;
 	
-	@Parameter (names = "by", description = "getting deadline date")
-	private String endDate = null;
+	/**************************** Add Parameters ****************************/
 	
+	@Parameter (name = "from", description = "getting start time")
+	private String startTime = null;
+	
+	@Parameter (name = "to", description = "getting end time")
+	private String endTime = null;
+	
+	@Parameter (names = { "on", "by" }, description = "getting deadline")
+	private String endDate = null;
+
+	public String getStartTime() {
+		return startTime;
+	}
+	
+	public String getEndTime() {
+		return endTime;
+	}	
 	public String getEndDate() {
 		return endDate;
-	}
+	}	
 }
