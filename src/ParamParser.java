@@ -13,10 +13,10 @@ public class ParamParser {
 	
 	/**************************** Add Parameters ****************************/
 	
-	@Parameter (name = "from", description = "getting start time")
+	@Parameter (names = "from", description = "getting start time")
 	private String startTime = null;
 	
-	@Parameter (name = "to", description = "getting end time")
+	@Parameter (names = "to", description = "getting end time")
 	private String endTime = null;
 	
 	@Parameter (names = { "on", "by" }, description = "getting deadline")
