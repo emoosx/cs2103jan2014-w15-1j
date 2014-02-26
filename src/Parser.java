@@ -71,7 +71,8 @@ public class Parser {
 	}
 
 	private void executeEdit(String userInput) {
-
+    TaskEdit taskEdit = new TaskEdit();
+    taskEdit.execute(userInput);
 	}
 
 	private void executeDelete(String userInput) {

@@ -17,7 +17,6 @@ public class TaskDelete {
 	  -delete task object
 	  - delete task successful update gson
 			  */
-	
 		void execute(String inputNumber) {
 			if (checkDeleteInput(inputNumber)) {
 				int lineToRemove = Integer.parseInt(inputNumber) - DELETE_OFFSET;
@@ -95,29 +94,12 @@ public class TaskDelete {
 	1) edit description
 	2) edit time/priority (sub)
 	*/
-	private void executeEdit(String userInput) {
-		if(!checkIfFileIsEmpty()){
-			String[] inputArray = userInput.split(" ");
-			String taskId = inputArray[NUMBER_COMMAND_INDEX];
-			searchForTaskId(taskId);	
-		}
-	}
 	
-	// To be coded by Clement
-	//search for task using taskname or id
-	private boolean searchForTaskId(String task) {
-		
-	
-		return false;
-	}
-    
 	// Method to check if input is a number
 	public static boolean isNumeric(String str)
 	{
 	  return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
 	}
-	
-	
 	
 	// Method will print out given argument
 		private void showToUser(String outputString) {
