@@ -20,6 +20,8 @@ public class Parser {
 	private final static String COMMAND_UNDO = "undo";
 	
 	private static Integer NUMBER_COMMAND_INDEX = 0;
+	private static Integer DELETE_PARA = 0;
+	private static Integer DELETE_OFFSET = 1;
 	
 	/*
 	 * Method will parse user input to obtain command type
