@@ -15,6 +15,7 @@ public class Parser {
 	private final static String COMMAND_UNDO = "undo";
 	
 	private static Integer NUMBER_COMMAND_INDEX = 0;
+	private static Integer NUMBER_USER_INPUT_WITHOUT_COMMAND = 1;
 
 	
 	/*
@@ -26,7 +27,6 @@ public class Parser {
 		try {
 		String[] inputArray = userInput.split(" ");
 		String userCommand = inputArray[NUMBER_COMMAND_INDEX];
-		// Still not sure what to pass here, array or string
 		executeCommand(userCommand, userInput);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -38,6 +38,7 @@ public class Parser {
 	 * Post condition: executes method respectively based on user command
 	 */
 	private void executeCommand(String userCommand, String userInput) {
+		userInput = removeFirstWord(userInput);
 		switch(userCommand) {
 			case(COMMAND_ADD):
 				executeAdd(userInput);
@@ -71,19 +72,17 @@ public class Parser {
 	}
 
 	private void executeEdit(String userInput) {
-    TaskEdit taskEdit = new TaskEdit();
-    taskEdit.execute(userInput);
+	    TaskEdit taskEdit = new TaskEdit();
+	    taskEdit.execute(userInput);
 	}
 
 	private void executeDelete(String userInput) {
-     TaskDelete taskDel = new TaskDelete();
-     taskDel.execute(userInput);
-		
+	     TaskDelete taskDel = new TaskDelete();
+	     taskDel.execute(userInput);
 	}
 
 	/*  
 	 * Process of coding.
-	 * Note to Htet: This is roughly how I envision it to be. Feel free to change if this practice/method is bad 
 	 */
 	private void executeAdd(String userInput) {
 		TaskAdder taskAdder = new TaskAdder();
@@ -98,6 +97,11 @@ public class Parser {
 		taskUndo.run();
 	}
 	
-
-	
+	/*
+	 *  This method remove the command word  
+	 */
+	private String removeFirstWord(String userInput) {
+		String[] stringArray = userInput.split(" ", 2);
+		return stringArray[NUMBER_USER_INPUT_WITHOUT_COMMAND];
+	}
 }
