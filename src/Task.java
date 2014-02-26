@@ -15,6 +15,9 @@ public class Task {
 		this.taskName = tName;
 		this.taskDescription = tDesc;
 	}
+	// Empty constructor
+	public Task(){		
+	}
 	
 	public void setTaskName(String tName){
 		this.taskName = tName;
