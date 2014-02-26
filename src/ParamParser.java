@@ -36,4 +36,11 @@ public class ParamParser {
 	public String getEndDate() {
 		return endDate;
 	}	
+	
+	/******Edit Parameters ****/
+	 @Parameter(names = {"edit_desc", "-ed"}, description = "Editing of task")
+	  private String edit_desc;
+	 
+	 @Parameter(names = {"edit_name", "-en"}, description = "Editing of task")
+	  private String edit_name;
 }
