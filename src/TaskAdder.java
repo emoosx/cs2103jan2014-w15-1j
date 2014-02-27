@@ -10,9 +10,11 @@ import java.util.StringTokenizer;
  *add repair watch
  *add wash car
  *add go to gardens by the bay
+ *add watch the day after tomorrow movie
  *
  *Timed tasks:
  *add meeting on 27-2-2014 from 2pm to 4pm
+ *add hackathon from 27-2-2014 2pm to 28-2-2014 3pm
  *
  *Deadline tasks:
  *add submit minutes on 28-2-2014 by 8pm
@@ -69,10 +71,14 @@ public class TaskAdder {
 	
 	/*
 	 *This method will check if token passed by determineTask method
-	 *contains keyword: by, to, from, on
+	 *contains keyword: on, by, from to
 	 */
 	private boolean isKeyWord(String token) {
-		if(token.equals("on"))
+		token = token.toLowerCase();
+		if(token.equals(KEYWORD_ON) ||
+			token.equals(KEYWORD_BY) ||
+				token.equals(KEYWORD_FROM) ||
+					token.equals(KEYWORD_TO))
 			return true;
 		else
 			return false;
@@ -90,10 +96,10 @@ public class TaskAdder {
 	 */
 	private void parseParameter(String keyWord, String parameter) {
 		if(keyWord.equals(KEYWORD_ON)) {
-			parseOn(keyWord, parameter);
+			parseDate(keyWord, parameter);
 		}
 		if(keyWord.equals(KEYWORD_BY)) {
-			parseBy(keyWord, parameter);
+			parseTime(keyWord, parameter);
 		}
 	}
 	
@@ -102,7 +108,7 @@ public class TaskAdder {
 	 *Post condition: appends to task description if parameter is not of date format
 	 *Post condition: parses day, month and year if it is of date format. 
 	 */
-	private void parseOn(String keyWord, String parameter) {
+	private void parseDate(String keyWord, String parameter) {
 		System.out.println("Parsing:" + keyWord + ", " + parameter);
 		// parameter should be a date format
 		String[] stringArray = parameter.split("-");
@@ -124,7 +130,7 @@ public class TaskAdder {
 		}
 	}
 	
-	private void parseBy(String keyWord, String parameter) {
+	private void parseTime(String keyWord, String parameter) {
 		
 	}
 }
