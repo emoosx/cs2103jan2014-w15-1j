@@ -1,3 +1,5 @@
+import java.util.Stack;
+
 /*
  * This class performs undo operations
  * It will store deleted task objects into a stack 
@@ -7,8 +9,14 @@
 
 public class TaskUndo {
 	
-	public void run() {
+	private static Stack<Task> undoStack = new Stack<Task>();
+	
+	public void undoAction() {
 		
+	}
+	
+	public void addHistory(Task task) {
+		undoStack.push(task);
 	}
 	
 }
