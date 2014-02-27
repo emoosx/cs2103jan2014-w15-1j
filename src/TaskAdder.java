@@ -1,3 +1,5 @@
+import java.util.StringTokenizer;
+
 /*
  * executeAdd class will perform its run method as a drive method
  * It will determine what kind of tasks to add and call on storage to store the data thereafter
@@ -18,11 +20,7 @@
 
 public class TaskAdder {
 	
-	private final String TASK_TYPE_FLOATING = "float"; 
-	private final String TASK_TYPE_TIMED = "timed";
-	private final String TASK_TYPE_DEADLINE = "deadline";
-	
-	private final String KEYWORD_BY = "by";
+	private final String KEYWORD_BY = " by ";
 	private final String KEYWORD_TO = "to";
 	private final String KEYWORD_FROM = "from";
 	private final String KEYWARD_ON = "on";
@@ -47,10 +45,23 @@ public class TaskAdder {
 	 * Deadline tasks: tasks that has an end time
 	 */
 	private void determineTask(String inputString) {
-		checkFloatingTask(inputString);
+		StringTokenizer st = new StringTokenizer(inputString);
+		String taskDesc = "";
+		while(st.hasMoreTokens()) {
+			String token = st.nextToken();
+			if(hasKeyword(token)) {
+				
+			} else {
+				taskDesc += token;
+			}
+		}	
 	}
 	
-	private void checkFloatingTask(String inputString) {
-		
+	/*
+	 * This method will check if token passed by determineTask method
+	 * contains keyword: by, to, from, on
+	 */
+	private boolean hasKeyword(String token) {
+		return false;
 	}
 }
