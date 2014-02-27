@@ -39,4 +39,9 @@ public class Date {
 	public void setYear(int year) {
 		this.year = year;
 	}
+	
+	// Overriding method
+	public String toString() {
+		return this.getDay() + "-" + this.getMonth() + "-" + this.getYear();
+	}
 }
