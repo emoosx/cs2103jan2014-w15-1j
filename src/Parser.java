@@ -24,13 +24,9 @@ public class Parser {
 	 * Postcondition: passes command type and user input into executeCommand method    
 	 */
 	public void parseUserInput(String userInput) {
-		try {
-		String[] inputArray = userInput.split(" ");
-		String userCommand = inputArray[NUMBER_COMMAND_INDEX];
-		executeCommand(userCommand, userInput);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		String userCommand = getCommand(userInput);
+		String userTask = removeFirstWord(userInput);
+		executeCommand(userCommand, userTask);
 	}
 	
 	/*
@@ -38,7 +34,6 @@ public class Parser {
 	 * Post condition: executes method respectively based on user command
 	 */
 	private void executeCommand(String userCommand, String userInput) {
-		userInput = removeFirstWord(userInput);
 		switch(userCommand) {
 			case(COMMAND_ADD):
 				executeAdd(userInput);
@@ -98,10 +93,18 @@ public class Parser {
 	}
 	
 	/*
-	 *  This method remove the command word  
+	 *  This method removes the command word  
 	 */
 	private String removeFirstWord(String userInput) {
 		String[] stringArray = userInput.split(" ", 2);
 		return stringArray[NUMBER_USER_INPUT_WITHOUT_COMMAND];
+	}
+	
+	/*
+	 *  This method returns the command word from the user input given
+	 */
+	private String getCommand(String userInput) {
+		String[] inputArray = userInput.split(" ");
+		return inputArray[NUMBER_COMMAND_INDEX];
 	}
 }
