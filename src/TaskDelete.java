@@ -8,19 +8,19 @@ public class TaskDelete {
 
 	private static Integer DELETE_PARA = 0;
 	private static Integer DELETE_OFFSET = 1;
-	private static Integer NUMBER_COMMAND_INDEX = 0;
+	
 
 	// To be coded by Clement
 	/*
 	 * How it works: - search for task id - no task found > return error -delete
 	 * task object - delete task successful update gson
 	 */
-	void execute(String inputNumber) {
+	public void execute(String inputNumber) {
 		if (checkDeleteInput(inputNumber)) {
 			int lineToRemove = Integer.parseInt(inputNumber) - DELETE_OFFSET;
-			// String deletedString = dataList.get(lineToRemove);
-			// dataList.remove(lineToRemove);
-			// showToUser(String.format(MESSAGE_DELETED, deletedString));
+			 String deletedString = dataList.get(lineToRemove);
+			 dataList.remove(lineToRemove);
+			 showToUser(String.format(MESSAGE_DELETED, deletedString));
 		}
 	}
 
@@ -56,11 +56,11 @@ public class TaskDelete {
 		}
 		try {
 			int num = Integer.parseInt(n) - 1;
-			// if (num >= dataList.size()) {
+			 if (num >= dataList.size()) {
 			showToUser(MESSAGE_INVALID_NUMBER);
 			return false;
-			// }
-			// return true;
+			 }
+			 return true;
 		} catch (NumberFormatException nfe) {
 			showToUser(MESSAGE_INVALID_NUMBERFORMAT);
 			return false;
@@ -91,10 +91,10 @@ public class TaskDelete {
 	// Method checks if data list is empty
 	// Arraylist name to be edited accordingly
 	private boolean checkIfFileIsEmpty() {
-		// if (dataList.isEmpty()) {
+		 if (dataList.isEmpty()) {
 		return true;
-		// }
-		// return false;
+		 }
+		 return false;
 	}
 
 	// Method checks if inputString is not empty

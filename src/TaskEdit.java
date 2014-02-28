@@ -1,5 +1,6 @@
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
 
 public class TaskEdit {
 
@@ -13,6 +14,7 @@ public class TaskEdit {
 	 */
 	ParamParser para = new ParamParser();
 	private static final String MESSAGE_EDIT_FAIL = "Unable to find file to edit";
+	private static Integer NUMBER_COMMAND_INDEX = 0;
 	String userInput;
 
 	void execute(String userInput) {
@@ -29,7 +31,6 @@ public class TaskEdit {
 	// search for task using taskname or id
 	private boolean searchTask(String task) {
 		Task t = new Task();
-
 		for (int i = 0; i < dataList.size(); i++) {
 			t = dataList.get(i);
 			if (t.getTaskID == task || t.getTaskName == task) {
@@ -42,18 +43,34 @@ public class TaskEdit {
 
 	private void performEdit(Task t) {
 
-		JCommander cmd = new JCommander(para, userInput);
+		JCommander cmd = new JCommander();
 		// jcommander determines edit type and pass description/name edit to
 		// respective method
 		// to add if/else once I figured how to use jcom to determine type
-		t.setTaskDescription(removeFirstWord(userInput));
-		t.setTaskName(removeFirstWord(userInput));
-
+		cmd.addCommand("editD", para, "-ed","editdesc");
+		cmd.addCommand("editN",para, "-en","editname");
+		try {
+	        cmd.parse(userInput);
+	        //
+	        if ("editD".equals(cmd.getParsedCommand())) {
+	        	t.setTaskDescription(para.getDesc());
+	        } else if ("editN".equals(cmd.getParsedCommand())) {
+	        	t.setTaskName(para.getName());
+	        } else {
+	           cmd.usage();
+	        }
+	        //
+	    } catch (ParameterException ex) {
+	        System.out.println(ex.getMessage());
+	        cmd.usage();
+	    }
 		// update arraylist
 		updateTaskList();
 	}
-
-	// Will update accordingly once edit is done
+    
+	// 1)Find task object in dataList and replace it
+	// 2)Saves to json file
+	//
 	private void updateTaskList() {
 		// TODO Auto-generated method stub
 
