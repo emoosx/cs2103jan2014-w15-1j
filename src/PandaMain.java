@@ -12,9 +12,13 @@ public class PandaMain {
 	public static void main(String[] args) {
 		showToUser(MESSAGE_WELCOME);
 		while(true) {
-			String userInput = readUserInput();
-			Parser parser = new Parser();
-			parser.parseUserInput(userInput);
+			try {
+				String userInput = readUserInput();
+				Parser parser = new Parser();
+				parser.parseUserInput(userInput);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
