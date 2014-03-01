@@ -159,6 +159,7 @@ public class TaskAdder {
 		// check if parameter is out of approved range - shortest range: 2pm, longest range: 12:12am
 		if(time.length() < NUM_SHORTEST_TIME_STRING || time.length() > NUM_LONGEST_TIME_STRING) {
 			System.out.println(time + " appended here. Case 1: Not in approved range");
+			appendDescription(keyWord);
 			appendDescription(time);
 			return st;
 		} 
@@ -168,6 +169,7 @@ public class TaskAdder {
 			// token does not end with "am" or "pm"
 			if(!containsAmPm(lastTwoAlphabets)) {
 				System.out.println(time + " appended here. Case 2: Time does not contain am or pm");
+				appendDescription(keyWord);
 				appendDescription(time);
 				return st;				
 			} else {
@@ -176,6 +178,7 @@ public class TaskAdder {
 					Integer.parseInt(hourString);
 				} catch(Exception e) {
 					System.out.println(time + " appended here. Case 3: Time ends with am or pm but format is wrong");
+					appendDescription(keyWord);
 					appendDescription(time);
 					return st;
 				}
@@ -186,12 +189,14 @@ public class TaskAdder {
 			String lastTwoAlphabets = time.substring(time.length() - LENGTH_AM_PM).toLowerCase();
 			if(!containsAmPm(lastTwoAlphabets)) {
 				System.out.println(time + " appended here. Case 4: Time does not contain am or pm");
+				appendDescription(keyWord);
 				appendDescription(time);
 				return st;					
 			} else {
 				String[] timeArray = time.split(":");
 				if(timeArray.length != 2) {
 					System.out.println(time + " appended here. Case 5: Time contains am or pm but wrong format");
+					appendDescription(keyWord);
 					appendDescription(time);
 					return st;
 				} else { // format here would be x:xpm or x:xam
@@ -202,6 +207,7 @@ public class TaskAdder {
 						Integer.parseInt(minString);
 					} catch(Exception e) {
 						System.out.println(time + " appended here. Case 6: Time ends with am or pm but format is wrong");
+						appendDescription(keyWord);
 						appendDescription(time);
 						return st;						
 					}
