@@ -45,8 +45,10 @@ public class TaskAdder {
 	private String taskDesc = "";
 	private String startHour = null;
 	private String startMin = null;
+	private String startTimeZone = null;
 	private String endHour = null;
 	private String endMin = null;
+	private String endTimeZone = null;
 	private Integer day = null;
 	private Integer month = null;
 	private Integer year = null;
@@ -124,7 +126,7 @@ public class TaskAdder {
 		String parameter = st.nextToken();
 		//System.out.println("Parsing:" + keyWord + ", with token: " + parameter);
 		// parameter should be a date format
-		String[] stringArray = parameter.split("/");
+		String[] stringArray = parameter.split("[./-]");
 		if(stringArray.length != NUM_INTEGER_IN_DATE) {
 			// does not match date format 
 			appendDescription(keyWord);
