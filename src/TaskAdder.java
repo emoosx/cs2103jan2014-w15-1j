@@ -43,8 +43,10 @@ public class TaskAdder {
 	private final int LENGTH_AM_PM = 2;
 	
 	private String taskDesc = "";
-	private Integer startTime = null;
-	private Integer endTime = null;
+	private String startHour = null;
+	private String startMin = null;
+	private String endHour = null;
+	private String endMin = null;
 	private Integer day = null;
 	private Integer month = null;
 	private Integer year = null;
@@ -107,7 +109,7 @@ public class TaskAdder {
 		if(keyWord.equals(KEYWORD_ON)) {
 			st = parseDate(keyWord, st);
 		}
-		if(keyWord.equals(KEYWORD_BY)) {
+		else {
 			st = parseTime(keyWord, st);
 		}
 		return st;
@@ -120,9 +122,9 @@ public class TaskAdder {
 	 */
 	private StringTokenizer parseDate(String keyWord, StringTokenizer st) {
 		String parameter = st.nextToken();
-		System.out.println("Parsing:" + keyWord + ", with token: " + parameter);
+		//System.out.println("Parsing:" + keyWord + ", with token: " + parameter);
 		// parameter should be a date format
-		String[] stringArray = parameter.split("-");
+		String[] stringArray = parameter.split("/");
 		if(stringArray.length != NUM_INTEGER_IN_DATE) {
 			// does not match date format 
 			appendDescription(keyWord);
@@ -148,11 +150,13 @@ public class TaskAdder {
 	 * Post condition: Next token will update endTime accordingly. 
 	 */
 	private StringTokenizer parseTime(String keyWord, StringTokenizer st) {
+		String hourString = null;
+		String minString = null;
 		String time = st.nextToken();
-		System.out.println("Parsing:" + keyWord + ", with token: " + time);
+		//System.out.println("Parsing:" + keyWord + ", with token: " + time);
 		// check if parameter is out of approved range - shortest range: 2pm, longest range: 12:12am
 		if(time.length() < NUM_SHORTEST_TIME_STRING || time.length() > NUM_LONGEST_TIME_STRING) {
-			System.out.println("Appended here. Case 1: Not in approved range");
+			System.out.println(time + " appended here. Case 1: Not in approved range");
 			appendDescription(time);
 			return st;
 		} 
@@ -160,32 +164,90 @@ public class TaskAdder {
 		if(time.length() == NUM_TIME_FORMAT_DOUBLE_DIGITS || time.length() == NUM_TIME_FORMAT_SINGLE_DIGITS) {
 			String lastTwoAlphabets = time.substring(time.length() - LENGTH_AM_PM).toLowerCase();
 			// token does not end with "am" or "pm"
-			if(!lastTwoAlphabets.equals(KEYWORD_AM) && !lastTwoAlphabets.equals(KEYWORD_PM)) {
-				System.out.println("Appended here. Case 2: Time does not contain am or pm");
+			if(!containsAmPm(lastTwoAlphabets)) {
+				System.out.println(time + " appended here. Case 2: Time does not contain am or pm");
 				appendDescription(time);
 				return st;				
 			} else {
 				try {
-					String hourString = time.substring(0, time.length() - LENGTH_AM_PM);
+					hourString = time.substring(0, time.length() - LENGTH_AM_PM);
+					Integer.parseInt(hourString);
 				} catch(Exception e) {
-					System.out.println("Appended here. Case 3: Time ends with am or pm but format is wrong");
+					System.out.println(time + " appended here. Case 3: Time ends with am or pm but format is wrong");
 					appendDescription(time);
+					return st;
 				}
 			}
 		}
+		// for cases of 6-7 letter string time format: 2:00pm, 1:15am, 12:00pm etc.
+		if(time.length() == 6 || time.length() == 7) {
+			String lastTwoAlphabets = time.substring(time.length() - LENGTH_AM_PM).toLowerCase();
+			if(!containsAmPm(lastTwoAlphabets)) {
+				System.out.println(time + " appended here. Case 4: Time does not contain am or pm");
+				appendDescription(time);
+				return st;					
+			} else {
+				String[] timeArray = time.split(":");
+				if(timeArray.length != 2) {
+					System.out.println(time + " appended here. Case 5: Time contains am or pm but wrong format");
+					appendDescription(time);
+					return st;
+				} else { // format here would be x:xpm or x:xam
+					try {
+						hourString = timeArray[0];
+						minString = timeArray[1].substring(0, timeArray[1].length() - LENGTH_AM_PM);
+						Integer.parseInt(hourString);
+						Integer.parseInt(minString);
+					} catch(Exception e) {
+						System.out.println(time + " appended here. Case 6: Time ends with am or pm but format is wrong");
+						appendDescription(time);
+						return st;						
+					}
+					
+				}
+			}
+		}
+		
+		/* 
+		 * For next time when we want to handle 4 digit time format
 		// check if parameter format is of 4 digits eg. 2359
 		if(time.length() == NUM_TIME_FORMAT_DIGITS_ONLY ){
-			try{
-				
+			try{			
 			} catch (Exception e) {
 				// token is a 4 digit string but not of time format
 				appendDescription(time);
 				return st;
 			}
 		}
+		*/
+		assignTime(keyWord, hourString, minString);
 		return st;
 	}
 	
+	private boolean containsAmPm(String string) {
+		if(string.equals(KEYWORD_AM) || string.equals(KEYWORD_PM)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private void assignTime(String keyWord, String hour, String minute) {
+		if(keyWord.equals(KEYWORD_BY) || keyWord.equals(KEYWORD_TO)) {
+			endHour = hour; 
+			endMin = minute;
+			if(endHour != null && endMin == null) {
+				endMin = "00";
+			}
+		}
+		else {
+			startHour = hour;
+			startMin = minute;
+			if(endHour != null && endMin == null) {
+				startMin = "00";
+			}
+		}
+	}
 	// Method that will store task given all parsed attributes
 	private void addTask() {
 		//StorageHelper storeTask = new StorageHelper();
@@ -196,8 +258,8 @@ public class TaskAdder {
 	private void debug() {
 		// Debugging purposes
 		System.out.println("Task Description: " + taskDesc);
-		System.out.println("Start Time: " + startTime);
-		System.out.println("End Time: " + endTime);
+		System.out.println("Start Time: " + startHour + ":" + startMin);
+		System.out.println("End Time: " + endHour + ":" + endMin);
 		System.out.println("Date deadline: " + day + "-" + month + "-" + year);
 	}
 }
