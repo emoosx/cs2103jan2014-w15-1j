@@ -260,8 +260,8 @@ public class TaskAdder {
 	private void debug() {
 		// Debugging purposes
 		System.out.println("Task Description: " + taskDesc);
-		System.out.println("Start Time: " + startHour + ":" + startMin);
-		System.out.println("End Time: " + endHour + ":" + endMin);
+		System.out.println("Start Time: " + startHour + ":" + startMin + startTimeZone);
+		System.out.println("End Time: " + endHour + ":" + endMin + endTimeZone);
 		System.out.println("Date deadline: " + day + "-" + month + "-" + year);
 	}
 }
