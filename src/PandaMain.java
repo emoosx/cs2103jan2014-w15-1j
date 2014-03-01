@@ -11,6 +11,7 @@ import java.util.*;
 public class PandaMain {
 	
 	private static final String MESSAGE_WELCOME = "Welcome to Task Panda v0.1!";
+	private static final String MESSAGE_ERROR = "An error has occured. Please try again.";
 	
 	public static void main(String[] args) {
 		showToUser(MESSAGE_WELCOME);
@@ -20,6 +21,8 @@ public class PandaMain {
 				Parser parser = new Parser();
 				parser.parseUserInput(userInput);
 			} catch (Exception e) {
+				showToUser(MESSAGE_ERROR);
+				// for debugging purposes
 				e.printStackTrace();
 			}
 		}
