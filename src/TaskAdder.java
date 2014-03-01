@@ -43,7 +43,7 @@ public class TaskAdder {
 	 *This is just a driver method that will pass the input String into a parser method, determineTask
 	 */
 	public void run(String inputString) {
-		determineTask(inputString);
+		parseTask(inputString);
 	}
 	
 	/*
@@ -52,26 +52,24 @@ public class TaskAdder {
 	 *Time tasks: tasks that has a start and end time
 	 *Deadline tasks: tasks that has an end time
 	 */
-	private void determineTask(String inputString) {
+	private void parseTask(String inputString) {
 		StringTokenizer st = new StringTokenizer(inputString);	
 		while(st.hasMoreTokens()) {
 			String token = st.nextToken();
 			if(isKeyWord(token)) {
-				parseParameter(token, st.nextToken());
+				st = parseParameter(token, st);
 			} else {
 				appendDescription(token);
 			}
 		}		
-		// Debugging purposes
-		System.out.println("Task Description: " + taskDesc);
-		System.out.println("Start Time: " + startTime);
-		System.out.println("End Time: " + endTime);
-		System.out.println("Date deadline: " + day + "-" + month + "-" + year);
+		debug();
+		addTask();
 	}
 	
 	/*
 	 *This method will check if token passed by determineTask method
-	 *contains keyword: on, by, from to
+	 *contains keyword: "on", "by", "from" and "to"
+	 *Post condition: Returns true if token is a key word, false otherwise
 	 */
 	private boolean isKeyWord(String token) {
 		token = token.toLowerCase();
@@ -94,13 +92,14 @@ public class TaskAdder {
 	 *If parameter is wrong, it is assumed to be part of task description
 	 *eg. add put cup "ON" table, add go to garden "BY" the day
 	 */
-	private void parseParameter(String keyWord, String parameter) {
+	private StringTokenizer parseParameter(String keyWord, StringTokenizer st) {
 		if(keyWord.equals(KEYWORD_ON)) {
-			parseDate(keyWord, parameter);
+			st = parseDate(keyWord, st);
 		}
 		if(keyWord.equals(KEYWORD_BY)) {
-			parseTime(keyWord, parameter);
+			st = parseTime(keyWord, st);
 		}
+		return st;
 	}
 	
 	/*
@@ -108,7 +107,8 @@ public class TaskAdder {
 	 *Post condition: appends to task description if parameter is not of date format
 	 *Post condition: parses day, month and year if it is of date format. 
 	 */
-	private void parseDate(String keyWord, String parameter) {
+	private StringTokenizer parseDate(String keyWord, StringTokenizer st) {
+		String parameter = st.nextToken();
 		System.out.println("Parsing:" + keyWord + ", " + parameter);
 		// parameter should be a date format
 		String[] stringArray = parameter.split("-");
@@ -128,9 +128,22 @@ public class TaskAdder {
 				appendDescription(parameter);
 			}
 		}
+		return st;
 	}
 	
-	private void parseTime(String keyWord, String parameter) {
-		
+	private StringTokenizer parseTime(String keyWord, StringTokenizer st) {
+		return st;
+	}
+	
+	private void addTask() {
+		//add(new Task());
+	}
+	
+	private void debug() {
+		// Debugging purposes
+		System.out.println("Task Description: " + taskDesc);
+		System.out.println("Start Time: " + startTime);
+		System.out.println("End Time: " + endTime);
+		System.out.println("Date deadline: " + day + "-" + month + "-" + year);
 	}
 }
