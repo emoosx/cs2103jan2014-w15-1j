@@ -8,8 +8,6 @@ public class Task {
 
 	protected String taskName;
 	protected String taskDescription;
-	//private Date time;
-	//private String priority;
 	
 	// Constructor method
 	public Task(String tName, String tDesc){
