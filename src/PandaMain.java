@@ -36,8 +36,6 @@ public class PandaMain {
 	// This method will read in 1 line of user input
 	private static String readUserInput() {
 		Scanner sc = new Scanner(System.in);
-		String userInput = sc.nextLine();
-		sc.close();
-		return userInput;
+		return sc.nextLine();
 	}
 }
