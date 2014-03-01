@@ -1,3 +1,4 @@
+package core;
 /*
  * Task class that will be used for creation of task objects.
  * Task objects will be converted into GSON objects which will be handled by storage
@@ -5,18 +6,18 @@
 
 public class Task {
 
-	private String taskName;
-	private String taskDescription;
-	//private Date time;
-	//private String priority;
+	protected String taskName;
+	protected String taskDescription;
 	
 	// Constructor method
 	public Task(String tName, String tDesc){
 		this.taskName = tName;
 		this.taskDescription = tDesc;
 	}
+
 	// Empty constructor
 	public Task(){		
+
 	}
 	
 	public void setTaskName(String tName){
