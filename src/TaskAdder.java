@@ -1,4 +1,5 @@
 import java.util.StringTokenizer;
+import storage.StorageHelper;
 
 /*
  *TaskAdder class will perform its run method as a drive method
@@ -22,14 +23,24 @@ import java.util.StringTokenizer;
 
 public class TaskAdder {
 	
+	
 	private final String KEYWORD_BY = "by";
 	private final String KEYWORD_TO = "to";
 	private final String KEYWORD_FROM = "from";
 	private final String KEYWORD_ON = "on";
+	private final String KEYWORD_AM = "am";
+	private final String KEYWORD_PM = "pm";
+	
 	private final int NUM_INTEGER_IN_DATE = 3;
 	private final int NUM_DAY_INDEX = 0;
 	private final int NUM_MONTH_INDEX = 1;
 	private final int NUM_YEAR_INDEX = 2;
+	private final int NUM_LONGEST_TIME_STRING = 7;
+	private final int NUM_SHORTEST_TIME_STRING = 3;
+	private final int NUM_TIME_FORMAT_DIGITS_ONLY = 4;
+	private final int NUM_TIME_FORMAT_SINGLE_DIGITS = 3;
+	private final int NUM_TIME_FORMAT_DOUBLE_DIGITS = 4;
+	private final int LENGTH_AM_PM = 2;
 	
 	private String taskDesc = "";
 	private Integer startTime = null;
@@ -109,7 +120,7 @@ public class TaskAdder {
 	 */
 	private StringTokenizer parseDate(String keyWord, StringTokenizer st) {
 		String parameter = st.nextToken();
-		System.out.println("Parsing:" + keyWord + ", " + parameter);
+		System.out.println("Parsing:" + keyWord + ", with token: " + parameter);
 		// parameter should be a date format
 		String[] stringArray = parameter.split("-");
 		if(stringArray.length != NUM_INTEGER_IN_DATE) {
@@ -131,12 +142,55 @@ public class TaskAdder {
 		return st;
 	}
 	
+	/*
+	 * Given keyword "by", "from" or "to", this method will try to parse next token as a time format token
+	 * Acceptable time formats: 2pm, 12:00pm, 1200
+	 * Post condition: Next token will update endTime accordingly. 
+	 */
 	private StringTokenizer parseTime(String keyWord, StringTokenizer st) {
+		String time = st.nextToken();
+		System.out.println("Parsing:" + keyWord + ", with token: " + time);
+		// check if parameter is out of approved range - shortest range: 2pm, longest range: 12:12am
+		if(time.length() < NUM_SHORTEST_TIME_STRING || time.length() > NUM_LONGEST_TIME_STRING) {
+			System.out.println("Appended here. Case 1: Not in approved range");
+			appendDescription(time);
+			return st;
+		} 
+		// for cases of 3-4 letter string time format: 2pm, 1am, 12pm, 12am etc.
+		if(time.length() == NUM_TIME_FORMAT_DOUBLE_DIGITS || time.length() == NUM_TIME_FORMAT_SINGLE_DIGITS) {
+			String lastTwoAlphabets = time.substring(time.length() - LENGTH_AM_PM).toLowerCase();
+			// token does not end with "am" or "pm"
+			if(!lastTwoAlphabets.equals(KEYWORD_AM) && !lastTwoAlphabets.equals(KEYWORD_PM)) {
+				System.out.println("Appended here. Case 2: Time does not contain am or pm");
+				appendDescription(time);
+				return st;				
+			} else {
+				try {
+					String hourString = time.substring(0, time.length() - LENGTH_AM_PM);
+				} catch(Exception e) {
+					System.out.println("Appended here. Case 3: Time ends with am or pm but format is wrong");
+					appendDescription(time);
+				}
+			}
+		}
+		// check if parameter format is of 4 digits eg. 2359
+		if(time.length() == NUM_TIME_FORMAT_DIGITS_ONLY ){
+			try{
+				
+			} catch (Exception e) {
+				// token is a 4 digit string but not of time format
+				appendDescription(time);
+				return st;
+			}
+		}
 		return st;
 	}
 	
+	// Method that will store task given all parsed attributes
 	private void addTask() {
-		//add(new Task());
+		//StorageHelper storeTask = new StorageHelper();
+		//Task task = new Task();
+		//storeTask.addNewTask(task);
 	}
 	
 	private void debug() {
