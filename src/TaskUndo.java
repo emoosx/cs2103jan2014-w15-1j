@@ -1,4 +1,5 @@
 import java.util.Stack;
+import core.Task;
 
 /*
  * This class performs undo operations
@@ -9,14 +10,19 @@ import java.util.Stack;
 
 public class TaskUndo {
 	
-	private static Stack<Task> undoStack = new Stack<Task>();
+	private static Stack<Task> taskStack = new Stack<Task>();
+	private static Stack<String> commandStack = new Stack<String>();
 	
 	public void undoAction() {
 		
 	}
 	
-	public void addHistory(Task task) {
-		undoStack.push(task);
+	public void addDeleteHistory(Task task) {
+		commandStack.push("delete");
+		taskStack.push(task);
 	}
 	
+	public void addEditHistory(Task oldTask, Task newTask) {
+		
+	}
 }
