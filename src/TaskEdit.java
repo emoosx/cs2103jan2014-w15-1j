@@ -1,6 +1,7 @@
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+import core.Task;
 
 public class TaskEdit {
 
