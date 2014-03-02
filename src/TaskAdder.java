@@ -23,7 +23,6 @@ import storage.StorageHelper;
 
 public class TaskAdder {
 	
-	
 	private final String KEYWORD_BY = "by";
 	private final String KEYWORD_TO = "to";
 	private final String KEYWORD_FROM = "from";
@@ -31,10 +30,13 @@ public class TaskAdder {
 	private final String KEYWORD_AM = "am";
 	private final String KEYWORD_PM = "pm";
 	
-	private final int NUM_INTEGER_IN_DATE = 3;
-	private final int NUM_DAY_INDEX = 0;
-	private final int NUM_MONTH_INDEX = 1;
-	private final int NUM_YEAR_INDEX = 2;
+	// Constants used in parseDate method
+	private final int NUM_INTEGERS_IN_DATE = 3;
+	private final int NUM_ARRAY_INDEX_DAY = 0;
+	private final int NUM_ARRAY_INDEX_MONTH = 1;
+	private final int NUM_ARRAY_INDEX_YEAR = 2;
+	
+	// Constants used in parseTime method
 	private final int NUM_LONGEST_TIME_STRING = 7;
 	private final int NUM_SHORTEST_TIME_STRING = 3;
 	private final int NUM_TIME_FORMAT_DIGITS_ONLY = 4;
@@ -61,12 +63,8 @@ public class TaskAdder {
 		parseTask(inputString);
 	}
 	
-	/*
-	 *This method will determine what kind of tasks that the user wants to add
-	 *Floating tasks: tasks that only contains task description
-	 *Time tasks: tasks that has a start and end time
-	 *Deadline tasks: tasks that has an end time
-	 */
+
+	// This method will parse and determine what kind of tasks that the user wants to add
 	private void parseTask(String inputString) {
 		StringTokenizer st = new StringTokenizer(inputString);	
 		while(st.hasMoreTokens()) {
@@ -76,22 +74,18 @@ public class TaskAdder {
 			} else {
 				appendDescription(token);
 			}
-		}		
+		}
 		debug();
 		addTask();
 	}
 	
-	/*
-	 *This method will check if token passed by determineTask method
-	 *contains keyword: "on", "by", "from" and "to"
-	 *Post condition: Returns true if token is a key word, false otherwise
-	 */
+	 //This method will check if token contains keywords
 	private boolean isKeyWord(String token) {
 		token = token.toLowerCase();
 		if(token.equals(KEYWORD_ON) ||
-			token.equals(KEYWORD_BY) ||
-				token.equals(KEYWORD_FROM) ||
-					token.equals(KEYWORD_TO))
+		   token.equals(KEYWORD_BY) ||
+		   token.equals(KEYWORD_FROM) ||
+		   token.equals(KEYWORD_TO))
 			return true;
 		else
 			return false;
@@ -127,16 +121,16 @@ public class TaskAdder {
 		//System.out.println("Parsing:" + keyWord + ", with token: " + parameter);
 		// parameter should be a date format
 		String[] stringArray = parameter.split("[./-]");
-		if(stringArray.length != NUM_INTEGER_IN_DATE) {
+		if(stringArray.length != NUM_INTEGERS_IN_DATE) {
 			// does not match date format 
 			appendDescription(keyWord);
 			appendDescription(parameter);
 		} else {
 			// parsing date format as day, month and time
 			try {
-				day = Integer.parseInt(stringArray[NUM_DAY_INDEX]);
-				month = Integer.parseInt(stringArray[NUM_MONTH_INDEX]);
-				year = Integer.parseInt(stringArray[NUM_YEAR_INDEX]);
+				day = Integer.parseInt(stringArray[NUM_ARRAY_INDEX_DAY]);
+				month = Integer.parseInt(stringArray[NUM_ARRAY_INDEX_MONTH]);
+				year = Integer.parseInt(stringArray[NUM_ARRAY_INDEX_YEAR]);
 			} catch (Exception e) { // cannot be parsed as integers
 				// 2 things i can do here, either 1. output invalid date format
 				// or 2. treat it as task description e.g. asds-asa-das input
@@ -240,6 +234,7 @@ public class TaskAdder {
 		}
 	}
 	
+	// This method assigns start/end time according to keyword
 	private void assignTime(String keyWord, String hour, String minute) {
 		if(keyWord.equals(KEYWORD_BY) || keyWord.equals(KEYWORD_TO)) {
 			endHour = hour; 
@@ -256,15 +251,21 @@ public class TaskAdder {
 			}
 		}
 	}
+	
 	// Method that will store task given all parsed attributes
 	private void addTask() {
+		taskDesc = taskDesc.trim();
 		//StorageHelper storeTask = new StorageHelper();
+		//Time startTime = new Time();
+		//Time endTime = new Time();
+		//Date startDate = new Date();
+		//Date endDate = new Date();
 		//Task task = new Task();
 		//storeTask.addNewTask(task);
 	}
 	
+	// A method for debugging purposes
 	private void debug() {
-		// Debugging purposes
 		System.out.println("Task Description: " + taskDesc);
 		System.out.println("Start Time: " + startHour + ":" + startMin + startTimeZone);
 		System.out.println("End Time: " + endHour + ":" + endMin + endTimeZone);
