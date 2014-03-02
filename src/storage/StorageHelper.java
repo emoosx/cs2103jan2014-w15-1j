@@ -27,11 +27,6 @@ public class StorageHelper {
 		this.file = createOrGetFile(FILENAME);
 	}
 
-	public void addNewTaskTest(Task t) {
-		gson = new Gson();
-		String json = gson.toJson(t);
-		System.out.println(json);
-	}
 	public void addNewTask(Task t) {
 		try(Writer writer = new OutputStreamWriter(new FileOutputStream(this.file), "UTF-8")) {
 			gson = new Gson();
@@ -51,9 +46,6 @@ public class StorageHelper {
 			}
 		}
 		return file;
-	}
-	
-	private void writeToFile() {
 	}
 }
 

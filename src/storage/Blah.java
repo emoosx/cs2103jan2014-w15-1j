@@ -6,6 +6,5 @@ public class Blah {
 	public static void main(String[] args) {
 		StorageHelper storage = new StorageHelper();
 		Task newTask = new Task("test Task", "woowhooo");
-		storage.addNewTaskTest(newTask);
 	}
 }
