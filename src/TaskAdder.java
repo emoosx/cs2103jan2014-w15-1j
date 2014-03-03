@@ -39,11 +39,11 @@ public class TaskAdder {
 	// Constants used in parseTime method
 	private final int NUM_LONGEST_TIME_STRING = 7;
 	private final int NUM_SHORTEST_TIME_STRING = 3;
-	private final int NUM_TIME_FORMAT_DIGITS_ONLY = 4;
 	private final int NUM_TIME_FORMAT_SINGLE_DIGITS = 3;
 	private final int NUM_TIME_FORMAT_DOUBLE_DIGITS = 4;
 	private final int LENGTH_AM_PM = 2;
 	
+	// Task object primitive types
 	private String taskDesc = "";
 	private String startHour = null;
 	private String startMin = null;
@@ -55,10 +55,7 @@ public class TaskAdder {
 	private Integer month = null;
 	private Integer year = null;
 	
-	/*
-	 *Public method that will be called by Parser.java
-	 *This is just a driver method that will pass the input String into a parser method, determineTask
-	 */
+	// A driver method that will pass the input String into a parser method, parseTask
 	public void run(String inputString) {
 		parseTask(inputString);
 	}
@@ -156,17 +153,17 @@ public class TaskAdder {
 			appendDescription(keyWord);
 			appendDescription(time);
 			return st;
-		} 
+		}
+		
+		String lastTwoAlphabets = time.substring(time.length() - LENGTH_AM_PM).toLowerCase();
+		if(!containsAmPm(lastTwoAlphabets)) {
+			System.out.println(time + " appended here. Case 2: Time does not contain am or pm");
+			appendDescription(keyWord);
+			appendDescription(time);
+			return st;	
+		}
 		// for cases of 3-4 letter string time format: 2pm, 1am, 12pm, 12am etc.
 		if(time.length() == NUM_TIME_FORMAT_DOUBLE_DIGITS || time.length() == NUM_TIME_FORMAT_SINGLE_DIGITS) {
-			String lastTwoAlphabets = time.substring(time.length() - LENGTH_AM_PM).toLowerCase();
-			// token does not end with "am" or "pm"
-			if(!containsAmPm(lastTwoAlphabets)) {
-				System.out.println(time + " appended here. Case 2: Time does not contain am or pm");
-				appendDescription(keyWord);
-				appendDescription(time);
-				return st;				
-			} else {
 				try {
 					hourString = time.substring(0, time.length() - LENGTH_AM_PM);
 					Integer.parseInt(hourString);
@@ -176,17 +173,9 @@ public class TaskAdder {
 					appendDescription(time);
 					return st;
 				}
-			}
 		}
 		// for cases of 6-7 letter string time format: 2:00pm, 1:15am, 12:00pm etc.
 		if(time.length() == 6 || time.length() == 7) {
-			String lastTwoAlphabets = time.substring(time.length() - LENGTH_AM_PM).toLowerCase();
-			if(!containsAmPm(lastTwoAlphabets)) {
-				System.out.println(time + " appended here. Case 4: Time does not contain am or pm");
-				appendDescription(keyWord);
-				appendDescription(time);
-				return st;					
-			} else {
 				String[] timeArray = time.split(":");
 				if(timeArray.length != 2) {
 					System.out.println(time + " appended here. Case 5: Time contains am or pm but wrong format");
@@ -207,22 +196,8 @@ public class TaskAdder {
 					}
 					
 				}
-			}
 		}
-		
-		/* 
-		 * For next time when we want to handle 4 digit time format
-		// check if parameter format is of 4 digits eg. 2359
-		if(time.length() == NUM_TIME_FORMAT_DIGITS_ONLY ){
-			try{			
-			} catch (Exception e) {
-				// token is a 4 digit string but not of time format
-				appendDescription(time);
-				return st;
-			}
-		}
-		*/
-		assignTime(keyWord, hourString, minString);
+		assignTime(keyWord, hourString, minString, lastTwoAlphabets);
 		return st;
 	}
 	
@@ -235,10 +210,11 @@ public class TaskAdder {
 	}
 	
 	// This method assigns start/end time according to keyword
-	private void assignTime(String keyWord, String hour, String minute) {
+	private void assignTime(String keyWord, String hour, String minute, String timeZone) {
 		if(keyWord.equals(KEYWORD_BY) || keyWord.equals(KEYWORD_TO)) {
 			endHour = hour; 
 			endMin = minute;
+			endTimeZone = timeZone;
 			if(endHour != null && endMin == null) {
 				endMin = "00";
 			}
@@ -246,6 +222,7 @@ public class TaskAdder {
 		else {
 			startHour = hour;
 			startMin = minute;
+			startTimeZone = timeZone;
 			if(endHour != null && endMin == null) {
 				startMin = "00";
 			}
