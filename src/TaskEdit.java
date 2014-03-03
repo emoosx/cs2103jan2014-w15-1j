@@ -1,35 +1,60 @@
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+
 import core.Task;
 
 public class TaskEdit {
 
-	// Format : edit <task> <-ed / -tn>
-	// To be coded by Clement
 	/*
-	 * How it works: format: edit task id <function> -search for task id -id
-	 * exist perform edit -edit details of task object. set to description or
-	 * set priority to then update to gson different functions: 1) edit
-	 * description 2) edit time/priority (sub)
+	 * Format: edit <taskid/taskname> <
 	 */
-	ParamParser para = new ParamParser();
-	private static final String MESSAGE_EDIT_FAIL = "Unable to find file to edit";
-	private static Integer NUMBER_COMMAND_INDEX = 0;
-	String userInput;
+	private final String KEYWORD_desc1 = "desc";
+	private final String KEYWORD_desc2 = "description";
+	private final String KEYWORD_name = "name";
+	private final String KEYWORD_date = "date";
+	private final String KEYWORD_time = "time";
 
+	private static final String MESSAGE_EDIT_FAIL = "Unable to find file to edit";
+	private static final String MESSAGE_INVALID_EDIT = "Usage: edit <task name/ID> <desc/name/date/time> <output>";
+	
+	private static Integer NUMBER_TASK_INDEX = 0;
+	private static Integer NUMBER_COMMAND_INDEX = 1;
+	private static Integer EDIT_PARA = 3;
+	String userInputDesc;
+	String commandType;
+	String[] inputArray;
+
+// user input should contains 3 para <task name/ID> <edit_type> <output>
 	void execute(String userInput) {
 		if (!checkIfFileIsEmpty()) {
-			String[] inputArray = userInput.split(" ");
-			String taskId = inputArray[NUMBER_COMMAND_INDEX];
-			userInput = removeFirstWord(userInput);
+			if(checkEditParameters(userInput)){
+			inputArray = userInput.split(" ");
+			String taskId = inputArray[NUMBER_TASK_INDEX];
+			commandType = inputArray[NUMBER_COMMAND_INDEX];
+			userInputDesc = obtainUserEditInput(userInput);
+
 			if (!searchTask(taskId)) {
 				showToUser(MESSAGE_EDIT_FAIL);
+			}
+			}else{
+				showToUser(MESSAGE_INVALID_EDIT);
 			}
 		}
 	}
 
+	private boolean checkEditParameters(String input) {
+		if(isValidString(input)){
+			String[] stringArray = input.split(" ");
+		   if (stringArray.length != EDIT_PARA) {
+			return false;
+		   }
+		} 
+		return true;
+	}
+
 	// search for task using taskname or id
+	// This is done by searching through an arraylist of task (not too sure how to search from json file)
 	private boolean searchTask(String task) {
 		Task t = new Task();
 		for (int i = 0; i < dataList.size(); i++) {
@@ -42,42 +67,39 @@ public class TaskEdit {
 		return false;
 	}
 
+	// Method to edit task description/ task name / date / time
 	private void performEdit(Task t) {
-
-		JCommander cmd = new JCommander();
-		// jcommander determines edit type and pass description/name edit to
-		// respective method
-		// to add if/else once I figured how to use jcom to determine type
-		cmd.addCommand("editD", para, "-ed","editdesc");
-		cmd.addCommand("editN",para, "-en","editname");
-		try {
-	        cmd.parse(userInput);
-	        //
-	        if ("editD".equals(cmd.getParsedCommand())) {
-	        	t.setTaskDescription(para.getDesc());
-	        } else if ("editN".equals(cmd.getParsedCommand())) {
-	        	t.setTaskName(para.getName());
-	        } else {
-	           cmd.usage();
+		
+		if((commandType== KEYWORD_desc1) || commandType == KEYWORD_desc2 ){
+		// Editing of task description
+			t.setTaskDescription(userInputDesc);			
+	        } 
+		// Editing of task name
+		else if (commandType == KEYWORD_name) {
+	        	t.setTaskName(userInputDesc);
 	        }
+		// Editing of date
+	        else if(commandType == KEYWORD_date){
+	          // t.
+	        }
+		// Editing of time
+	        else if(commandType == KEYWORD_time){
 	        //
-	    } catch (ParameterException ex) {
-	        System.out.println(ex.getMessage());
-	        cmd.usage();
-	    }
+	        }
 		// update arraylist
 		updateTaskList();
 	}
-    
+
 	// 1)Find task object in dataList and replace it
 	// 2)Saves to json file
 	//
 	private void updateTaskList() {
-		// TODO Auto-generated method stub
+	
 
 	}
 
-	private static String removeFirstWord(String userCommand) {
+	private static String obtainUserEditInput(String userCommand) {
+		userCommand.replace(getFirstWord(userCommand), "").trim();
 		return userCommand.replace(getFirstWord(userCommand), "").trim();
 	}
 
@@ -91,14 +113,22 @@ public class TaskEdit {
 		return str.matches("-?\\d+(\\.\\d+)?"); // match a number with optional
 												// '-' and decimal.
 	}
+	
+	// Method checks if inputString is a valid String
+		private static boolean isValidString(String inputString) {
+			if (inputString.trim().length() == 0) {
+				return false;
+			}
+			return true;
+		}
 
 	// Method checks if data list is empty
 	// Arraylist name to be edited accordingly
 	private boolean checkIfFileIsEmpty() {
-		// if (dataList.isEmpty()) {
-		return true;
-		// }
-		// return false;
+		if (dataList.isEmpty()) {
+			return true;
+		}
+		return false;
 	}
 
 	private void showToUser(String outputString) {
