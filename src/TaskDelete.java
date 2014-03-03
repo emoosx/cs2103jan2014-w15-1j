@@ -1,3 +1,5 @@
+import core.Task;
+
 public class TaskDelete {
 	private static final String MESSAGE_INVALID_DELETE = "Usage: delete <number>";
 	private static final String MESSAGE_INVALID_NUMBERFORMAT = "Please key in an integer";
@@ -5,6 +7,7 @@ public class TaskDelete {
 	private static final String MESSAGE_INVALID_NUMBER = "Please choose a lower value";
 	private static final String MESSAGE_DELETED = "deleted : \"%s\"";
 	private static final String MESSAGE_EMPTY = "file is empty";
+	private static final String COMMAND_DELETE = "delete";
 
 	private static Integer DELETE_PARA = 0;
 	private static Integer DELETE_OFFSET = 1;
@@ -19,7 +22,8 @@ public class TaskDelete {
 		if (checkDeleteInput(inputNumber)) {
 			int lineToRemove = Integer.parseInt(inputNumber) - DELETE_OFFSET;
 			 String deletedString = dataList.get(lineToRemove);
-			 dataList.remove(lineToRemove);
+			 Task task = dataList.remove(lineToRemove);
+			 addToHistory(task);
 			 showToUser(String.format(MESSAGE_DELETED, deletedString));
 		}
 	}
@@ -103,5 +107,11 @@ public class TaskDelete {
 			return false;
 		}
 		return true;
+	}
+	
+	// Method adds recent deletion to the history for undo purposes
+	private void addToHistory(Task task) {
+		TaskUndo history = new TaskUndo();
+		history.addDeleteHistory(task);
 	}
 }
