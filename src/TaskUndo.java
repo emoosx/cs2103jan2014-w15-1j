@@ -10,11 +10,30 @@ import core.Task;
 
 public class TaskUndo {
 	
+	private static final String MESSAGE_EMPTY_HISTORY = "There is nothing to undo.";
+	
 	private static Stack<Task> taskStack = new Stack<Task>();
 	private static Stack<String> commandStack = new Stack<String>();
 	
 	public void undoAction() {
-		
+		if(commandStack.isEmpty()) {
+			showToUser(MESSAGE_EMPTY_HISTORY);
+			return;
+		}
+		String undoCommand = commandStack.pop();
+		switch(undoCommand) {
+			case("add"):
+				// Delete
+				break;
+			case("delete"):
+				// Add
+				break;
+			case("edit"):
+				// Un-edit
+				break;
+			default:
+				break;
+		}
 	}
 	
 	public void addDeleteHistory(Task task) {
@@ -23,6 +42,14 @@ public class TaskUndo {
 	}
 	
 	public void addEditHistory(Task oldTask, Task newTask) {
+		commandStack.push("add");
+		taskStack.push(oldTask);
 		
+		commandStack.push("delete");
+		taskStack.push(newTask);
+	}
+	
+	private void showToUser(String string) {
+		System.out.println(string);
 	}
 }
