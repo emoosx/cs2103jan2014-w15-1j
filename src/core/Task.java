@@ -17,6 +17,7 @@ public class Task {
 	protected String taskDescription;
 	protected ArrayList<String> taskTags;			// tags are in lowercase
 	protected DateTime taskDeadline;
+	protected boolean taskDone;
 	private DateTime taskCreatedTimestamp; 
 	
 	// Constructor method
@@ -25,6 +26,7 @@ public class Task {
 		this.taskName = tName;
 		this.taskDescription = tDesc;
 		this.taskTags = new ArrayList<String>();
+		this.taskDone = false;
 		this.taskCreatedTimestamp = new DateTime();
 	}
 	
@@ -34,6 +36,7 @@ public class Task {
 		this.taskName = tName;
 		this.taskDescription = null;
 		this.taskTags = new ArrayList<String>();
+		this.taskDone = false;
 		this.taskCreatedTimestamp = new DateTime();
 	}
 	
@@ -44,6 +47,7 @@ public class Task {
 		this.taskTags = new ArrayList<String>();
 		this.taskCreatedTimestamp = new DateTime();
 		this.taskDeadline = taskDeadline;
+		this.taskDone = false;
 	}
 	
 	
@@ -77,6 +81,18 @@ public class Task {
 	
 	public void addNewTag(String newTag) {
 		this.taskTags.add(newTag.trim().toLowerCase());
+	}
+	
+	public void setTaskDone() {
+		this.taskDone = true;
+	}
+	
+	public void setTaskUndone() {
+		this.taskDone = false;
+	}
+	
+	public boolean getTaskDone() {
+		return this.taskDone;
 	}
 	
 	// Override method for toString
