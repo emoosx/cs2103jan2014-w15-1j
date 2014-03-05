@@ -1,5 +1,7 @@
 import java.util.StringTokenizer;
+
 import storage.StorageHelper;
+import core.Task;
 
 /*
  *TaskAdder class will perform its run method as a drive method
@@ -232,13 +234,23 @@ public class TaskAdder {
 	// Method that will store task given all parsed attributes
 	private void addTask() {
 		taskDesc = taskDesc.trim();
-		//StorageHelper storeTask = new StorageHelper();
+		StorageHelper storeTask = new StorageHelper();
 		//Time startTime = new Time();
 		//Time endTime = new Time();
 		//Date startDate = new Date();
 		//Date endDate = new Date();
-		//Task task = new Task();
-		//storeTask.addNewTask(task);
+//		private String taskDesc = "";
+//		private String startHour = null;
+//		private String startMin = null;
+//		private String startTimeZone = null;
+//		private String endHour = null;
+//		private String endMin = null;
+//		private String endTimeZone = null;
+//		private Integer day = null;
+//		private Integer month = null;
+//		private Integer year = null;
+		Task task = new Task(taskDesc);
+		storeTask.addNewTask(task);
 	}
 	
 	// A method for debugging purposes
