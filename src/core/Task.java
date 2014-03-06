@@ -13,54 +13,35 @@ import org.joda.time.DateTime;
 public class Task {
 
 	protected UUID taskID;
-	protected String taskName;
+	private String rawText;
 	protected String taskDescription;
 	protected ArrayList<String> taskTags;			// tags are in lowercase
-	protected DateTime taskDeadline;
+	protected DateTime startTime;
+	protected DateTime endTime;
 	protected boolean taskDone;
 	private DateTime taskCreatedTimestamp; 
-	
+	private boolean hasAlias;
+
 	// Constructor method
-	public Task(String tName, String tDesc){
+	public Task(String rawText) {
+		this.rawText = rawText;
 		this.taskID = UUID.randomUUID();
-		this.taskName = tName;
-		this.taskDescription = tDesc;
-		this.taskTags = new ArrayList<String>();
-		this.taskDone = false;
-		this.taskCreatedTimestamp = new DateTime();
-	}
-	
-	// task without any deadline
-	public Task(String tName) {
-		this.taskID = UUID.randomUUID();
-		this.taskName = tName;
 		this.taskDescription = null;
-		this.taskTags = new ArrayList<String>();
-		this.taskDone = false;
+		this.startTime = null;
+		this.endTime = null;
 		this.taskCreatedTimestamp = new DateTime();
+		this.taskDone = false;
+		this.hasAlias = false;
+		this.parse(this.rawText);
 	}
 	
-	public Task(String tName, DateTime taskDeadline) {
-		this.taskID = UUID.randomUUID();
-		this.taskName = tName;
-		this.taskDeadline = taskDeadline;
-		this.taskTags = new ArrayList<String>();
-		this.taskCreatedTimestamp = new DateTime();
-		this.taskDeadline = taskDeadline;
-		this.taskDone = false;
+/*	parsing will update the necessary attributes of the task*/
+	private void parse(String rawText) {
+
 	}
-	
 	
 	public UUID getTaskID() {
 		return this.taskID;
-	}
-
-	public void setTaskName(String tName){
-		this.taskName = tName;
-	}
-	
-	public String getTaskName(){
-		return this.taskName;
 	}
 	
 	public void setTaskDescription(String tDesc){
@@ -71,8 +52,8 @@ public class Task {
 		return this.taskDescription;
 	}
 	
-	public DateTime getTaskDeadline() {
-		return this.taskDeadline;
+	public DateTime getTaskEndTime() {
+		return this.endTime;
 	}
 	
 	public void setTaskTags(ArrayList<String> tags) {
@@ -98,7 +79,7 @@ public class Task {
 	// Override method for toString
 	public String toString() {
 		return new StringBuffer(" Task ID :").append(this.taskID.toString())
-						.append(" Task Name : ").append(this.taskName)
+						.append(" Task Name : ").append(this.taskDescription)
 		                .append(" Task Description : ").append(this.taskDescription).toString();
 	}
 }
