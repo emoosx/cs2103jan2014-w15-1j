@@ -3,6 +3,9 @@ package core;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import logic.RegExp;
+import logic.TaskParser;
+
 import org.joda.time.DateTime;
 
 /*
@@ -16,8 +19,8 @@ public class Task {
 	private String rawText;
 	protected String taskDescription;
 	protected ArrayList<String> taskTags;			// tags are in lowercase
-	protected DateTime startTime;
-	protected DateTime endTime;
+	protected DateTime startDateTime;
+	protected DateTime endDateTime;
 	protected boolean taskDone;
 	private DateTime taskCreatedTimestamp; 
 	private boolean hasAlias;
@@ -27,17 +30,21 @@ public class Task {
 		this.rawText = rawText;
 		this.taskID = UUID.randomUUID();
 		this.taskDescription = null;
-		this.startTime = null;
-		this.endTime = null;
+		this.startDateTime = null;
+		this.endDateTime = null;
 		this.taskCreatedTimestamp = new DateTime();
 		this.taskDone = false;
 		this.hasAlias = false;
 		this.parse(this.rawText);
 	}
 	
-/*	parsing will update the necessary attributes of the task*/
+	// parsing will update the necessary attributes of the task
 	private void parse(String rawText) {
-
+		TaskParser parser = new TaskParser(rawText);
+		parser.parseTask();
+		taskDescription = parser.getTaskDescription();
+		startDateTime = parser.getStartDateTime();
+		endDateTime = parser.getEndDateTime();
 	}
 	
 	public UUID getTaskID() {
@@ -53,7 +60,7 @@ public class Task {
 	}
 	
 	public DateTime getTaskEndTime() {
-		return this.endTime;
+		return this.endDateTime;
 	}
 	
 	public void setTaskTags(ArrayList<String> tags) {
