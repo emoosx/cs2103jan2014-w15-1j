@@ -59,6 +59,12 @@ public class RegExpTest {
 		
 		time = RegExp.timeFromTimeString("haha");
 		assertEquals(null, time);
+		
+//		time = RegExp.timeFromTimeString("45:45pm");
+//		assertEquals(null, time);
+//
+//		time = RegExp.timeFromTimeString("06:99am");
+//		assertEquals(null, time);
 	}
 	
 	@Test
@@ -75,6 +81,9 @@ public class RegExpTest {
 		assertEquals(2014,date[2]);
 		
 		date = RegExp.dateFromDateString("a/2/2014");
+		assertEquals(null, date);
+		
+		date = RegExp.dateFromDateString("31/14/9999");
 		assertEquals(null, date);
 	}
 }
