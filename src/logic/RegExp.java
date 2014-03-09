@@ -37,7 +37,7 @@ public class RegExp {
     // Case 1: "from TIME to TIME", where TIME is HH:MM(am/pm) or HH(am/pm), all cases are insensitive and HH is between 1-12 and MM is between 0 to 59
     public static String REGEX_TIME_FORMAT_1 = "\\bfrom\\s(([1-9]|1[0-2])(:[0-5][0-9])?[aApP][mM])\\sto\\s(([1-9]|1[0-2])(:[0-5][0-9])?[aApP][mM])\\b";
     // Case 2: "from TIME to TIME", where TIME is HH:MM or HHMM, H is between 0-23 and MM is between 0 to 59
-    public static String REGEX_TIME_FORMAT_2 = "\\b";
+    public static String REGEX_TIME_FORMAT_2 = "\\bfrom\\s(([0-1][0-9]|2[0-3]):?([0-5][0-9]))\\sto\\s(([0-1][0-9]|2[0-3]):?[0-5][0-9])\\b";
     // Case 3: "at/due/by TIME", where TIME can be HH:MM(am/pm) or HH(am/pm), all cases are insensitive
     public static String REGEX_TIME_FORMAT_3 = "\\b(at|by)\\s((([1-9]|1[0-2])(:[0-5][0-9])?[aApP][mM])|(([0-1][0-9]|2[0-3]):?[0-5][0-9]))\\b";
     
@@ -49,7 +49,9 @@ public class RegExp {
     // Case 2: HH (am/pm)
     public static String REGEX_TIMESTRING_FORMAT_2 = "([1-9]|1[0-2])[AaPp][Mm]"; 
     // Case 3: HH:MM
-    public static String REGEX_TIMESTRING_FORMAT_3 = "([0-1][0-9]|2[0-3]):?[0-5][0-9]";
+    public static String REGEX_TIMESTRING_FORMAT_3 = "([0-1][0-9]|2[0-3]):[0-5][0-9]";
+    // Case 4: HHMM
+    public static String REGEX_TIMESTRING_FORMAT_4 = "([0-1][0-9]|2[0-3])[0-5][0-9]";
     
     // Hash Tag Regular Expressions
     public static String HASHTAG = "#(.+?)\\b";
@@ -85,7 +87,7 @@ public class RegExp {
     		time[NUM_HOUR_INDEX] = Integer.parseInt(timeStringArray[NUM_HOUR_INDEX]);
     		if(timeStringArray[NUM_MIN_INDEX].contains("pm")) {
     			timeStringArray[NUM_MIN_INDEX] = timeStringArray[NUM_MIN_INDEX].replace("pm", "");
-    			time[NUM_HOUR_INDEX] = (time[0] % 12) + 12;
+    			time[NUM_HOUR_INDEX] = (time[NUM_HOUR_INDEX] % 12) + 12;
     			time[NUM_MIN_INDEX] = Integer.parseInt(timeStringArray[1]);
     		} else {
     			timeStringArray[NUM_MIN_INDEX] = timeStringArray[NUM_MIN_INDEX].replace("am", "");
@@ -109,6 +111,22 @@ public class RegExp {
     	}
     	
     	// Case 3: HH:MM
+    	pattern = Pattern.compile(REGEX_TIMESTRING_FORMAT_3);
+    	matcher = pattern.matcher(timeString);
+    	if(matcher.find()) {
+    		String[] timeStringArray = timeString.split(":");
+    		time[NUM_HOUR_INDEX] = Integer.parseInt(timeStringArray[0]); 
+    		time[NUM_MIN_INDEX] = Integer.parseInt(timeStringArray[1]);
+    		return time;
+    	}
+    	// Case 4: HHMM
+    	pattern = Pattern.compile(REGEX_TIMESTRING_FORMAT_4);
+    	matcher = pattern.matcher(timeString);
+    	if(matcher.find()) {
+    		time[NUM_HOUR_INDEX] = Integer.parseInt(timeString.substring(0,2));
+    		time[NUM_MIN_INDEX] = Integer.parseInt(timeString.substring(2,4));
+    		return time;
+    	}
     	
     	return null;
     }
@@ -145,11 +163,13 @@ public class RegExp {
 			return timeArray;
 		}
     	
-		// Case 2: "from TIME to TIME", where TIME can be HH:MM
+		// Case 2: "from TIME to TIME", where TIME can be HH:MM or HHMM
 		pattern = Pattern.compile(REGEX_TIME_FORMAT_2);
 		matcher = pattern.matcher(userInput);
 		if(matcher.find()) {
-			//return timeArray;
+			timeArray.add(matcher.group(NUM_START_TIME_GROUP));
+			timeArray.add(matcher.group(NUM_END_TIME_GROUP));
+			return timeArray;
 		}
 		
 		// Case 3: by/at/due "TIME", where TIME can be HH:MM(am/pm) or HH(am/pm) or HH:MM
