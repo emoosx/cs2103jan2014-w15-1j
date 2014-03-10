@@ -28,8 +28,17 @@ public class RegExp {
 									    	"\\b(?:(at|by|due|on|from|to)\\s)(([1-9]|1[0-2])[AaPp][Mm])\\b",				//HH am|pm (eg. 5pm, 12am)										
 									    	"\\b(?:(at|by|due|on|from|to)\\s)(([0-1]?[0-9]|2[0-3]):[0-5][0-9])\\b"};  		  	//HH:MM (eg. 23:59, 13:15)
     											
-    // Date Format Expressions
-    public static String REGEX_DATE_FORMAT_1 = "\\d{1,2}[-/]\\d{1,2}[-/]\\d{1,4}";
+    /*
+     * Date Format Expressions for parsing raw text data
+     */
+    // Case 1: "on DATE", where DATE is DD/MM/YY or DD-MM-YY
+    public static String REGEX_DATE_FORMAT_1 = "\\bon\\s((([1-9]|[12]\\d|3[01])-([13578]|1[02])-(\\d{4}|\\d{2})|([1-9]|[12]\\d|30)-([1-9]|1[02])-(\\d{4}|\\d{2}))|(([1-9]|[12]\\d|3[01])/([13578]|1[02])/(\\d{4}|\\d{2})|([1-9]|[12]\\d|30)/([1-9]|1[02])/(\\d{4}|\\d{2})))\\b";
+    
+    /*
+     * Date Format Expression for parsing raw date data
+     */
+    // Case 1: DD/MM/YY(YY) or DD-MM-YY(YY) or  
+    public static String REGEX_DATESTRING_FORMAT_1 = "((([1-9]|[12]\\d|3[01])-([13578]|1[02])-(\\d{4}|\\d{2})|([1-9]|[12]\\d|30)-([1-9]|1[02])-(\\d{4}|\\d{2}))|(([1-9]|[12]\\d|3[01])/([13578]|1[02])/(\\d{4}|\\d{2})|([1-9]|[12]\\d|30)/([1-9]|1[02])/(\\d{4}|\\d{2})))\\b";
 
     /*
      *  Time Format Expressions for parsing raw text data
@@ -59,12 +68,12 @@ public class RegExp {
     // Method returns integer array of 3 elements given time string
     public static int[] dateFromDateString(String dateString) {
     	int[] date = new int[TOTAL_DATE_FIELDS];
-    	
-    	// Case 1: DD-MM-YYYY
-    	Pattern pattern = Pattern.compile(REGEX_DATE_FORMAT_1);
+    	// Case 1: DD-MM-YY(YY)
+    	Pattern pattern = Pattern.compile(REGEX_DATESTRING_FORMAT_1);
     	Matcher matcher = pattern.matcher(dateString);
     	if(matcher.find()) {
-    		String[] dateStringArray = dateString.split("[-|/]");
+    		
+    		String[] dateStringArray = dateString.split("[-/]");
         	date[0] = Integer.parseInt(dateStringArray[0]);
         	date[1] = Integer.parseInt(dateStringArray[1]);
         	date[2] = Integer.parseInt(dateStringArray[2]);
@@ -72,6 +81,7 @@ public class RegExp {
     	}
     	
     	// Case 2: DDMMYYYY
+    	
 		return null;
     }
     
@@ -119,6 +129,7 @@ public class RegExp {
     		time[NUM_MIN_INDEX] = Integer.parseInt(timeStringArray[1]);
     		return time;
     	}
+    	
     	// Case 4: HHMM
     	pattern = Pattern.compile(REGEX_TIMESTRING_FORMAT_4);
     	matcher = pattern.matcher(timeString);
@@ -135,9 +146,17 @@ public class RegExp {
     public static ArrayList<String> parseDate(String userInput) {
     	ArrayList<String> dateArray = new ArrayList<String>();
     	
+    	// Case 1: "on DD-MM-YY(YY) or DD/MM/YY(YY)"
+    	Pattern pattern = Pattern.compile(REGEX_DATE_FORMAT_1);
+    	Matcher matcher = pattern.matcher(userInput);
+    	if(matcher.find()) {
+    		dateArray.add(matcher.group(1));
+    		return dateArray;
+    	}
+    	
     	for(int i=0; i<regexDateArray.length; i++) {
-    		Pattern pattern = Pattern.compile(regexDateArray[i]);
-    		Matcher matcher = pattern.matcher(userInput);
+    		pattern = Pattern.compile(regexDateArray[i]);
+    		matcher = pattern.matcher(userInput);
     		while(matcher.find()) {
     			dateArray.add(matcher.group(2));
     		}
@@ -181,7 +200,8 @@ public class RegExp {
 			timeArray.add(userInputArray[1]);
 			return timeArray;
 		}
-    	return null; 
+		
+    	return timeArray; 
     }
 
     // Method will replace all time and date regular expressions in user input with "" to obtain task description
