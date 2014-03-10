@@ -1,6 +1,9 @@
 package test;
 
 import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+
 import logic.RegExp;
 
 import org.junit.Test;
@@ -14,6 +17,11 @@ public class RegExpTest {
 		assertEquals("5pm", RegExp.parseTime("add haha by 5pm 14/2/2014").get(0));
 		assertEquals("12am", RegExp.parseTime("add haha by 12am 14/2/2014").get(0));
 		assertEquals("23:59", RegExp.parseTime("add haha by 23:59 14/2/2014").get(0));
+		assertEquals("01:59", RegExp.parseTime("add haha by 01:59 14/2/2014").get(0));
+		assertEquals("2359", RegExp.parseTime("add haha by 2359 on 14-2-2014").get(0));
+		
+		ArrayList<String> list = new ArrayList<String>();
+		assertEquals(list, RegExp.parseTime("add haha by 1:59 on 14-2-2014"));
 	}
 	
 	@Test
