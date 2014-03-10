@@ -1,20 +1,24 @@
 package logic;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import org.joda.time.DateTime;
 
 public class TaskParser {
 	
-	private static final int TOTAL_DATE_FIELDS = 3;
-	private static final int TOTAL_TIME_FIELDS = 2;
 	private static final int NUM_HOUR_INDEX = 0;
 	private static final int NUM_MIN_INDEX = 1;
 	private static final int NUM_YEAR_INDEX = 2;
 	private static final int NUM_MONTH_INDEX = 1;
 	private static final int NUM_DAY_INDEX = 0;
+	private static final int NUM_CALENDAR_MONTH_OFFSET = 1;
+	private static final int NUM_CENTURY_YEAR = 2000;
+	private static final int NUM_2_DIGIT_FORMAT = 100;
 	
-	
+	// Task object variables
+	private DateTime startDateTime;
+	private DateTime endDateTime;
 	private String taskDescription;
 	
 	// Primitive time variables
@@ -48,14 +52,19 @@ public class TaskParser {
 	}
 	
 	// Method will call RegExp class to get all date and time of user's input
-	// Method will store results in a time array and date array
+	// Method will then initialize all date and time variables
 	public void parseTask() {
 		ArrayList<String> timeArray = RegExp.parseTime(taskDescription);
 		ArrayList<String> dateArray = RegExp.parseDate(taskDescription);
 		taskDescription = RegExp.parseDescription(taskDescription);
 		initializeTime(timeArray);
 		initializeDate(dateArray);
-		finalizeDateTime();
+		try {
+			finalizeDateTime();
+		} catch (Exception e) {
+			System.out.println("Invalid time and date format");
+			e.printStackTrace();
+		}
 	}
 	
 	// Given an array of user time, method will parse start and end time accordingly
@@ -123,24 +132,74 @@ public class TaskParser {
 	}
 	
 	public String getTaskDescription() {
-		System.out.println("Task Description: " + taskDescription);
+		//System.out.println("Task Description: " + taskDescription);
 		return taskDescription.trim();
 	}
 	
 	public DateTime getStartDateTime() {
-		System.out.println("Start Date: " + startDay + "/" + startMonth + "/" + startYear + ". Start Time: " + startHour + ":" + startMin);
-		//return new DateTime(startYear, startMonth, startDay, startHour, startMin);
-		return null;
+		//System.out.println("Start Date: " + startDay + "/" + startMonth + "/" + startYear + ". Start Time: " + startHour + ":" + startMin);
+		return startDateTime;
 	}
 	
 	public DateTime getEndDateTime() {
-		System.out.println("End Date: " + endDay + "/" + endMonth + "/" + endYear + ". Start Time: " + endHour + ":" + endMin);
-		//return new DateTime(endYear, endMonth, endDay, endHour, endMin);
-		return null;
+		//System.out.println("End Date: " + endDay + "/" + endMonth + "/" + endYear + ". Start Time: " + endHour + ":" + endMin);
+		return endDateTime;
 	}
 	
 	// Method will finalize all date and time dates accordingly
 	private void finalizeDateTime() {
-		
+		if(startYear != null && startYear < NUM_2_DIGIT_FORMAT) {
+			startYear += NUM_CENTURY_YEAR;
+		}
+		if(endYear != null && endYear < NUM_2_DIGIT_FORMAT) {
+			endYear += NUM_CENTURY_YEAR;
+		}
+		finalizeFloatingTask();
+		finalizeTimedTask();
+		finalizeDeadlineTask();
+	}
+	
+	// Method will finalize date and time if variables fits that of a floating task
+	private void finalizeFloatingTask() {
+		if(startHour == null && endHour == null &&
+				startYear == null && endYear == null) {
+			startDateTime = null;
+			endDateTime = null;
+		}		
+	}
+	
+	// Method will finalize date and time if variables fits that of a timed task
+	private void finalizeTimedTask() {
+		if(startHour != null && endHour != null) {
+			// if 1 date is given, task starts and end on the same day
+			if(endYear != null && startYear == null) {
+				startYear = endYear;
+				startMonth = endMonth;
+				startDay = endDay;
+			}
+			if(endYear == null && startYear == null) {
+				initializeDateToToday();
+			}
+			startDateTime = new DateTime(startYear, startMonth, startDay, startHour, startMin);
+			endDateTime = new DateTime(endYear, endMonth, endDay, endHour, endMin);
+		}
+	}
+	
+	// Method will finalize date and time if variables fits that of a deadline task
+	private void finalizeDeadlineTask() {
+		if(startHour == null && endHour != null) {
+			if(endYear == null) {
+				initializeDateToToday();
+			}
+			startDateTime = null;
+			endDateTime = new DateTime(endYear, endMonth, endDay, endHour, endMin);	
+		}
+	}
+	
+	// Method will initialize date to local time if it is not stated by user
+	private void initializeDateToToday() {
+		startYear = endYear = Calendar.getInstance().get(Calendar.YEAR);
+		startMonth = endMonth = Calendar.getInstance().get(Calendar.MONTH) + NUM_CALENDAR_MONTH_OFFSET;
+		startDay = endDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 	}
 }
