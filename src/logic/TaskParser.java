@@ -5,6 +5,13 @@ import java.util.Calendar;
 
 import org.joda.time.DateTime;
 
+/*
+ * TaskParser class will aid the adding of tasks through parsing of user's raw data
+ * It is called by any task object to correctly parse user's raw data input
+ * It will take in a raw user input and create 2 DateTime objects and 1 task description string using RegExp class
+ * The task object can then get these data through getter methods available. 
+ */
+
 public class TaskParser {
 	
 	private static final int NUM_HOUR_INDEX = 0;
@@ -52,7 +59,7 @@ public class TaskParser {
 	}
 	
 	// Method will call RegExp class to get all date and time of user's input
-	// Method will then initialize all date and time variables
+	// Method will then call other methods to initialize all date and time variables
 	public void parseTask() {
 		ArrayList<String> timeArray = RegExp.parseTime(taskDescription);
 		ArrayList<String> dateArray = RegExp.parseDate(taskDescription);
@@ -63,11 +70,10 @@ public class TaskParser {
 			finalizeDateTime();
 		} catch (Exception e) {
 			System.out.println("Invalid time and date format");
-			e.printStackTrace();
 		}
 	}
 	
-	// Given an array of user time, method will parse start and end time accordingly
+	// Given an array of user time inputs, method will parse start and end time accordingly
 	private void initializeTime(ArrayList<String> timeArray) {
 		// Case 0: user inputs a floating task
 		if(timeArray.isEmpty()) {
@@ -86,17 +92,19 @@ public class TaskParser {
 		}
 	}
 	
+	// Given an integer array of 2 time field values (hour and minute), it will initialize start time 
 	private void initializeStartTime(int[] startTimeArray) {
 		startHour = startTimeArray[NUM_HOUR_INDEX];
 		startMin = startTimeArray[NUM_MIN_INDEX];
 	}
 	
+	// Given an integer array of 2 time field values (hour and minute), it will initialize end time 
 	private void initializeEndTime(int[] endTimeArray) {
 		endHour = endTimeArray[NUM_HOUR_INDEX];
 		endMin = endTimeArray[NUM_MIN_INDEX];
 	}
 	
-	// Given an array of user dates, method will parse start and end date accordingly
+	// Given an array of user date inputs, method will parse start and end date accordingly
 	private void initializeDate(ArrayList<String> dateArray) {
 		// Case 0: user inputs a floating task
 		if(dateArray.isEmpty()) {
@@ -115,20 +123,18 @@ public class TaskParser {
 		}
 	}
 	
+	// Given an integer array of 3 date field values (year, month and day), it will initialize start date
 	private void initializeStartDate(int[] startDateArray) {
 		startYear = startDateArray[NUM_YEAR_INDEX];
 		startMonth = startDateArray[NUM_MONTH_INDEX];
 		startDay = startDateArray[NUM_DAY_INDEX];
 	}
 	
+	// Given an integer array of 3 date field values (year, month and day), it will initialize end date
 	private void initializeEndDate(int[] endDateArray) {
 		endYear = endDateArray[NUM_YEAR_INDEX];
 		endMonth = endDateArray[NUM_MONTH_INDEX];
 		endDay = endDateArray[NUM_DAY_INDEX];
-		// User specified start time but not start date, assumed to be on same day as end date
-		if(startHour != null && startYear == null) {
-			initializeStartDate(endDateArray);
-		}
 	}
 	
 	public String getTaskDescription() {
@@ -171,12 +177,13 @@ public class TaskParser {
 	// Method will finalize date and time if variables fits that of a timed task
 	private void finalizeTimedTask() {
 		if(startHour != null && endHour != null) {
-			// if 1 date is given, task starts and end on the same day
+			// if one date is given, task will be assumed to start and end on the only date given
 			if(endYear != null && startYear == null) {
 				startYear = endYear;
 				startMonth = endMonth;
 				startDay = endDay;
 			}
+			// Initialize date to local date as two time inputs are read and no date inputs are read
 			if(endYear == null && startYear == null) {
 				initializeDateToToday();
 			}
@@ -187,6 +194,7 @@ public class TaskParser {
 	
 	// Method will finalize date and time if variables fits that of a deadline task
 	private void finalizeDeadlineTask() {
+		// Initialize date to local date if time is stated by user but not the date
 		if(startHour == null && endHour != null) {
 			if(endYear == null) {
 				initializeDateToToday();
