@@ -21,17 +21,22 @@ public class RegExp {
     public static String DATE2 = "\\b\\d{1,2}\\s(?:january|febuary|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)(?:\\s\\d{2,4})?\\b";
     
     // Date Input Expressions
-    public static String[] regexDateArray = {"\\b(?:(on||at)\\s)(\\d{1,2}[-/]\\d{1,2}[-/]\\d{1,4}\\b)"};
+    public static String[] regexDateArray = {"\\bon\\s((([1-9]|[12]\\d|3[01])-([13578]|1[02])-(\\d{4}|\\d{2})|([1-9]|[12]\\d|30)-([1-9]|1[02])-(\\d{4}|\\d{2}))|(([1-9]|[12]\\d|3[01])/([13578]|1[02])/(\\d{4}|\\d{2})|([1-9]|[12]\\d|30)/([1-9]|1[02])/(\\d{4}|\\d{2})))\\b"};
     
     // Time Input Expressions
+    /*
     public static String[] regexTimeArray = {"\\b(?:(at|by|due|on|from|to)\\s)(([1-9]|1[0-2]):[0-5][0-9][AaPp][Mm])\\b", //HH:MM am|pm (eg. 12:45pm, 1:25am)
 									    	"\\b(?:(at|by|due|on|from|to)\\s)(([1-9]|1[0-2])[AaPp][Mm])\\b",				//HH am|pm (eg. 5pm, 12am)										
 									    	"\\b(?:(at|by|due|on|from|to)\\s)(([0-1]?[0-9]|2[0-3]):[0-5][0-9])\\b"};  		  	//HH:MM (eg. 23:59, 13:15)
-    											
+    */
+    public static String[] regexTimeArray = {"\\bfrom\\s(([1-9]|1[0-2])(:[0-5][0-9])?[aApP][mM])\\sto\\s(([1-9]|1[0-2])(:[0-5][0-9])?[aApP][mM])\\b",
+    										"\\bfrom\\s(([0-1][0-9]|2[0-3]):?([0-5][0-9]))\\sto\\s(([0-1][0-9]|2[0-3]):?[0-5][0-9])\\b",											
+    										"\\b(at|by)\\s((([1-9]|1[0-2])(:[0-5][0-9])?[aApP][mM])|(([0-1][0-9]|2[0-3]):?[0-5][0-9]))\\b"};
+    
     /*
      * Date Format Expressions for parsing raw text data
      */
-    // Case 1: "on DATE", where DATE is DD/MM/YY or DD-MM-YY
+    // Case 1: "on DATE", where DATE is DD/MM/YY(YY) or DD-MM-YY(YY)
     public static String REGEX_DATE_FORMAT_1 = "\\bon\\s((([1-9]|[12]\\d|3[01])-([13578]|1[02])-(\\d{4}|\\d{2})|([1-9]|[12]\\d|30)-([1-9]|1[02])-(\\d{4}|\\d{2}))|(([1-9]|[12]\\d|3[01])/([13578]|1[02])/(\\d{4}|\\d{2})|([1-9]|[12]\\d|30)/([1-9]|1[02])/(\\d{4}|\\d{2})))\\b";
     
     /*
@@ -222,6 +227,6 @@ public class RegExp {
     			taskDescription = taskDescription.replaceAll(regexDateArray[i], "");
     		}
     	}
-		return taskDescription;
+		return taskDescription.trim();
 	}
 }

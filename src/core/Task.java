@@ -35,7 +35,7 @@ public class Task {
 		this.parse(this.rawText);
 	}
 	
-	// parsing will update the necessary attributes of the task
+	// This method will update the necessary attributes of the task
 	private void parse(String rawText) {
 		TaskParser parser = new TaskParser(rawText);
 		parser.parseTask();
@@ -58,11 +58,11 @@ public class Task {
 	public String getTaskDescription(){
 		return this.taskDescription;
 	}
-
+	
 	public DateTime getTaskStartTime() {
 		return this.startDateTime;
 	}
-	
+
 	public DateTime getTaskEndTime() {
 		return this.endDateTime;
 	}
