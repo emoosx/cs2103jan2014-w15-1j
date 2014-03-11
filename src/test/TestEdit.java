@@ -16,7 +16,7 @@ public class TestEdit {
 	       // testEditCommand("test number out of arraylist range", "Please choose a lower value", "4");
 	       // testEditCommand("test for positive number", "Please key in a positive number", "-2");
 	      //  testEditCommand("test for invalid number format", "Please key in an integer", "two");
-			testEditCommand("test edit", "meetingchanged on 28-2-2014 from 1pm to 2pm", "1 meetingchanged on 28-2-2014 from 1pm to 2pm");
+			testEditCommand("test edit description", "meetingchanged", "1 meetingchanged on 28-2-2014 from 1pm to 2pm");
 	
 		}
 

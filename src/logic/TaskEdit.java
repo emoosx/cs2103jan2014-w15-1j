@@ -159,11 +159,14 @@ public class TaskEdit {
 				parseAndEdit(taskToEdit, userInput);
 				cFactory.updateTasksList(taskList);
 				cFactory.writeToJson();
+				return taskToEdit.getTaskDescription();
+				/*
 			 StringBuilder sb = new StringBuilder();
 				for(int i=0; i<taskList.size();i++){
 				sb.append(taskList.get(i).toString());
 				}
 				return sb.toString();
+				*/
 		}
 		else{
 			return FEEDBACK;
