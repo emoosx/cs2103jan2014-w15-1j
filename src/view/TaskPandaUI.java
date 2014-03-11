@@ -14,12 +14,15 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import logic.Command;
+import logic.CommandFactory;
 
 public class TaskPandaUI extends JFrame {
 	
 	protected JTextField inputField;
+	protected CommandFactory commandFactory; 
 
 	public TaskPandaUI() {
+		this.commandFactory = CommandFactory.INSTANCE;
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -63,5 +66,6 @@ public class TaskPandaUI extends JFrame {
 	private void processCommand(String inputText) {
 		assert(inputText != null);
 		Command command = new Command(inputText);
+		commandFactory.process(command);
 	}
 }

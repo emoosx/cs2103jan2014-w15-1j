@@ -73,31 +73,4 @@ public class Command {
 		}
 		return COMMAND_TYPE.INVALID; 
 	}
-	
-	public void executeCommand(COMMAND_TYPE command, String rawText) {
-		switch(command) {
-		case ADD:
-			break;
-		case LIST:
-			break;
-		case EDIT:
-			break;
-		case UNDO:
-			break;
-		case ARCHIVE:
-			break;
-		case CLEAR:
-			break;
-		case DONEALL:
-			break;
-		case ARCHIVEALL:
-			break;
-		case DELETE:
-			break;
-		case HELP:
-			break;
-		default:
-			break;
-		}
-	}
 }

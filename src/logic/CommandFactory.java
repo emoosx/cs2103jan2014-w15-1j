@@ -5,11 +5,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import logic.Command.COMMAND_TYPE;
 import storage.StorageHelper;
 import core.Task;
 
 public class CommandFactory {
 	
+	
+	public static CommandFactory INSTANCE = new CommandFactory();
 	public final String UNDO_ADD = "add";
 	public final String UNDO_EDIT = "edit";
 	public final String UNDO_DONE = "done";
@@ -22,8 +25,9 @@ public class CommandFactory {
 	
 	private Stack<Map<Integer, List<String>>> undoStack;
 	
-	public CommandFactory() {
+	private CommandFactory() {
 		tasks = new ArrayList<Task>();
+		this.storage = StorageHelper.INSTANCE;
 		this.fetch();
 	}
 	
@@ -93,7 +97,8 @@ public class CommandFactory {
 	}
 
 	public void writeToJson() {
-		storage = new StorageHelper();
+		StorageHelper.INSTANCE.clearFile();
+		System.out.println("here");
 		storage.clearFile();
 		for (int i = 0; i < tasks.size(); i++) {
 			storage.addNewTask(tasks.get(i));
@@ -107,4 +112,49 @@ public class CommandFactory {
 	private void saveUndo(List<String> item) {
 		
 	}
+	
+	public void process(Command command) {
+		executeCommand(command.command, command.rawText);
+		
+		// call undo here
+	}
+	
+	public void executeCommand(COMMAND_TYPE command, String rawText) {
+		assert(rawText != null);
+		switch(command) {
+		case ADD:
+			break;
+		case LIST:
+			doList(rawText);
+			break;
+		case EDIT:
+			break;
+		case UNDO:
+			break;
+		case ARCHIVE:
+			break;
+		case CLEAR:
+			break;
+		case DONEALL:
+			break;
+		case ARCHIVEALL:
+			break;
+		case DELETE:
+			break;
+		case HELP:
+			break;
+		default:
+			break;
+		}
+	}
+	
+	private void doList(String rawText) {
+		assert(rawText != null);
+		List<Task> tasks = this.storage.getAllTasks();
+		for(Task t : tasks) {
+			System.out.println(t);
+		}
+		
+	}
+
 }
