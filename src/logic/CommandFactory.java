@@ -143,6 +143,7 @@ public class CommandFactory {
 		assert(rawText != null);
 		switch(command) {
 		case ADD:
+			doAdd(rawText);
 			break;
 		case LIST:
 			doList(rawText);
@@ -168,6 +169,13 @@ public class CommandFactory {
 		default:
 			break;
 		}
+	}
+	
+	private void doAdd(String rawText) {
+		Task newTask = new Task(rawText);
+		tasks.add(newTask);
+		writeToJson();
+		showToUser(newTask.getTaskDescription() + " added.");
 	}
 	
 	private void doList(String rawText) {
