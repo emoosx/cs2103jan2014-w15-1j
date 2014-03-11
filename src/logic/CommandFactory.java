@@ -55,9 +55,7 @@ public class CommandFactory {
 		this.fetch();
 	}
 	
-	/*
-	 * populate command stack and task list from storage
-	 */
+	// Method will fill task list and undo history from storage
 	private void fetch() {
 		
 	}
