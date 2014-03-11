@@ -3,10 +3,12 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -14,13 +16,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import logic.Command;
 import logic.CommandFactory;
-
+import core.Task;
 public class TaskPandaUI extends JFrame {
 	
 	protected PlaceholderTextField inputField;
@@ -62,39 +63,24 @@ public class TaskPandaUI extends JFrame {
 			}
 		});
 		JSeparator separator = new JSeparator();
-		separator.setForeground(Color.GRAY);
+		separator.setForeground(Color.BLACK);
 		topPanel.add(inputField, BorderLayout.CENTER);
-		topPanel.add(separator, BorderLayout.SOUTH);
+//		topPanel.add(separator, BorderLayout.SOUTH);
+		
+		basic.add(topPanel);
 		
 		
-		String[] columnNames = {
-				"First Name",
-				"Last Name",
-				"Sport",
-				"# of Years",
-				"Vegetarian"
-		};
-		
-		Object[][] data = {
-            { "Kathy", "Smith", "Snowboarding", new Integer(5), new Boolean(false)},
-            { "John", "Doe", "Rowing", new Integer(3), new Boolean(true)},
-            { "Sue", "Black", "Knitting", new Integer(2), new Boolean(false)},
-            { "Jane", "White", "Speed reading", new Integer(20), new Boolean(true)},
-            { "Joe", "Brown", "Pool", new Integer(10), new Boolean(false)},
-		};
-		
-		JPanel feedbackPanel = new JPanel();
-		JTable table = new JTable(data, columnNames);
+		JPanel bottomPanel = new JPanel(new BorderLayout());
+		TaskTableModel tableModel = new TaskTableModel();
+		JTable table = new JTable(tableModel);
+		table.setMaximumSize(getMaximumSize());
 		
 		JScrollPane scrollPane = new JScrollPane(table);
+		bottomPanel.add(scrollPane);
+		basic.add(bottomPanel);
 
 
-		
-		
-		
-
-		add(topPanel);
-//		add(scrollPane);
+		add(basic);
 		pack();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);

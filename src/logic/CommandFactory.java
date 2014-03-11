@@ -62,6 +62,11 @@ public class CommandFactory {
 		
 	}
 	
+	public List<Task> getTasks() {
+		return this.tasks;
+	}
+	
+	
 	public void undo() {
 		if(undoStack.size() == 0) {
 			return;
