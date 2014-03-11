@@ -5,6 +5,8 @@ import java.util.Calendar;
 
 import org.joda.time.DateTime;
 
+import common.PandaLogger;
+
 /*
  * TaskParser class will aid the adding of tasks through parsing of user's raw data
  * It is called by any task object to correctly parse user's raw data input
@@ -62,6 +64,8 @@ public class TaskParser {
 	// Method will call RegExp class to get all date and time of user's input
 	// Method will then call other methods to initialize all date and time variables
 	public void parseTask() {
+		PandaLogger.getLogger().info("TaskParser.taskParse");
+		PandaLogger.getLogger().info("taskDescription:" + taskDescription);
 		ArrayList<String> timeArray = RegExp.parseTime(taskDescription);
 		ArrayList<String> dateArray = RegExp.parseDate(taskDescription);
 		taskDescription = RegExp.parseDescription(taskDescription);
