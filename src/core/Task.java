@@ -13,7 +13,7 @@ import org.joda.time.DateTime;
 
 public class Task {
 
-	protected int taskID;
+//	protected int taskID;
 	private String rawText;
 	protected String taskDescription;
 	protected ArrayList<String> taskTags;			// tags are in lowercase
@@ -44,13 +44,13 @@ public class Task {
 		endDateTime = parser.getEndDateTime();
 	}
 	
-	public int getID() {
-		return this.taskID;
-	}
-
-	public void setID(int id) {
-		this.taskID = id;
-	}
+//	public int getID() {
+//		return this.taskID;
+//	}
+//
+//	public void setID(int id) {
+//		this.taskID = id;
+//	}
 	public void setTaskDescription(String tDesc){
 		this.taskDescription = tDesc;
 	}
@@ -97,8 +97,6 @@ public class Task {
 	
 	// Override method for toString
 	public String toString() {
-		return new StringBuffer(" Task ID :").append(String.valueOf(this.taskID))
-						.append(" Task Name : ").append(this.taskDescription)
-		                .append(" Task Description : ").append(this.taskDescription).toString();
+		return this.taskDescription;
 	}
 }

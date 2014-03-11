@@ -187,9 +187,8 @@ public class CommandFactory {
 	private void doAdd(String rawText) {
 		assert (rawText != null);
 		Task newTask = new Task(rawText);
-		newTask.setID(this.tasks.size() + 1);
+//		newTask.setID(this.tasks.size() + 1);
 		this.tasks.add(newTask);
-		System.out.println(this.tasks.size());
 		this.storage.writeTasks(tasks);
 	}
 
@@ -202,21 +201,25 @@ public class CommandFactory {
 	}
 
 	private void doEdit(String userInput) {
+		assert (userInput != null);
+		this.logger.info("doEdit:" + userInput);
 		if (checkEditIndexInput(userInput)) {
 			int taskInt = (Integer.parseInt(getFirstWord(userInput)) - EDIT_OFFSET);
 			Task editTask = new Task(obtainUserEditInput(userInput));
 			tasks.set(taskInt, editTask);
-			writeToJson();
+			this.storage.writeTasks(tasks);
 		}
 	}
 
 	private void doDelete(String inputNumber) {
+		assert(inputNumber != null);
+		this.logger.info("doDelete:" + inputNumber);
 		if (checkDeleteInput(inputNumber)) {
 			int lineToRemove = Integer.parseInt(inputNumber) - DELETE_OFFSET;
 			String deletedString = tasks.get(lineToRemove).getTaskDescription();
 			tasks.remove(lineToRemove);
 			showToUser(String.format(MESSAGE_DELETED, deletedString));
-			writeToJson();
+			this.storage.writeTasks(tasks);
 		}
 	}
 
@@ -247,6 +250,7 @@ public class CommandFactory {
 	}
 
 	private boolean checkEditIndexInput(String inputNumber) {
+		this.logger.info("checkEditIndexInput:" + inputNumber);
 		// No argument input
 		if (!isValidString(inputNumber)) {
 			showToUser("here valid string");
@@ -322,6 +326,7 @@ public class CommandFactory {
 			sb.append(" ");
 		}
 		showToUser(sb.toString());
+		this.logger.info("obtainUserEditInput:" + sb.toString());
 		return sb.toString();
 	}
 
@@ -331,7 +336,7 @@ public class CommandFactory {
 	}
 
 	// Method checks if inputString is a valid String
-	private static boolean isValidString(String inputString) {
+	private boolean isValidString(String inputString) {
 		if (inputString.trim().length() == 0) {
 			return false;
 		}

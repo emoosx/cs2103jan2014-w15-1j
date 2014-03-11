@@ -1,11 +1,15 @@
 package view;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
 import logic.CommandFactory;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import core.Task;
 
 @SuppressWarnings("serial")
@@ -43,13 +47,17 @@ public class TaskTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if(columnIndex == 0) {
-			return l.get(rowIndex).getID();
+			return rowIndex + 1;
 		} else if(columnIndex == 1) {
 			return l.get(rowIndex).getTaskDescription();
 		} else if(columnIndex == 2) {
-			return l.get(rowIndex).getTaskStartTime();
+			DateTime startTime = l.get(rowIndex).getTaskStartTime();
+			DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM d, yyyy hh:mm");
+			return fmt.print(startTime);
 		} else if(columnIndex == 3) {
-			return l.get(rowIndex).getTaskEndTime();
+			DateTime endTime = l.get(rowIndex).getTaskEndTime();
+			DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM d, yyyy hh:mm");
+			return fmt.print(endTime);
 		} else if(columnIndex == 4) {
 			return null;
 		}
