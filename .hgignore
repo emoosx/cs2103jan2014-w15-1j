@@ -4,7 +4,7 @@ bin/
 .DS_Store
 .swo
 .swp
+*.json
 .settings/
 .classpath
-panda.log
-panda.log.lck
+panda.log*
