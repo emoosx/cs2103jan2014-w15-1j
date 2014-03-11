@@ -60,9 +60,7 @@ public class CommandFactory {
 		this.fetch(); 	// Make sure this comes after Storage singleton initialization
 	}
 	
-	/*
-	 * populate command stack and task list from storage
-	 */
+	// Method will fill task list and undo history from storage
 	private void fetch() {
 		this.tasks = this.storage.getAllTasks();
 //		this.tasks = this.storage.getAllTasks();
