@@ -24,6 +24,8 @@ public class TaskPandaUI extends JFrame {
 	
 	protected PlaceholderTextField inputField;
 	protected CommandFactory commandFactory; 
+	protected JTable table;
+	protected TaskTableModel tableModel;
 
 	public TaskPandaUI() {
 		this.commandFactory = CommandFactory.INSTANCE;
@@ -69,8 +71,8 @@ public class TaskPandaUI extends JFrame {
 		
 		
 		JPanel bottomPanel = new JPanel(new BorderLayout());
-		TaskTableModel tableModel = new TaskTableModel();
-		JTable table = new JTable(tableModel);
+		tableModel = new TaskTableModel();
+		table = new JTable(tableModel);
 		table.setMaximumSize(getMaximumSize());
 		
 		JScrollPane scrollPane = new JScrollPane(table);
@@ -88,5 +90,6 @@ public class TaskPandaUI extends JFrame {
 		assert(inputText != null);
 		Command command = new Command(inputText);
 		commandFactory.process(command);
+		tableModel.fireTableDataChanged();
 	}
 }
