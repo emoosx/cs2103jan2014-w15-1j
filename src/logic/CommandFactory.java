@@ -83,6 +83,25 @@ public class CommandFactory {
 		this.saveUndo(item);
 	}
 	
+	
+	public List<Task> getTasksList() {
+		return tasks;
+	}
+
+	public void updateTasksList(List<Task> newTask) {
+		tasks = newTask;
+	}
+
+	public void writeToJson() {
+		storage = new StorageHelper();
+		storage.clearFile();
+		System.out.println("here");
+		for (int i = 0; i < tasks.size(); i++) {
+			storage.addNewTask(tasks.get(i));
+		}
+	}
+
+	
 	/*
 	 * insert a new row into the undo stack of task collection
 	 */
