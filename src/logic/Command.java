@@ -12,6 +12,7 @@ public class Command {
 		ADD, LIST, EDIT, UNDO, ARCHIVE, CLEAR, DONEALL, ARCHIVEALL, DELETE, HELP, INVALID
 	}
 
+	// Constructor Method
 	public Command(String commandText) {
 		this.rawText = commandText;
 		this.command = COMMAND_TYPE.INVALID;
@@ -32,6 +33,7 @@ public class Command {
 		this.command = determineCommandType(rawText[INDEX_COMMAND]);
 	}
 
+	// Method splits raw user input into command and user input
 	private String[] stripCommand(String commandText) {
 		assert(commandText != null);
 		String cmd, rawText;
@@ -50,6 +52,7 @@ public class Command {
 		return ans;
 	}
 
+	// Method will determine command type given user command
 	private COMMAND_TYPE determineCommandType(String command) {
 		assert(command != null);
 		if(command.equalsIgnoreCase("add")) {
