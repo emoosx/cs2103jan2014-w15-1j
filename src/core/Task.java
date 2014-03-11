@@ -44,6 +44,13 @@ public class Task {
 		endDateTime = parser.getEndDateTime();
 	}
 	
+	public int getID() {
+		return this.taskID;
+	}
+
+	public void setID(int id) {
+		this.taskID = id;
+	}
 	public void setTaskDescription(String tDesc){
 		this.taskDescription = tDesc;
 	}

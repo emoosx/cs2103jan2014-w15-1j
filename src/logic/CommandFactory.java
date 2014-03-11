@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.logging.Logger;
 
 import logic.Command.COMMAND_TYPE;
 import storage.StorageHelper;
+
+import common.PandaLogger;
+
 import core.Task;
 
 
@@ -46,24 +50,27 @@ public class CommandFactory {
 
 	private List<Task> tasks;
 	private StorageHelper storage;
+	private Logger logger = PandaLogger.getLogger();
 	
 	private Stack<Map<Integer, List<String>>> undoStack;
 	
 	private CommandFactory() {
-		tasks = new ArrayList<Task>();
+		this.tasks = new ArrayList<Task>();
 		this.storage = StorageHelper.INSTANCE;
-		this.fetch();
+		this.fetch(); 	// Make sure this comes after Storage singleton initialization
 	}
 	
 	/*
 	 * populate command stack and task list from storage
 	 */
 	private void fetch() {
+		this.tasks = this.storage.getAllTasks();
+//		this.tasks = this.storage.getAllTasks();
 		
 	}
 	
 	public List<Task> getTasks() {
-		return this.tasks;
+		return tasks;
 	}
 	
 	
@@ -83,7 +90,6 @@ public class CommandFactory {
 	}
 	
 	
-
 	private void doUndoAction(String cmd) {
 		switch(cmd) {
 		case UNDO_ADD: break;
@@ -123,7 +129,7 @@ public class CommandFactory {
 		StorageHelper.INSTANCE.clearFile();
 		storage.clearFile();
 		for (int i = 0; i < tasks.size(); i++) {
-			storage.addNewTask(tasks.get(i));
+//			storage.addNewTask(tasks.get(i));
 		}
 	}
 
@@ -145,6 +151,7 @@ public class CommandFactory {
 		assert(rawText != null);
 		switch(command) {
 		case ADD:
+			doAdd(rawText);
 			break;
 		case LIST:
 			doList(rawText);
@@ -172,12 +179,21 @@ public class CommandFactory {
 		}
 	}
 	
+	private void doAdd(String rawText) {
+		assert(rawText != null);
+		Task newTask = new Task(rawText);
+		newTask.setID(this.tasks.size() + 1);
+		this.tasks.add(newTask);
+		System.out.println(this.tasks.size());
+		this.storage.writeTasks(tasks);
+	}
+	
 	private void doList(String rawText) {
 		assert(rawText != null);
+		logger.info("doList");
 		List<Task> tasks = this.storage.getAllTasks();
-		for(Task t : tasks) {
-			System.out.println(t);
-		}	
+		logger.info("Task size: " + tasks.size());
+		logger.info("exit doList");
 	}
 	
 	private void doEdit(String userInput){

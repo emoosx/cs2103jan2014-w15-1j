@@ -6,3 +6,5 @@ bin/
 .swp
 .settings/
 .classpath
+panda.log
+panda.log.lck

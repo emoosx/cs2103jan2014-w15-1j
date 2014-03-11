@@ -3,12 +3,10 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -21,7 +19,7 @@ import javax.swing.border.EmptyBorder;
 
 import logic.Command;
 import logic.CommandFactory;
-import core.Task;
+
 public class TaskPandaUI extends JFrame {
 	
 	protected PlaceholderTextField inputField;

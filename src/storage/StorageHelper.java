@@ -10,13 +10,16 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import logic.CommandFactory;
+
 import org.joda.time.DateTime;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import common.DateTimeTypeConverter;
 
+import common.DateTimeTypeConverter;
+import common.PandaLogger;
 import core.Task;
 
 public class StorageHelper {
@@ -40,14 +43,15 @@ public class StorageHelper {
 			.create();
 	}
 
-	public void addNewTask(Task t) {
+	public void writeTasks(List<Task> t) {
+		System.out.println(t.size());
 		try(Writer writer = new OutputStreamWriter(new FileOutputStream(this.file), "UTF-8")) {
 			gson.toJson(t, writer);
-		//	System.out.println(this.gson.toJson(t));
 		} catch(IOException e) {
 			throw new Error(ERROR_TASK_ADDITION);
 		}
 	}
+	
 	
 //	public ArrayList<Task> getAll() {
 //		try(Reader reader = new InputStreamReader(JsonToJava.class.getResourceAsStream(this.file), "UTF-8")) {
@@ -58,10 +62,12 @@ public class StorageHelper {
 //	}
 
 	public ArrayList<Task> getAllTasks() {
+        PandaLogger.getLogger().info("getAllTasks");
 		ArrayList<Task> tasks = null;
 		try{
             BufferedReader br = new BufferedReader(new FileReader(this.file));
             tasks = this.gson.fromJson(br, new TypeToken<List<Task>>(){}.getType());
+            PandaLogger.getLogger().info(String.valueOf(tasks.size()));
         } catch(Exception e) {
         	throw new Error(ERROR_FILE_IO);
         }

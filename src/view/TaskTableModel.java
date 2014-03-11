@@ -5,8 +5,10 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import logic.CommandFactory;
 import core.Task;
 
+@SuppressWarnings("serial")
 public class TaskTableModel extends AbstractTableModel {
 
 	private String[] columnNames = { "Task ID", "Description",
@@ -15,7 +17,7 @@ public class TaskTableModel extends AbstractTableModel {
 	private List<Task> l;
 	
 	public TaskTableModel() {
-		l = new ArrayList<Task>();
+		l = CommandFactory.INSTANCE.getTasks();
 	}
 
 	@Override
@@ -40,7 +42,18 @@ public class TaskTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		return l.get(rowIndex); 
+		if(columnIndex == 0) {
+			return l.get(rowIndex).getID();
+		} else if(columnIndex == 1) {
+			return l.get(rowIndex).getTaskDescription();
+		} else if(columnIndex == 2) {
+			return l.get(rowIndex).getTaskStartTime();
+		} else if(columnIndex == 3) {
+			return l.get(rowIndex).getTaskEndTime();
+		} else if(columnIndex == 4) {
+			return null;
+		}
+		return null;
 	}
 
 }
