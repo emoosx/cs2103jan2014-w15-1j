@@ -1,29 +1,38 @@
 package storage;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.joda.time.DateTime;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import common.DateTimeTypeConverter;
 
 import core.Task;
 
 public class StorageHelper {
 
+	// A singleton class
+	public static StorageHelper INSTANCE = new StorageHelper();
+
 	protected static final String FILENAME = "data.json";
 	public static final String ERROR_FILE_CREATION = "Error in file creation";
 	public static final String ERROR_TASK_ADDITION = "Error in task addition";
+	public static final String ERROR_FILE_IO = "Error in File IO";
 
 	private Gson gson;
 	private File file;
 	
-	public StorageHelper() {
+	private StorageHelper() {
 		this.file = createOrGetFile(FILENAME);
 		this.gson = new GsonBuilder()
 			.registerTypeAdapter(DateTime.class, new DateTimeTypeConverter())
@@ -33,11 +42,30 @@ public class StorageHelper {
 
 	public void addNewTask(Task t) {
 		try(Writer writer = new OutputStreamWriter(new FileOutputStream(this.file), "UTF-8")) {
-//			gson.toJson(t, writer);
+			gson.toJson(t, writer);
 			System.out.println(this.gson.toJson(t));
 		} catch(IOException e) {
 			throw new Error(ERROR_TASK_ADDITION);
 		}
+	}
+	
+//	public ArrayList<Task> getAll() {
+//		try(Reader reader = new InputStreamReader(JsonToJava.class.getResourceAsStream(this.file), "UTF-8")) {
+//			Gson gson = new GsonBuilder().create();
+//		} catch(IOException e) {
+//			throw new Error(ERROR_FILE_IO);
+//		}
+//	}
+
+	public ArrayList<Task> getAllTasks() {
+		ArrayList<Task> tasks = null;
+		try{
+            BufferedReader br = new BufferedReader(new FileReader(this.file));
+            tasks = this.gson.fromJson(br, new TypeToken<List<Task>>(){}.getType());
+        } catch(Exception e) {
+        	throw new Error(ERROR_FILE_IO);
+        }
+		return tasks;
 	}
 	
 	private File createOrGetFile(String filename) {
@@ -56,7 +84,4 @@ public class StorageHelper {
 		file.delete();
 		this.file = createOrGetFile(FILENAME);
 	}
-
 }
-
-
