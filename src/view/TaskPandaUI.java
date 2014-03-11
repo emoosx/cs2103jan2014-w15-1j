@@ -17,7 +17,10 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import common.PandaLogger;
+
 import logic.Command;
+import logic.Command.COMMAND_TYPE;
 import logic.CommandFactory;
 
 public class TaskPandaUI extends JFrame {
@@ -26,6 +29,7 @@ public class TaskPandaUI extends JFrame {
 	protected CommandFactory commandFactory; 
 	protected JTable table;
 	protected TaskTableModel tableModel;
+	protected JPanel basic, bottomPanel, topPanel;
 
 	public TaskPandaUI() {
 		this.commandFactory = CommandFactory.INSTANCE;
@@ -40,11 +44,12 @@ public class TaskPandaUI extends JFrame {
 	
 	private void initUI() {
 		
-		JPanel basic = new JPanel();
+		PandaLogger.getLogger().info("initUI");
+		basic = new JPanel();
 		basic.setLayout(new BoxLayout(basic, BoxLayout.Y_AXIS));
 		add(basic);
 
-		JPanel topPanel = new JPanel(new BorderLayout(0, 0));
+		topPanel = new JPanel(new BorderLayout(0, 0));
 		inputField = new PlaceholderTextField(40);
 		inputField.setPlaceholder("Hello there!");
 		inputField.setPreferredSize(new Dimension(450, 45));
@@ -70,14 +75,14 @@ public class TaskPandaUI extends JFrame {
 		basic.add(topPanel);
 		
 		
-		JPanel bottomPanel = new JPanel(new BorderLayout());
+		bottomPanel = new JPanel(new BorderLayout());
 		tableModel = new TaskTableModel();
 		table = new JTable(tableModel);
 		table.setMaximumSize(getMaximumSize());
 		
 		JScrollPane scrollPane = new JScrollPane(table);
 		bottomPanel.add(scrollPane);
-		basic.add(bottomPanel);
+//		basic.add(bottomPanel);
 
 
 		add(basic);
@@ -90,6 +95,10 @@ public class TaskPandaUI extends JFrame {
 		assert(inputText != null);
 		Command command = new Command(inputText);
 		commandFactory.process(command);
+		basic.add(bottomPanel);
+        basic.revalidate();
+        basic.repaint();
+        pack();
 		tableModel.fireTableDataChanged();
 	}
 }

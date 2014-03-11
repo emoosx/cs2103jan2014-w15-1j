@@ -13,11 +13,9 @@ import common.PandaLogger;
 
 import core.Task;
 
-
-
 public class CommandFactory {
-	
-	//EDIT//
+
+	// EDIT//
 	private static final String MESSAGE_INVALID_EDIT = "Usage: edit <index> <description> on <date> from <start time> to <end time>";
 	private static final String MESSAGE_INVALID_NUMBERFORMAT = "Please key in an integer";
 	private static final String MESSAGE_INVALID_NUMBERSIGN = "Please key in a positive number";
@@ -31,15 +29,15 @@ public class CommandFactory {
 	String userInputDesc;
 	String commandType;
 	String[] inputArray;
-	
-	//DELETE//
+
+	// DELETE//
 	private static final String MESSAGE_INVALID_DELETE = "Usage: delete <number>";
 	private static final String MESSAGE_INVALID_NUMBER = "Please choose another value";
 	private static final String MESSAGE_DELETED = "deleted : \"%s\"";
-	
+
 	private static Integer DELETE_PARA = 1;
 	private static Integer DELETE_OFFSET = 1;
-	
+
 	public static CommandFactory INSTANCE = new CommandFactory();
 	public final String UNDO_ADD = "add";
 	public final String UNDO_EDIT = "edit";
@@ -51,103 +49,112 @@ public class CommandFactory {
 	private List<Task> tasks;
 	private StorageHelper storage;
 	private Logger logger = PandaLogger.getLogger();
-	
+
 	private Stack<Map<Integer, List<String>>> undoStack;
-	
+
 	private CommandFactory() {
 		this.tasks = new ArrayList<Task>();
 		this.storage = StorageHelper.INSTANCE;
-		this.fetch(); 	// Make sure this comes after Storage singleton initialization
+		this.fetch(); // Make sure this comes after Storage singleton
+						// initialization
 	}
-	
+
 	// Method will fill task list and undo history from storage
 	private void fetch() {
 		this.tasks = this.storage.getAllTasks();
-//		this.tasks = this.storage.getAllTasks();
-		
+		// this.tasks = this.storage.getAllTasks();
+
 	}
-	
+
 	public List<Task> getTasks() {
 		return tasks;
 	}
-	
-	
+
 	public void undo() {
-		if(undoStack.size() == 0) {
+		if (undoStack.size() == 0) {
 			return;
 		}
-		
+
 		Map<Integer, List<String>> undoItem = undoStack.pop();
-		
+
 		// get the command string from undoItem
 		String commandString = null;
 		this.doUndoAction(commandString);
-		
+
 		// remove that entry record from the storage, pass the integerID
 		this.removeRecord(1);
 	}
-	
-	
+
 	private void doUndoAction(String cmd) {
-		switch(cmd) {
-		case UNDO_ADD: break;
-		case UNDO_EDIT: break;
-		case UNDO_DONE: break;
-		case UNDO_ARCHIVE: break;
-		case UNDO_DONEALL: break;
-		case UNDO_ARCHIVEALL: break;
+		switch (cmd) {
+		case UNDO_ADD:
+			break;
+		case UNDO_EDIT:
+			break;
+		case UNDO_DONE:
+			break;
+		case UNDO_ARCHIVE:
+			break;
+		case UNDO_DONEALL:
+			break;
+		case UNDO_ARCHIVEALL:
+			break;
 		}
-		
+
 		// remove that entry record from the storage
 	}
-	
+
 	private void removeRecord(int id) {
-		
+
 	}
-	
+
 	private void pushUndo(String cmd, Task task, List<Task> tasks) {
-		
+
 		List<String> item = new ArrayList<String>();
 		item.add(cmd);
-		
-		switch(cmd) {
-		case UNDO_ADD: break;
-		case UNDO_EDIT: break;
-		case UNDO_DONE: break;
-		case UNDO_ARCHIVE: break;
-		case UNDO_DONEALL: break;
-		case UNDO_ARCHIVEALL: break;
+
+		switch (cmd) {
+		case UNDO_ADD:
+			break;
+		case UNDO_EDIT:
+			break;
+		case UNDO_DONE:
+			break;
+		case UNDO_ARCHIVE:
+			break;
+		case UNDO_DONEALL:
+			break;
+		case UNDO_ARCHIVEALL:
+			break;
 		}
-		
+
 		this.saveUndo(item);
 	}
-	
 
 	public void writeToJson() {
 		StorageHelper.INSTANCE.clearFile();
 		storage.clearFile();
 		for (int i = 0; i < tasks.size(); i++) {
-//			storage.addNewTask(tasks.get(i));
+			// storage.addNewTask(tasks.get(i));
 		}
 	}
 
-	
 	/*
 	 * insert a new row into the undo stack of task collection
 	 */
 	private void saveUndo(List<String> item) {
-		
+
 	}
-	
+
 	public void process(Command command) {
 		executeCommand(command.command, command.rawText);
-		
+
 		// call undo here
 	}
-	
+
 	public void executeCommand(COMMAND_TYPE command, String rawText) {
-		assert(rawText != null);
-		switch(command) {
+		assert (rawText != null);
+		switch (command) {
 		case ADD:
 			doAdd(rawText);
 			break;
@@ -176,25 +183,25 @@ public class CommandFactory {
 			break;
 		}
 	}
-	
+
 	private void doAdd(String rawText) {
-		assert(rawText != null);
+		assert (rawText != null);
 		Task newTask = new Task(rawText);
 		newTask.setID(this.tasks.size() + 1);
 		this.tasks.add(newTask);
 		System.out.println(this.tasks.size());
 		this.storage.writeTasks(tasks);
 	}
-	
+
 	private void doList(String rawText) {
-		assert(rawText != null);
+		assert (rawText != null);
 		logger.info("doList");
 		List<Task> tasks = this.storage.getAllTasks();
 		logger.info("Task size: " + tasks.size());
 		logger.info("exit doList");
 	}
-	
-	private void doEdit(String userInput){
+
+	private void doEdit(String userInput) {
 		if (checkEditIndexInput(userInput)) {
 			int taskInt = (Integer.parseInt(getFirstWord(userInput)) - EDIT_OFFSET);
 			Task editTask = new Task(obtainUserEditInput(userInput));
@@ -202,44 +209,43 @@ public class CommandFactory {
 			writeToJson();
 		}
 	}
-	
- private void doDelete(String inputNumber){
-	 if (checkDeleteInput(inputNumber)) {
+
+	private void doDelete(String inputNumber) {
+		if (checkDeleteInput(inputNumber)) {
 			int lineToRemove = Integer.parseInt(inputNumber) - DELETE_OFFSET;
-			 String deletedString = tasks.get(lineToRemove).getTaskDescription();
-			 tasks.remove(lineToRemove);
-			 showToUser(String.format(MESSAGE_DELETED, deletedString));
-		     writeToJson();
+			String deletedString = tasks.get(lineToRemove).getTaskDescription();
+			tasks.remove(lineToRemove);
+			showToUser(String.format(MESSAGE_DELETED, deletedString));
+			writeToJson();
 		}
- }
-		
-		// Method to check delete parameter
-		private boolean checkDeleteInput(String inputNumber) {
-			// No argument input
-			if (!isValidString(inputNumber)) {
-				showToUser(MESSAGE_INVALID_DELETE);
-				FEEDBACK = MESSAGE_INVALID_DELETE;
-				return false;
-			}
-			/*
-			 * Checks if argument fulfill the delete parameters, is a positive non
-			 * zero integer and whether the number specified is within the array
-			 * size
-			 */
-			String[] stringArray = inputNumber.split(" ");
-			if (stringArray.length != DELETE_PARA) {
-				showToUser(MESSAGE_INVALID_DELETE);
-				FEEDBACK = MESSAGE_INVALID_DELETE;
-				return false;
-			} else if (!isPositiveNonZeroInt(inputNumber)) {
-				return false;
-			} else if (!checkIfNumberBelowArraySize(inputNumber)) {
-				return false;
-			}
-			return true;
+	}
+
+	// Method to check delete parameter
+	private boolean checkDeleteInput(String inputNumber) {
+		// No argument input
+		if (!isValidString(inputNumber)) {
+			showToUser(MESSAGE_INVALID_DELETE);
+			FEEDBACK = MESSAGE_INVALID_DELETE;
+			return false;
 		}
-		
-	
+		/*
+		 * Checks if argument fulfill the delete parameters, is a positive non
+		 * zero integer and whether the number specified is within the array
+		 * size
+		 */
+		String[] stringArray = inputNumber.split(" ");
+		if (stringArray.length != DELETE_PARA) {
+			showToUser(MESSAGE_INVALID_DELETE);
+			FEEDBACK = MESSAGE_INVALID_DELETE;
+			return false;
+		} else if (!isPositiveNonZeroInt(inputNumber)) {
+			return false;
+		} else if (!checkIfNumberBelowArraySize(inputNumber)) {
+			return false;
+		}
+		return true;
+	}
+
 	private boolean checkEditIndexInput(String inputNumber) {
 		// No argument input
 		if (!isValidString(inputNumber)) {
@@ -307,11 +313,11 @@ public class CommandFactory {
 		}
 	}
 
-	//remove task index from usercommand and return edit input
+	// remove task index from usercommand and return edit input
 	private String obtainUserEditInput(String userCommand) {
 		StringBuilder sb = new StringBuilder();
 		String[] stringArray = userCommand.split(" ");
-		for(int i=1;i<(stringArray.length); i++){
+		for (int i = 1; i < (stringArray.length); i++) {
 			sb.append(stringArray[i]);
 			sb.append(" ");
 		}
@@ -332,7 +338,6 @@ public class CommandFactory {
 		return true;
 	}
 
-	
 	// Method checks if data list is empty
 	private boolean checkIfFileIsEmpty() {
 		if (tasks.isEmpty()) {
@@ -341,12 +346,11 @@ public class CommandFactory {
 		return false;
 	}
 
-
 	private void showToUser(String outputString) {
 		System.out.println(outputString);
 	}
 
-	public String testEdit(String userInput){
+	public String testEdit(String userInput) {
 		tasks.clear();
 		Task task1 = new Task("meeting1 on 27-2-2014 from 1pm to 2pm");
 		tasks.add(task1);
@@ -355,18 +359,17 @@ public class CommandFactory {
 			Task editTask = new Task(obtainUserEditInput(userInput));
 			tasks.set(taskInt, editTask);
 			writeToJson();
-		StringBuilder sb = new StringBuilder();
-		sb.append(tasks.get(0).getTaskDescription());
-		sb.append(tasks.get(0).getTaskStartTime().getHourOfDay());
-		sb.append(tasks.get(0).getTaskEndTime().getHourOfDay());
-		return sb.toString();
-		}
-		else{
+			StringBuilder sb = new StringBuilder();
+			sb.append(tasks.get(0).getTaskDescription());
+			sb.append(tasks.get(0).getTaskStartTime().getHourOfDay());
+			sb.append(tasks.get(0).getTaskEndTime().getHourOfDay());
+			return sb.toString();
+		} else {
 			return FEEDBACK;
-		}	
+		}
 	}
-	
-	public String testDelete(String inputNumber){
+
+	public String testDelete(String inputNumber) {
 		tasks.clear();
 		Task task1 = new Task("meeting1 on 27-2-2014 from 1pm to 2pm");
 		Task task2 = new Task("meeting2 on 27-2-2014 from 2pm to 3pm");
@@ -374,20 +377,20 @@ public class CommandFactory {
 		tasks.add(task1);
 		tasks.add(task2);
 		tasks.add(task3);
-		 if (checkDeleteInput(inputNumber)) {
-				int lineToRemove = Integer.parseInt(inputNumber) - DELETE_OFFSET;
-				 String deletedString = tasks.get(lineToRemove).getTaskDescription();
-				 tasks.remove(lineToRemove);
-				 showToUser(String.format(MESSAGE_DELETED, deletedString));
-			     writeToJson();
-			 StringBuilder sb = new StringBuilder();
-				for(int i=0; i<tasks.size();i++){
+		if (checkDeleteInput(inputNumber)) {
+			int lineToRemove = Integer.parseInt(inputNumber) - DELETE_OFFSET;
+			String deletedString = tasks.get(lineToRemove).getTaskDescription();
+			tasks.remove(lineToRemove);
+			showToUser(String.format(MESSAGE_DELETED, deletedString));
+			writeToJson();
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < tasks.size(); i++) {
 				sb.append(tasks.get(i).getTaskDescription());
-				}
-				return sb.toString();
-		}else{
+			}
+			return sb.toString();
+		} else {
 			return FEEDBACK;
 		}
-		
+
 	}
 }
