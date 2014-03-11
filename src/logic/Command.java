@@ -26,7 +26,6 @@ public class Command {
 		return s;
 	}
 	
-	
 	private void parse() {
 		String[] rawText = stripCommand(this.rawText);
 		this.rawText = rawText[INDEX_RAWTEXT];
@@ -34,6 +33,7 @@ public class Command {
 	}
 
 	private String[] stripCommand(String commandText) {
+		assert(commandText != null);
 		String cmd, rawText;
 		int spaceIndex = commandText.indexOf(' ');
 		if(spaceIndex > 0) {
@@ -72,5 +72,32 @@ public class Command {
 			return COMMAND_TYPE.DELETE;
 		}
 		return COMMAND_TYPE.INVALID; 
+	}
+	
+	public void executeCommand(COMMAND_TYPE command, String rawText) {
+		switch(command) {
+		case ADD:
+			break;
+		case LIST:
+			break;
+		case EDIT:
+			break;
+		case UNDO:
+			break;
+		case ARCHIVE:
+			break;
+		case CLEAR:
+			break;
+		case DONEALL:
+			break;
+		case ARCHIVEALL:
+			break;
+		case DELETE:
+			break;
+		case HELP:
+			break;
+		default:
+			break;
+		}
 	}
 }
