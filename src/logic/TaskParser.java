@@ -14,6 +14,7 @@ import org.joda.time.DateTime;
 
 public class TaskParser {
 	
+	private static final String MESSAGE_INVALID_TIME_DATE = "Invalid date and time format";
 	private static final int NUM_HOUR_INDEX = 0;
 	private static final int NUM_MIN_INDEX = 1;
 	private static final int NUM_YEAR_INDEX = 2;
@@ -69,7 +70,7 @@ public class TaskParser {
 		try {
 			finalizeDateTime();
 		} catch (Exception e) {
-			System.out.println("Invalid time and date format");
+			showToUser(MESSAGE_INVALID_TIME_DATE);
 		}
 	}
 	
@@ -194,9 +195,9 @@ public class TaskParser {
 	
 	// Method will finalize date and time if variables fits that of a deadline task
 	private void finalizeDeadlineTask() {
-		// Initialize date to local date if time is stated by user but not the date
 		if(startHour == null && endHour != null) {
 			if(endYear == null) {
+				// Initialize date to local date if end time is stated by user but not the date
 				initializeDateToToday();
 			}
 			startDateTime = null;
@@ -204,10 +205,15 @@ public class TaskParser {
 		}
 	}
 	
-	// Method will initialize date to local time if it is not stated by user
+	// Method will initialize date to local date if it is not stated by user
 	private void initializeDateToToday() {
 		startYear = endYear = Calendar.getInstance().get(Calendar.YEAR);
 		startMonth = endMonth = Calendar.getInstance().get(Calendar.MONTH) + NUM_CALENDAR_MONTH_OFFSET;
 		startDay = endDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+	}
+	
+	// Method will print statement given string arguments
+	private void showToUser(String outputString) {
+		System.out.println(outputString);
 	}
 }
