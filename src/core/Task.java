@@ -1,9 +1,7 @@
 package core;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
-import logic.RegExp;
 import logic.TaskParser;
 
 import org.joda.time.DateTime;
@@ -15,7 +13,7 @@ import org.joda.time.DateTime;
 
 public class Task {
 
-	protected UUID taskID;
+	protected int taskID;
 	private String rawText;
 	protected String taskDescription;
 	protected ArrayList<String> taskTags;			// tags are in lowercase
@@ -28,7 +26,6 @@ public class Task {
 	// Constructor method
 	public Task(String rawText) {
 		this.rawText = rawText;
-		this.taskID = UUID.randomUUID();
 		this.taskDescription = null;
 		this.startDateTime = null;
 		this.endDateTime = null;
@@ -45,10 +42,6 @@ public class Task {
 		taskDescription = parser.getTaskDescription();
 		startDateTime = parser.getStartDateTime();
 		endDateTime = parser.getEndDateTime();
-	}
-	
-	public UUID getTaskID() {
-		return this.taskID;
 	}
 	
 	public void setTaskDescription(String tDesc){
@@ -93,7 +86,7 @@ public class Task {
 	
 	// Override method for toString
 	public String toString() {
-		return new StringBuffer(" Task ID :").append(this.taskID.toString())
+		return new StringBuffer(" Task ID :").append(String.valueOf(this.taskID))
 						.append(" Task Name : ").append(this.taskDescription)
 		                .append(" Task Description : ").append(this.taskDescription).toString();
 	}
