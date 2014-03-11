@@ -63,6 +63,14 @@ public class Task {
 		return this.endDateTime;
 	}
 	
+	public void setTaskStartTime(DateTime newStartDateTime) {
+		this.startDateTime = newStartDateTime;
+	}
+
+	public void setTaskEndTime(DateTime newEndDateTime) {
+		this.endDateTime = newEndDateTime;
+	}
+	
 	public void setTaskTags(ArrayList<String> tags) {
 		this.taskTags = tags;
 	}
