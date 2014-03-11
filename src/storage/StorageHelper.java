@@ -51,6 +51,12 @@ public class StorageHelper {
 		}
 		return file;
 	}
+	
+	public void clearFile(){
+		file.delete();
+		this.file = createOrGetFile(FILENAME);
+	}
+
 }
 
 
