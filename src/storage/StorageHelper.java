@@ -43,7 +43,7 @@ public class StorageHelper {
 	public void addNewTask(Task t) {
 		try(Writer writer = new OutputStreamWriter(new FileOutputStream(this.file), "UTF-8")) {
 			gson.toJson(t, writer);
-			System.out.println(this.gson.toJson(t));
+		//	System.out.println(this.gson.toJson(t));
 		} catch(IOException e) {
 			throw new Error(ERROR_TASK_ADDITION);
 		}

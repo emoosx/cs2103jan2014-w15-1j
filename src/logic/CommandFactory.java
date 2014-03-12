@@ -98,7 +98,6 @@ public class CommandFactory {
 
 	public void writeToJson() {
 		StorageHelper.INSTANCE.clearFile();
-		System.out.println("here");
 		storage.clearFile();
 		for (int i = 0; i < tasks.size(); i++) {
 			storage.addNewTask(tasks.get(i));
