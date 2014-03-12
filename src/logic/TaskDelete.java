@@ -22,7 +22,7 @@ public class TaskDelete {
 	private static String FEEDBACK;
 	
     private List<Task> taskList;
-    private CommandFactory cFactory = new CommandFactory();
+    private CommandFactory cFactory = CommandFactory.INSTANCE;
 	// To be coded by Clement
 	/*
 	 * How it works: - search for task id - no task found > return error -delete
