@@ -28,7 +28,7 @@ public class TaskEdit {
 
 	private static String FEEDBACK;
 	private List<Task> taskList;
-	private CommandFactory cFactory = new CommandFactory();
+	private CommandFactory cFactory =   CommandFactory.INSTANCE;
 	String userInputDesc;
 	String commandType;
 	String[] inputArray;
@@ -39,8 +39,8 @@ public class TaskEdit {
 		getTaskList();	
 		if (checkEditIndexInput(userInput)) {
 			int taskInt = (Integer.parseInt(getFirstWord(userInput)) - EDIT_OFFSET);
-			Task taskToEdit = taskList.get(taskInt);
-			parseAndEdit(taskToEdit, userInput);
+			Task editTask = new Task(obtainUserEditInput(userInput));
+			taskList.set(taskInt, editTask);
 			cFactory.updateTasksList(taskList);
 			cFactory.writeToJson();
 		}
@@ -149,29 +149,24 @@ public class TaskEdit {
 	public String testEdit(String userInput){
 		taskList = new ArrayList<Task>();
 		Task task1 = new Task("meeting1 on 27-2-2014 from 1pm to 2pm");
-		Task task2 = new Task("meeting2 on 27-2-2014 from 2pm to 3pm");
-		//task1.setTaskDescription("1");
 		taskList.add(task1);
-		taskList.add(task2);
-		if (checkEditIndexInput(userInput)){
-		int taskInt = (Integer.parseInt(getFirstWord(userInput)) - EDIT_OFFSET);
-				Task taskToEdit = taskList.get(taskInt);
-				parseAndEdit(taskToEdit, userInput);
-				cFactory.updateTasksList(taskList);
-				cFactory.writeToJson();
-				return taskToEdit.getTaskDescription();
-				/*
-			 StringBuilder sb = new StringBuilder();
-				for(int i=0; i<taskList.size();i++){
-				sb.append(taskList.get(i).toString());
-				}
-				return sb.toString();
-				*/
+		if (checkEditIndexInput(userInput)) {
+			int taskInt = (Integer.parseInt(getFirstWord(userInput)) - EDIT_OFFSET);
+			Task editTask = new Task(obtainUserEditInput(userInput));
+			taskList.set(taskInt, editTask);
+			cFactory.updateTasksList(taskList);
+			cFactory.writeToJson();
+		StringBuilder sb = new StringBuilder();
+		sb.append(taskList.get(0).getTaskDescription());
+		sb.append(taskList.get(0).getTaskStartTime().getHourOfDay());
+		sb.append(taskList.get(0).getTaskEndTime().getHourOfDay());
+		return sb.toString();
 		}
 		else{
 			return FEEDBACK;
 		}	
 	}
+
 
 	// Method checks if data list is empty
 	private boolean checkIfFileIsEmpty() {
