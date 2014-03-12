@@ -51,6 +51,10 @@ public class Task {
 	public String getTaskDescription(){
 		return this.taskDescription;
 	}
+
+	public DateTime getTaskStartTime() {
+		return this.startDateTime;
+	}
 	
 	public DateTime getTaskEndTime() {
 		return this.endDateTime;
