@@ -187,7 +187,6 @@ public class CommandFactory {
 	private void doAdd(String rawText) {
 		assert (rawText != null);
 		Task newTask = new Task(rawText);
-//		newTask.setID(this.tasks.size() + 1);
 		this.tasks.add(newTask);
 		this.storage.writeTasks(tasks);
 	}
