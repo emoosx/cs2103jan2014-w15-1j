@@ -52,10 +52,16 @@ public class TaskTableModel extends AbstractTableModel {
 			return l.get(rowIndex).getTaskDescription();
 		} else if(columnIndex == 2) {
 			DateTime startTime = l.get(rowIndex).getTaskStartTime();
+			if(startTime == null) {
+				return null;
+			}
 			DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM d, yyyy hh:mm");
 			return fmt.print(startTime);
 		} else if(columnIndex == 3) {
 			DateTime endTime = l.get(rowIndex).getTaskEndTime();
+			if (endTime == null) {
+				return null;
+			}
 			DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM d, yyyy hh:mm");
 			return fmt.print(endTime);
 		} else if(columnIndex == 4) {
