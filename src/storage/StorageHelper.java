@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,6 @@ import org.joda.time.DateTime;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonWriter;
 import common.DateTimeTypeConverter;
 import common.PandaLogger;
 
@@ -44,16 +44,9 @@ public class StorageHelper {
 	public void writeTasks(List<Task> t) {
 		PandaLogger.getLogger().info(
 				"writeTasks: Length of Task array = " + t.size());
-		JsonWriter writer;
-		try {
-			writer = new JsonWriter(new OutputStreamWriter(
-					new FileOutputStream(this.file), "UTF-8"));
-			if (t.size() == 0) {
-				writer.beginArray();
-				writer.endArray();
-			} else {
-				gson.toJson(t);
-			}
+		try (Writer writer = new OutputStreamWriter(new FileOutputStream(
+				this.file), "UTF-8")) {
+			gson.toJson(t, writer);
 		} catch (IOException e) {
 			throw new Error(ERROR_TASK_ADDITION);
 		}
@@ -72,11 +65,20 @@ public class StorageHelper {
 	public ArrayList<Task> getAllTasks() {
 		PandaLogger.getLogger().info("getAllTasks");
 		ArrayList<Task> tasks = null;
+		// try{
+		// BufferedReader br = new BufferedReader(new FileReader(this.file));
+		// tasks = this.gson.fromJson(br, new
+		// TypeToken<List<Task>>(){}.getType());
+		// PandaLogger.getLogger().info(String.valueOf(tasks.size()));
+		// } catch(Exception e) {
+		// e.printStackTrace();
+		// throw new Error(ERROR_FILE_IO);
+		// }
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(this.file));
 			tasks = this.gson.fromJson(br, new TypeToken<List<Task>>() {
 			}.getType());
-			if(tasks == null) {
+			if (tasks == null) {
 				return new ArrayList<Task>();
 			}
 			PandaLogger.getLogger().info(String.valueOf(tasks.size()));
@@ -92,7 +94,6 @@ public class StorageHelper {
 		if (!file.isFile()) {
 			try {
 				file.createNewFile();
-				writeTasks(new ArrayList<Task>());
 			} catch (IOException e) {
 				throw new Error(ERROR_FILE_CREATION);
 			}
