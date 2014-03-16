@@ -55,14 +55,14 @@ public class TaskTableModel extends AbstractTableModel {
 			if(startTime == null) {
 				return null;
 			}
-			DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM d, yyyy hh:mm");
+			DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM d, yyyy HH:mm");
 			return fmt.print(startTime);
 		} else if(columnIndex == 3) {
 			DateTime endTime = l.get(rowIndex).getTaskEndTime();
 			if (endTime == null) {
 				return null;
 			}
-			DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM d, yyyy hh:mm");
+			DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM d, yyyy HH:mm");
 			return fmt.print(endTime);
 		} else if(columnIndex == 4) {
 			return null;
