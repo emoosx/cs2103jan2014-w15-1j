@@ -2,14 +2,14 @@ package logic;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.joda.time.DateTime;
+import org.joda.time.MutableDateTime;
 
 import com.joestelmach.natty.DateGroup;
-import com.joestelmach.natty.ParseLocation;
 import com.joestelmach.natty.Parser;
 import common.PandaLogger;
 
@@ -36,6 +36,10 @@ public class TaskParser {
 	private DateTime startDateTime;
 	private DateTime endDateTime;
 	private String taskDescription;
+	
+	// mutable
+	private MutableDateTime mutableStartDateTime;
+	private MutableDateTime mutableEndDateTime;
 
 	// Primitive time variables
 	private Integer startHour;
@@ -64,6 +68,10 @@ public class TaskParser {
 		endYear = null;
 		endMonth = null;
 		endDay = null;
+		
+		// mutable date time
+		mutableStartDateTime = null;
+		mutableEndDateTime = null;
 	}
 
 	// Method will call RegExp class to get all date and time of user's input
@@ -85,26 +93,58 @@ public class TaskParser {
 	}
 
 	public void parseTask2() {
+		PandaLogger.getLogger().info("TaskParser.parseTask2");
+
 		Parser parser = new Parser();
-		System.out.println("Input :" + taskDescription);
 		ArrayList<String> timeArray = RegExp.parseTime(taskDescription);
-		System.out.println("Timestamps :" + timeArray);
 		List<DateGroup> groups = parser.parse(taskDescription);
-		List<Date> dates = null;
+		List<Date> dates = new ArrayList<Date>();
+		String matchingValue = null;
+
 		for (DateGroup group : groups) {
 			dates = group.getDates();
-			String matchingValue = group.getText();
-			taskDescription = removeMatchingValue(taskDescription, matchingValue);
-//			System.out.println(matchingValue);
+			int line = group.getLine();
+			matchingValue = group.getText();
+			System.out.println("Matching Value::\t" + matchingValue);
 		}
-		System.out.println("Dates :" + dates);
-		taskDescription = RegExp.parseDescription(taskDescription);
-		System.out.println("Description: " + taskDescription);
+//		taskDescription = RegExp.parseDescription(taskDescription);
+		System.out.println(taskDescription);
+		initStartAndEndDateTime(timeArray, dates);
+		prepareDescription(taskDescription, matchingValue);
+
 	}
 	
-	private String removeMatchingValue(String desc, String match) {
-		String result = desc.replaceFirst("the " + match,  "");
-		return result.replaceAll("  ", " ");
+	private String prepareDescription(String original, String matchingValue) {
+		String result = "";
+
+		PandaLogger.getLogger().info("original desc:" + original);
+		PandaLogger.getLogger().info("match:" + matchingValue);
+		result = RegExp.parseDescription(original);
+		PandaLogger.getLogger().info("after clement: " + result);
+		result = result.replaceFirst("the " + matchingValue,  "");
+		result = result.replaceAll("  ", " ");
+		PandaLogger.getLogger().info("after substraction: " + result);
+		return result;
+	}
+	
+	private void initStartAndEndDateTime(ArrayList<String> timeArray, List<Date> dates) {
+		PandaLogger.getLogger().info("timeArray: " + timeArray);
+		PandaLogger.getLogger().info("dates: " + dates);
+		if(dates.size() == 1) {
+            PandaLogger.getLogger().info("Dates.size() = 1");
+			mutableEndDateTime = new MutableDateTime(dates.get(0));
+			if(timeArray.size() == 1) {
+				PandaLogger.getLogger().info("timeArray.size() = 1");
+                int[] time = RegExp.timeFromTimeString(timeArray.get(0));
+                mutableEndDateTime.setTime(time[0], time[1], 0, 0);
+                PandaLogger.getLogger().info("MutableEndDateTime:" + mutableEndDateTime);
+			}
+		} else if(dates.size() == 2) {
+			PandaLogger.getLogger().info("Date.size() = 2");
+			Collections.sort(dates);
+			mutableStartDateTime = new MutableDateTime(dates.get(0));
+			mutableEndDateTime = new MutableDateTime(dates.get(1));
+		}
 	}
 
 	// Given an array of user time inputs, method will parse start and end time
@@ -192,6 +232,14 @@ public class TaskParser {
 		// System.out.println("End Date: " + endDay + "/" + endMonth + "/" +
 		// endYear + ". Start Time: " + endHour + ":" + endMin);
 		return endDateTime;
+	}
+	
+	public MutableDateTime getMutableStartDateTime() {
+		return mutableStartDateTime;
+	}
+	
+	public MutableDateTime getMutableEndDateTime() {
+		return mutableEndDateTime;
 	}
 
 	// Method will finalize all date and time dates accordingly
