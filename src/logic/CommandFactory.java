@@ -22,7 +22,6 @@ public class CommandFactory {
 	private static final String MESSAGE_EMPTY = "file is empty";
 
 	private static Integer NUMBER_TASK_INDEX = 0;
-	private static Integer EDIT_PARA = 8;
 	private static Integer EDIT_OFFSET = 1;
 
 	private static String FEEDBACK;
@@ -250,6 +249,8 @@ public class CommandFactory {
 
 	private boolean checkEditIndexInput(String inputNumber) {
 		this.logger.info("checkEditIndexInput:" + inputNumber);
+		String[] stringArray = inputNumber.split(" ");
+		String taskIndex = stringArray[NUMBER_TASK_INDEX];
 		// No argument input
 		if (!isValidString(inputNumber)) {
 			showToUser("here valid string");
@@ -262,14 +263,7 @@ public class CommandFactory {
 		 * zero integer and whether the number specified is within the array
 		 * size
 		 */
-		String[] stringArray = inputNumber.split(" ");
-		String taskIndex = stringArray[NUMBER_TASK_INDEX];
-		if (stringArray.length != EDIT_PARA) {
-			System.out.println((stringArray.length));
-			showToUser(MESSAGE_INVALID_EDIT);
-			FEEDBACK = MESSAGE_INVALID_EDIT;
-			return false;
-		} else if (!isPositiveNonZeroInt(taskIndex)) {
+		else if (!isPositiveNonZeroInt(taskIndex)) {
 			return false;
 		} else if (!checkIfNumberBelowArraySize(taskIndex)) {
 			return false;
