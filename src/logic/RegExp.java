@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import common.PandaLogger;
+
 
 public class RegExp {
 
@@ -212,28 +214,46 @@ public class RegExp {
 
     // Method will replace all time and date regular expressions in user input with "" to obtain task description
 	public static String parseDescription(String taskDescription) {
+		Pattern pattern;
+		Matcher matcher;
+		
 		// Replacing all matched time regex with ""
 		for(int i=0; i<regexTimeArray.length; i++) {
-    		Pattern pattern = Pattern.compile(regexTimeArray[i]);
-    		Matcher matcher = pattern.matcher(taskDescription);
+    		pattern = Pattern.compile(regexTimeArray[i]);
+    		matcher = pattern.matcher(taskDescription);
     		while(matcher.find()) {
     			taskDescription = taskDescription.replaceAll(regexTimeArray[i], "");
     		}
 		}
+		
     	// Replacing all matched date regex with ""
 		for(int i=0; i<regexDateArray.length; i++) {
-    		Pattern pattern = Pattern.compile(regexDateArray[i]);
-    		Matcher matcher = pattern.matcher(taskDescription);
+    		pattern = Pattern.compile(regexDateArray[i]);
+    		matcher = pattern.matcher(taskDescription);
     		while(matcher.find()) {
     			taskDescription = taskDescription.replaceAll(regexDateArray[i], "");
     		}
     	}
+		
+		// Replacing hashtags with ""
+		pattern = Pattern.compile(HASHTAG2);
+		matcher = pattern.matcher(HASHTAG2);
+		taskDescription = taskDescription.replaceAll(HASHTAG2, "");
+		
 		return taskDescription.trim();
 	}
 	
 	// Method will attempt to parse a hashtag if possible and return the string
 	// Returns null if hashtag is invalid
-	public static String parseHashtag(String taskDescription) {
-		return null;
+	public static String parseHashtag(String userInput) {
+		String hashtag = null;
+		
+		Pattern pattern = Pattern.compile(HASHTAG2);
+		Matcher matcher = pattern.matcher(userInput);
+		if(matcher.find()) {
+			hashtag = userInput.substring(matcher.start(), matcher.end());
+		}
+		PandaLogger.getLogger().info("Hashtag obtained: " + hashtag);
+		return hashtag;
 	}
 }
