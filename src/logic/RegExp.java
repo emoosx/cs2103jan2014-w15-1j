@@ -69,6 +69,7 @@ public class RegExp {
     
     // Hash Tag Regular Expressions
     public static String HASHTAG = "#(.+?)\\b";
+    public static String HASHTAG2 = "(?<=^|(?<=[^a-zA-Z0-9-\\.]))#([A-Za-z]+[A-Za-z0-9]+)";
     
     // Method returns integer array of 3 elements given time string
     public static int[] dateFromDateString(String dateString) {
@@ -228,5 +229,11 @@ public class RegExp {
     		}
     	}
 		return taskDescription.trim();
+	}
+	
+	// Method will attempt to parse a hashtag if possible and return the string
+	// Returns null if hashtag is invalid
+	public static String parseHashtag(String taskDescription) {
+		return null;
 	}
 }
