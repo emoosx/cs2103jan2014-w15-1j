@@ -8,6 +8,8 @@
 
 import java.util.*;
 
+import logic.Command;
+
 public class PandaMain {
 	
 	private static final String MESSAGE_WELCOME = "Welcome to Task Panda v0.1!";
@@ -19,7 +21,7 @@ public class PandaMain {
 			try {
 				String userInput = readUserInput();
 				Parser parser = new Parser();
-				parser.parseUserInput(userInput);
+				parser.parseUserInput(userInput);				
 			} catch (Exception e) {
 				showToUser(MESSAGE_ERROR);
 				// for debugging purposes

@@ -82,12 +82,13 @@ public class TaskParser {
 		PandaLogger.getLogger().info("taskDescription:" + taskDescription);
 		ArrayList<String> timeArray = RegExp.parseTime(taskDescription);
 		ArrayList<String> dateArray = RegExp.parseDate(taskDescription);
+		String hashtag = RegExp.parseHashtag(taskDescription);
 		taskDescription = RegExp.parseDescription(taskDescription);
 		initializeTime(timeArray);
 		initializeDate(dateArray);
 		try {
 			finalizeDateTime();
-		} catch (Exception e) {
+		} catch (NullPointerException e) {
 			showToUser(MESSAGE_INVALID_TIME_DATE);
 		}
 	}

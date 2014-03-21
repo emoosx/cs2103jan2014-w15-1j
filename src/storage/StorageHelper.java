@@ -33,6 +33,7 @@ public class StorageHelper {
 	private Gson gson;
 	private File file;
 
+	// Constructor method
 	private StorageHelper() {
 		this.file = createOrGetFile(FILENAME);
 		this.gson = new GsonBuilder()
@@ -101,6 +102,7 @@ public class StorageHelper {
 		return file;
 	}
 
+	// Method clears all content of file
 	public void clearFile() {
 		file.delete();
 		this.file = createOrGetFile(FILENAME);
