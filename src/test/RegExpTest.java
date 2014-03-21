@@ -38,8 +38,8 @@ public class RegExpTest {
 	
 	@Test
 	public void testDateRegexDeadline() {
-		assertEquals("14-2-2014", RegExp.parseDate("add haha by 14-2-2014").get(0));
-		assertEquals("14-2-2014", RegExp.parseDate("add haha by 14-2-2014").get(0));
+		assertEquals("14-2-2014", RegExp.parseDate("add haha on 14-2-2014").get(0));
+		assertEquals("14-2-2014", RegExp.parseDate("add haha on 14-2-2014").get(0));
 	}
 	
 	@Test
@@ -93,5 +93,17 @@ public class RegExpTest {
 		
 		date = RegExp.dateFromDateString("31/14/9999");
 		assertEquals(null, date);
+	}
+	
+	@Test
+	public void testParseDescription() {
+		assertEquals("add meeting", RegExp.parseDescription("add meeting from 5pm to 6pm"));
+		assertEquals("add from to from to", RegExp.parseDescription("add from to from to from 5:15pm to 6:15pm"));
+		assertEquals("add meeting", RegExp.parseDescription("add meeting on 14-2-2014 from 5pm to 6pm"));
+	}
+	
+	@Test
+	public void testParseHashtag() {
+		assertEquals("#work", RegExp.parseHashtag("add ##### on 2/2/2014 from 2pm to 3pm #work"));
 	}
 }

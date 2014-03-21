@@ -37,6 +37,7 @@ public class Task {
 	
 	// This method will update the necessary attributes of the task
 	private void parse(String rawText) {
+		assert(!rawText.equals(null));
 		TaskParser parser = new TaskParser(rawText);
 		parser.parseTask();
 		taskDescription = parser.getTaskDescription();
