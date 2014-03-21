@@ -13,11 +13,15 @@ public class TaskParserTest {
 	// the command verb has already been striped
     String[] insaneFloating = {
         "just a floating task",
+        "",
+        " ",
+        "null"
     };
     
     String[] insaneTimed = {
         "attend a meeting next week from 2pm to 4pm",
-        "go to the school from 2pm to 4pm"
+        "go to the school from 2pm to 4pm",
+        "remind boss of meeting next week by the day after tomorrow 5pm"
     };
     
     String[] insaneDeadline = {
