@@ -1,12 +1,15 @@
 package logic;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.logging.Logger;
 
-import logic.Command.COMMAND_TYPE;
 import storage.StorageHelper;
 
 import common.PandaLogger;
@@ -46,6 +49,7 @@ public class CommandFactory {
 	public final String UNDO_ARCHIVEALL = "archiveall";
 
 	private List<Task> tasks;
+	private Map<Task, Integer> tasksMap;
 	private List<Task> filteredTasks;
 	private StorageHelper storage;
 	private Logger logger = PandaLogger.getLogger();
@@ -70,8 +74,12 @@ public class CommandFactory {
 
 	// Method will fill task list from storage
 	private void fetch() {
-		this.tasks = this.storage.getAllTasks();
-		this.filteredTasks = TaskLister.getAllUndeletedTasks(this.tasks);
+		List<Task> allTasks = this.storage.getAllTasks();
+		tasksMap = new LinkedHashMap<Task, Integer>(allTasks.size());
+		for(int i = 0; i < allTasks.size(); i++) {
+			this.tasksMap.put(allTasks.get(i), i);
+		}
+		this.filteredTasks = TaskLister.getAllUndeletedTasks(tasksMap);
 		this.populateUndoStack();
 	}
 
@@ -152,26 +160,38 @@ public class CommandFactory {
 	private void doAdd(String rawText) {
 		assert (rawText != null);
 		Task newTask = new Task(rawText);
-		this.tasks.add(newTask);
-		syncTasks(tasks);
+		this.tasksMap.put(newTask, this.tasksMap.size());
+		syncTasks();
 	}
 
 	private void doList(String rawText) {
 		assert (rawText != null);
 		logger.info("doList");
-		this.filteredTasks  = TaskLister.getAllUndeletedTasks(tasks);
+		this.filteredTasks = TaskLister.getAllUndeletedTasks(this.tasksMap);
 		
 	}
 
+	/* remove the original task from tasksMap and replace it with new task */
 	private void doEdit(String userInput) {
 		assert (userInput != null);
 		this.logger.info("doEdit:" + userInput);
 		if (checkEditIndexInput(userInput)) {
 			int taskInt = (Integer.parseInt(getFirstWord(userInput)) - EDIT_OFFSET);
+			Task originalTask = getTaskById(taskInt);
+			this.tasksMap.remove(originalTask);
 			Task editTask = new Task(obtainUserEditInput(userInput));
-			tasks.set(taskInt, editTask);
-			syncTasks(tasks);
+			this.tasksMap.put(editTask, taskInt);
+			syncTasks();
 		}
+	}
+	
+	private Task getTaskById(int id) {
+		for(Entry<Task, Integer> entry: this.tasksMap.entrySet()) {
+			if(entry.getValue().equals(new Integer(id))) {
+				return entry.getKey();
+			}
+		}
+		return null;
 	}
 
 	private void doDelete(String inputNumber) {
@@ -382,7 +402,31 @@ public class CommandFactory {
 		}
 	}
 
-	private void syncTasks(List<Task> tasks) {
+	private void syncTasks() {
+		this.sortById();
+		System.out.println(this.tasksMap);
+		List<Task> tasks = new ArrayList<Task>(this.tasksMap.keySet());
 		this.storage.writeTasks(tasks);
+	}
+	
+	/* sort the task hashmap by its index */
+	private void sortById() {
+		List<Entry<Task, Integer>> entries = new ArrayList<Entry<Task, Integer>>(this.tasksMap.entrySet());
+		Collections.sort(entries, new Comparator<Entry<Task, Integer>>() {
+			@Override
+			public int compare(Entry<Task, Integer> e1, Entry<Task, Integer> e2) {
+				return e1.getValue().compareTo(e2.getValue());
+			}
+		});
+		
+		Map<Task, Integer> sortedMap = new LinkedHashMap<Task, Integer>();
+		for(Entry<Task, Integer> entry: entries) {
+			sortedMap.put(entry.getKey(), entry.getValue());
+		}
+		this.tasksMap = sortedMap;
+	}
+
+	private void syncTasks(List<Task> tasks) {
+
 	}
 }
