@@ -76,4 +76,8 @@ public class Command {
 		}
 		return COMMAND_TYPE.INVALID; 
 	}
+	
+	public String toString() {
+		return this.rawText;
+	}
 }

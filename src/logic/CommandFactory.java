@@ -49,21 +49,28 @@ public class CommandFactory {
 	private List<Task> tasksUpdated = new ArrayList<Task>();
 	private StorageHelper storage;
 	private Logger logger = PandaLogger.getLogger();
+	private int lastElementID = 0;
 
-	private Stack<Map<Integer, List<String>>> undoStack;
+	
+	private Stack<Command> undoStack;
 
 	private CommandFactory() {
 		this.tasks = new ArrayList<Task>();
+		this.undoStack = new Stack<Command>();
 		this.storage = StorageHelper.INSTANCE;
-		this.fetch(); // Make sure this comes after Storage singleton
-						// initialization
+		this.fetch(); // Make sure this comes after Storage singleton initialization
+		this.populateUndoStack();
 	}
 
 	// Method will fill task list and undo history from storage
 	private void fetch() {
 		this.tasks = this.storage.getAllTasks();
-		// this.tasks = this.storage.getAllTasks();
-
+	}
+	
+	// initialize and populate undoStack
+	private void populateUndoStack() {
+		this.undoStack = new Stack<Command>();
+		// this.undoStack = this.undoStorage.getAllCommands();
 	}
 	
 	//Method to get tasks list without deleted tasks
@@ -81,67 +88,6 @@ public class CommandFactory {
 		return tasks;
 	}
 
-	public void undo() {
-		if (undoStack.size() == 0) {
-			return;
-		}
-
-		Map<Integer, List<String>> undoItem = undoStack.pop();
-
-		// get the command string from undoItem
-		String commandString = null;
-		this.doUndoAction(commandString);
-
-		// remove that entry record from the storage, pass the integerID
-		this.removeRecord(1);
-	}
-
-	private void doUndoAction(String cmd) {
-		switch (cmd) {
-		case UNDO_ADD:
-			break;
-		case UNDO_EDIT:
-			break;
-		case UNDO_DONE:
-			break;
-		case UNDO_ARCHIVE:
-			break;
-		case UNDO_DONEALL:
-			break;
-		case UNDO_ARCHIVEALL:
-			break;
-		}
-
-		// remove that entry record from the storage
-	}
-
-	private void removeRecord(int id) {
-
-	}
-
-	private void pushUndo(String cmd, Task task, List<Task> tasks) {
-
-		List<String> item = new ArrayList<String>();
-		item.add(cmd);
-
-		switch (cmd) {
-		case UNDO_ADD:
-			break;
-		case UNDO_EDIT:
-			break;
-		case UNDO_DONE:
-			break;
-		case UNDO_ARCHIVE:
-			break;
-		case UNDO_DONEALL:
-			break;
-		case UNDO_ARCHIVEALL:
-			break;
-		}
-
-		this.saveUndo(item);
-	}
-
 	public void writeToJson() {
 		StorageHelper.INSTANCE.clearFile();
 		storage.clearFile();
@@ -150,32 +96,27 @@ public class CommandFactory {
 		}
 	}
 
-	/*
-	 * insert a new row into the undo stack of task collection
-	 */
-	private void saveUndo(List<String> item) {
-
-	}
 
 	public void process(Command command) {
-		executeCommand(command.command, command.rawText);
-
-		// call undo here
+		executeCommand(command);
 	}
 
-	public void executeCommand(COMMAND_TYPE command, String rawText) {
-		assert (rawText != null);
-		switch (command) {
+	public void executeCommand(Command command) {
+		assert (command.rawText != null);
+		switch (command.command) {
 		case ADD:
-			doAdd(rawText);
+			doAdd(command.rawText);
+			this.undoStack.push(command);
 			break;
 		case LIST:
-			doList(rawText);
+			doList(command.rawText);
 			break;
 		case EDIT:
-			doEdit(rawText);
+			doEdit(command.rawText);
+			this.undoStack.push(command);
 			break;
 		case UNDO:
+			doUndo();
 			break;
 		case ARCHIVE:
 			break;
@@ -186,7 +127,8 @@ public class CommandFactory {
 		case ARCHIVEALL:
 			break;
 		case DELETE:
-			doDelete(rawText);
+			doDelete(command.rawText);
+			this.undoStack.push(command);
 			break;
 		case HELP:
 			break;
@@ -195,20 +137,41 @@ public class CommandFactory {
 		}
 	}
 
+	private void doUndo() {
+		logger.info("doUndo" );
+		Command lastCommand = this.undoStack.pop();
+		logger.info(lastCommand.toString());
+		executeUndo(lastCommand);
+		syncTasks(tasks);
+	}
+	
+	private void executeUndo(Command command) {
+		assert(command.rawText == null);
+		switch(command.command) {
+		case ADD:
+			doDelete(String.valueOf(this.tasks.size() - 1));
+			break;
+		case EDIT:
+			break;
+		case DELETE:
+			break;
+		default:
+			return; 
+		}
+	}
+
 	private void doAdd(String rawText) {
 		assert (rawText != null);
 		Task newTask = new Task(rawText);
 		this.tasks.add(newTask);
-        //this.tasksUpdated.add(newTask);
-		this.storage.writeTasks(tasks);
+		syncTasks(tasks);
 	}
 
 	private void doList(String rawText) {
 		assert (rawText != null);
 		logger.info("doList");
-		List<Task> tasks = this.storage.getAllTasks();
-		logger.info("Task size: " + tasks.size());
-		logger.info("exit doList");
+		TaskLister lister = new TaskLister(tasks);
+		List<Task> tasks = lister.getAllTasks();
 	}
 
 	private void doEdit(String userInput) {
@@ -239,7 +202,7 @@ public class CommandFactory {
 				}
 			}
 			tasks.get(listIndex).setMarkAsDelete();	
-			this.storage.writeTasks(tasks);
+			syncTasks(tasks);
 		}
 	}
 
@@ -411,7 +374,7 @@ public class CommandFactory {
 					}
 				}
 				tasks.get(listIndex).setMarkAsDelete();			
-				this.storage.writeTasks(tasks);
+				syncTasks(tasks);
 			}
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < tasks.size(); i++) {
@@ -427,6 +390,10 @@ public class CommandFactory {
 		} else {
 			return FEEDBACK;
 		}
+	}
+	
+	private void syncTasks(List<Task> tasks) {
+		this.storage.writeTasks(tasks);
 	}
 	}
 
