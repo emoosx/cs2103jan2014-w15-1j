@@ -21,7 +21,7 @@ public class TaskTableModel extends AbstractTableModel {
 	private List<Task> l;
 	
 	public TaskTableModel() {
-		l = CommandFactory.INSTANCE.getTasks();
+		l = CommandFactory.getInstance().getTasks();
 	}
 
 	@Override

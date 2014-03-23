@@ -7,7 +7,7 @@ import org.junit.Test;
 
 public class TestDelete {
 
-	CommandFactory cFact = CommandFactory.INSTANCE;
+	CommandFactory cFact = CommandFactory.getInstance();
 
 	@Test
 	public void testDelete() {
