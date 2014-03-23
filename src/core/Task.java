@@ -21,7 +21,7 @@ public class Task {
 	protected DateTime endDateTime;
 	protected boolean taskDone;
 	private DateTime taskCreatedTimestamp; 
-	private boolean hasAlias;
+	//private boolean hasAlias;
 	private boolean markAsDelete;
 
 	// Constructor method
@@ -32,7 +32,7 @@ public class Task {
 		this.endDateTime = null;
 		this.taskCreatedTimestamp = new DateTime();
 		this.taskDone = false;
-		this.hasAlias = false;
+		//this.hasAlias = false;
 		this.parse(this.rawText);
 		this.markAsDelete = false;
 	}
@@ -107,6 +107,9 @@ public class Task {
 	   return this.markAsDelete;	
 	}
 	
+	public ArrayList<String> getTaskTags() {
+		return taskTags;
+	}
 	
 	// Override method for toString
 	public String toString() {
