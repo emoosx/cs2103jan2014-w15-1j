@@ -78,7 +78,7 @@ public class CommandFactory {
 	}
 
 	public List<Task> getTasks() {
-		return TaskLister.getAllUndeletedTasks(this.tasks);
+		return this.tasks;
 	}
 
 	public void process(Command command) {
