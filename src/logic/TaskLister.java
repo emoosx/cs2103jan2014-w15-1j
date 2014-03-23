@@ -15,21 +15,19 @@ import com.google.common.collect.Collections2;
 
 import core.Task;
 
-// Class to help with the filtering of tasks
-// Task list is passed from the CommandFactory
+/* 
+ * Class to help with the filtering of tasks
+ */
 public class TaskLister {
 	
-	// get all tasks that are not marked as deleted
-	public static ArrayList<Task> getAllUndeletedTasks(Map<Task, Integer> map) {
-
+	/* get all tasks that are not marked as deleted */
+	public static ArrayList<Task> getAllUndeletedTasks(List<Task> tasks) {
 		Predicate<Task> undeletedTaskPredicate = new Predicate<Task>() {
 			public boolean apply(Task t) {
 				return t.getMarkAsDelete() == false;
 			}
 		};
-		
-		List<Task> originalTasks = new ArrayList<Task>(map.keySet());
-		Collection<Task> collection = Collections2.filter(originalTasks, undeletedTaskPredicate);
+		Collection<Task> collection = Collections2.filter(tasks, undeletedTaskPredicate);
 		ArrayList<Task> result = new ArrayList<Task>(collection);
 		return result;
 	}

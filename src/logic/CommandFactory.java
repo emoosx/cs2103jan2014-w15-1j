@@ -49,20 +49,19 @@ public class CommandFactory {
 	public final String UNDO_ARCHIVEALL = "archiveall";
 
 	private List<Task> tasks;
-	private Map<Task, Integer> tasksMap;
 	private List<Task> filteredTasks;
+
 	private StorageHelper storage;
 	private Logger logger = PandaLogger.getLogger();
-	private int lastElementID = 0;
 
 	private Stack<Command> undoStack;
 
 	private CommandFactory() {
 		this.tasks = new ArrayList<Task>();
+		this.filteredTasks = new ArrayList<Task>();
 		this.undoStack = new Stack<Command>();
 		this.storage = StorageHelper.INSTANCE;
-		this.fetch(); // Make sure this comes after Storage singleton
-						// initialization
+		this.fetch();
 	}
 	
 	public static CommandFactory getInstance() {
@@ -71,15 +70,11 @@ public class CommandFactory {
 		}
 		return INSTANCE;
 	}
-
-	// Method will fill task list from storage
+	
+	/* populate tasks buffer and undo command stack */ 
 	private void fetch() {
-		List<Task> allTasks = this.storage.getAllTasks();
-		tasksMap = new LinkedHashMap<Task, Integer>(allTasks.size());
-		for(int i = 0; i < allTasks.size(); i++) {
-			this.tasksMap.put(allTasks.get(i), i);
-		}
-		this.filteredTasks = TaskLister.getAllUndeletedTasks(tasksMap);
+		this.tasks = this.storage.getAllTasks();
+		this.filteredTasks = TaskLister.getAllUndeletedTasks(this.tasks);
 		this.populateUndoStack();
 	}
 
@@ -90,8 +85,7 @@ public class CommandFactory {
 	}
 
 	public List<Task> getTasks() {
-		return this.filteredTasks;
-
+		return TaskLister.getAllUndeletedTasks(this.tasks);
 	}
 
 	public void process(Command command) {
@@ -139,7 +133,7 @@ public class CommandFactory {
 		Command lastCommand = this.undoStack.pop();
 		logger.info(lastCommand.toString());
 		executeUndo(lastCommand);
-		syncTasks(tasks);
+		syncTasks();
 	}
 
 	private void executeUndo(Command command) {
@@ -160,15 +154,14 @@ public class CommandFactory {
 	private void doAdd(String rawText) {
 		assert (rawText != null);
 		Task newTask = new Task(rawText);
-		this.tasksMap.put(newTask, this.tasksMap.size());
+		this.tasks.add(newTask);
 		syncTasks();
 	}
 
 	private void doList(String rawText) {
 		assert (rawText != null);
 		logger.info("doList");
-		this.filteredTasks = TaskLister.getAllUndeletedTasks(this.tasksMap);
-		
+		this.filteredTasks = TaskLister.getAllUndeletedTasks(tasks);
 	}
 
 	/* remove the original task from tasksMap and replace it with new task */
@@ -177,22 +170,12 @@ public class CommandFactory {
 		this.logger.info("doEdit:" + userInput);
 		if (checkEditIndexInput(userInput)) {
 			int taskInt = (Integer.parseInt(getFirstWord(userInput)) - EDIT_OFFSET);
-			Task originalTask = getTaskById(taskInt);
-			this.tasksMap.remove(originalTask);
 			Task editTask = new Task(obtainUserEditInput(userInput));
-			this.tasksMap.put(editTask, taskInt);
+			this.tasks.set(taskInt, editTask);
 			syncTasks();
 		}
 	}
 	
-	private Task getTaskById(int id) {
-		for(Entry<Task, Integer> entry: this.tasksMap.entrySet()) {
-			if(entry.getValue().equals(new Integer(id))) {
-				return entry.getKey();
-			}
-		}
-		return null;
-	}
 
 	private void doDelete(String inputNumber) {
 		assert (inputNumber != null);
@@ -211,7 +194,7 @@ public class CommandFactory {
 				}
 			}
 			tasks.get(listIndex).setMarkAsDelete();
-			syncTasks(tasks);
+			syncTasks();
 		}
 	}
 
@@ -403,30 +386,6 @@ public class CommandFactory {
 	}
 
 	private void syncTasks() {
-		this.sortById();
-		System.out.println(this.tasksMap);
-		List<Task> tasks = new ArrayList<Task>(this.tasksMap.keySet());
 		this.storage.writeTasks(tasks);
-	}
-	
-	/* sort the task hashmap by its index */
-	private void sortById() {
-		List<Entry<Task, Integer>> entries = new ArrayList<Entry<Task, Integer>>(this.tasksMap.entrySet());
-		Collections.sort(entries, new Comparator<Entry<Task, Integer>>() {
-			@Override
-			public int compare(Entry<Task, Integer> e1, Entry<Task, Integer> e2) {
-				return e1.getValue().compareTo(e2.getValue());
-			}
-		});
-		
-		Map<Task, Integer> sortedMap = new LinkedHashMap<Task, Integer>();
-		for(Entry<Task, Integer> entry: entries) {
-			sortedMap.put(entry.getKey(), entry.getValue());
-		}
-		this.tasksMap = sortedMap;
-	}
-
-	private void syncTasks(List<Task> tasks) {
-
 	}
 }
