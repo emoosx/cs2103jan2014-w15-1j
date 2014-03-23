@@ -46,6 +46,7 @@ public class CommandFactory {
 	public final String UNDO_ARCHIVEALL = "archiveall";
 
 	private List<Task> tasks;
+	private List<Task> tasksUpdated = new ArrayList<Task>();
 	private StorageHelper storage;
 	private Logger logger = PandaLogger.getLogger();
 
@@ -64,8 +65,19 @@ public class CommandFactory {
 		// this.tasks = this.storage.getAllTasks();
 
 	}
+	
+	//Method to get tasks list without deleted tasks
+	public List<Task> getTasksExcludingDeleted(){
+		for(int i = 0; i<tasks.size();i++){
+			if(!tasks.get(i).getMarkAsDelete()){
+				tasksUpdated.add(tasks.get(i));
+			}
+		}
+		return tasksUpdated;
+	}
 
-	public List<Task> getTasks() {
+	
+	public List<Task> getTasks() {		
 		return tasks;
 	}
 
@@ -187,6 +199,7 @@ public class CommandFactory {
 		assert (rawText != null);
 		Task newTask = new Task(rawText);
 		this.tasks.add(newTask);
+        //this.tasksUpdated.add(newTask);
 		this.storage.writeTasks(tasks);
 	}
 
@@ -212,11 +225,18 @@ public class CommandFactory {
 	private void doDelete(String inputNumber) {
 		assert(inputNumber != null);
 		this.logger.info("doDelete:" + inputNumber);
+		int listIndex =0;
 		if (checkDeleteInput(inputNumber)) {
-			int lineToRemove = Integer.parseInt(inputNumber) - DELETE_OFFSET;
-			String deletedString = tasks.get(lineToRemove).getTaskDescription();
-			tasks.remove(lineToRemove);
-			showToUser(String.format(MESSAGE_DELETED, deletedString));
+			int inputIndex = Integer.parseInt(inputNumber);
+			while( inputIndex >0){
+				if(!tasks.get(listIndex).getMarkAsDelete()){
+				inputIndex--;
+				if(inputIndex != 0){
+				listIndex++;
+				}
+				}
+			}
+			tasks.get(listIndex).setMarkAsDelete();	
 			this.storage.writeTasks(tasks);
 		}
 	}
@@ -376,19 +396,32 @@ public class CommandFactory {
 		tasks.add(task2);
 		tasks.add(task3);
 		if (checkDeleteInput(inputNumber)) {
-			int lineToRemove = Integer.parseInt(inputNumber) - DELETE_OFFSET;
-			String deletedString = tasks.get(lineToRemove).getTaskDescription();
-			tasks.remove(lineToRemove);
-			showToUser(String.format(MESSAGE_DELETED, deletedString));
-			writeToJson();
+			int listIndex =0;
+			if (checkDeleteInput(inputNumber)) {
+				int inputIndex = Integer.parseInt(inputNumber);
+				while( inputIndex >0){
+					if(!tasks.get(listIndex).getMarkAsDelete()){
+					inputIndex--;
+					if(inputIndex != 0)
+					listIndex++;
+					}
+				}
+				tasks.get(listIndex).setMarkAsDelete();			
+				this.storage.writeTasks(tasks);
+			}
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < tasks.size(); i++) {
-				sb.append(tasks.get(i).getTaskDescription());
+				if(tasks.get(i).getMarkAsDelete()){
+					int index = i+1;
+				sb.append("task" + index + "deleted");
+				}else{
+					int index = i+1;
+					sb.append("task" + index + "notdeleted");
+				}
 			}
 			return sb.toString();
 		} else {
 			return FEEDBACK;
 		}
-
 	}
 }
