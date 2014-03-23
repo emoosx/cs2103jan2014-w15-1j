@@ -22,6 +22,7 @@ public class Task {
 	protected boolean taskDone;
 	private DateTime taskCreatedTimestamp; 
 	private boolean hasAlias;
+	private boolean markAsDelete;
 
 	// Constructor method
 	public Task(String rawText) {
@@ -33,6 +34,7 @@ public class Task {
 		this.taskDone = false;
 		this.hasAlias = false;
 		this.parse(this.rawText);
+		this.markAsDelete = false;
 	}
 	
 	// This method will update the necessary attributes of the task
@@ -95,6 +97,15 @@ public class Task {
 	public boolean getTaskDone() {
 		return this.taskDone;
 	}
+	
+	public void setMarkAsDelete(){
+		this.markAsDelete = true;
+	}
+	
+	public boolean getMarkAsDelete(){
+	   return this.markAsDelete;	
+	}
+	
 	
 	// Override method for toString
 	public String toString() {
