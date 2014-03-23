@@ -37,7 +37,7 @@ public class CommandFactory {
 	private static Integer DELETE_PARA = 1;
 	private static Integer DELETE_OFFSET = 1;
 
-	public static CommandFactory INSTANCE = new CommandFactory();
+	private static CommandFactory INSTANCE ;
 	public final String UNDO_ADD = "add";
 	public final String UNDO_EDIT = "edit";
 	public final String UNDO_DONE = "done";
@@ -51,51 +51,38 @@ public class CommandFactory {
 	private Logger logger = PandaLogger.getLogger();
 	private int lastElementID = 0;
 
-	
 	private Stack<Command> undoStack;
 
 	private CommandFactory() {
 		this.tasks = new ArrayList<Task>();
 		this.undoStack = new Stack<Command>();
 		this.storage = StorageHelper.INSTANCE;
-		this.fetch(); // Make sure this comes after Storage singleton initialization
+		this.fetch(); // Make sure this comes after Storage singleton
+						// initialization
 		this.populateUndoStack();
 	}
+	
+	public static CommandFactory getInstance() {
+		if(INSTANCE == null) {
+			return new CommandFactory();
+		}
+		return INSTANCE;
+	}
 
-	// Method will fill task list and undo history from storage
+	// Method will fill task list from storage
 	private void fetch() {
 		this.tasks = this.storage.getAllTasks();
 	}
-	
+
 	// initialize and populate undoStack
 	private void populateUndoStack() {
 		this.undoStack = new Stack<Command>();
 		// this.undoStack = this.undoStorage.getAllCommands();
 	}
-	
-	//Method to get tasks list without deleted tasks
-	public List<Task> getTasksExcludingDeleted(){
-		for(int i = 0; i<tasks.size();i++){
-			if(!tasks.get(i).getMarkAsDelete()){
-				tasksUpdated.add(tasks.get(i));
-			}
-		}
-		return tasksUpdated;
-	}
 
-	
-	public List<Task> getTasks() {		
+	public List<Task> getTasks() {
 		return tasks;
 	}
-
-	public void writeToJson() {
-		StorageHelper.INSTANCE.clearFile();
-		storage.clearFile();
-		for (int i = 0; i < tasks.size(); i++) {
-			// storage.addNewTask(tasks.get(i));
-		}
-	}
-
 
 	public void process(Command command) {
 		executeCommand(command);
@@ -138,25 +125,25 @@ public class CommandFactory {
 	}
 
 	private void doUndo() {
-		logger.info("doUndo" );
+		logger.info("doUndo");
 		Command lastCommand = this.undoStack.pop();
 		logger.info(lastCommand.toString());
 		executeUndo(lastCommand);
 		syncTasks(tasks);
 	}
-	
+
 	private void executeUndo(Command command) {
-		assert(command.rawText == null);
-		switch(command.command) {
+		assert (command.rawText == null);
+		switch (command.command) {
 		case ADD:
-			doDelete(String.valueOf(this.tasks.size() - 1));
+			doDelete(String.valueOf(this.tasks.size()));
 			break;
 		case EDIT:
 			break;
 		case DELETE:
 			break;
 		default:
-			return; 
+			return;
 		}
 	}
 
@@ -171,7 +158,11 @@ public class CommandFactory {
 		assert (rawText != null);
 		logger.info("doList");
 		TaskLister lister = new TaskLister(tasks);
-		List<Task> tasks = lister.getAllTasks();
+		List<Task> tasks = lister.getAllUndeletedTasks();
+		List<Task> original = this.storage.getAllTasks();
+		logger.info("Original : " + original.size());
+		logger.info("Filtered : " + tasks.size());
+		
 	}
 
 	private void doEdit(String userInput) {
@@ -181,27 +172,27 @@ public class CommandFactory {
 			int taskInt = (Integer.parseInt(getFirstWord(userInput)) - EDIT_OFFSET);
 			Task editTask = new Task(obtainUserEditInput(userInput));
 			tasks.set(taskInt, editTask);
-			this.storage.writeTasks(tasks);
+			syncTasks(tasks);
 		}
 	}
 
 	private void doDelete(String inputNumber) {
-		assert(inputNumber != null);
+		assert (inputNumber != null);
 		this.logger.info("doDelete:" + inputNumber);
-		int listIndex =0;
+		int listIndex = 0;
 		if (checkDeleteInput(inputNumber)) {
 			int inputIndex = Integer.parseInt(inputNumber);
-			while( inputIndex >0){
-				if(!tasks.get(listIndex).getMarkAsDelete()){
-				inputIndex--;
-				if(inputIndex != 0){
-				listIndex++;
-				}
-				}else{
+			while (inputIndex > 0) {
+				if (!tasks.get(listIndex).getMarkAsDelete()) {
+					inputIndex--;
+					if (inputIndex != 0) {
+						listIndex++;
+					}
+				} else {
 					listIndex++;
 				}
 			}
-			tasks.get(listIndex).setMarkAsDelete();	
+			tasks.get(listIndex).setMarkAsDelete();
 			syncTasks(tasks);
 		}
 	}
@@ -361,28 +352,29 @@ public class CommandFactory {
 		tasks.add(task2);
 		tasks.add(task3);
 		if (checkDeleteInput(inputNumber)) {
-			int listIndex =0;
+			int listIndex = 0;
 			if (checkDeleteInput(inputNumber)) {
 				int inputIndex = Integer.parseInt(inputNumber);
-				while( inputIndex >0){
-					if(!tasks.get(listIndex).getMarkAsDelete()){
-					inputIndex--;
-					if(inputIndex != 0){
-					listIndex++;
-					}}else{
+				while (inputIndex > 0) {
+					if (!tasks.get(listIndex).getMarkAsDelete()) {
+						inputIndex--;
+						if (inputIndex != 0) {
+							listIndex++;
+						}
+					} else {
 						listIndex++;
 					}
 				}
-				tasks.get(listIndex).setMarkAsDelete();			
+				tasks.get(listIndex).setMarkAsDelete();
 				syncTasks(tasks);
 			}
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < tasks.size(); i++) {
-				if(tasks.get(i).getMarkAsDelete()){
-					int index = i+1;
-				sb.append("task" + index + "deleted");
-				}else{
-					int index = i+1;
+				if (tasks.get(i).getMarkAsDelete()) {
+					int index = i + 1;
+					sb.append("task" + index + "deleted");
+				} else {
+					int index = i + 1;
 					sb.append("task" + index + "notdeleted");
 				}
 			}
@@ -391,10 +383,8 @@ public class CommandFactory {
 			return FEEDBACK;
 		}
 	}
-	
+
 	private void syncTasks(List<Task> tasks) {
 		this.storage.writeTasks(tasks);
 	}
-	}
-
-
+}
