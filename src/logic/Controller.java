@@ -5,6 +5,6 @@ public class Controller {
 	private CommandFactory cf;
 	
 	public Controller() {
-		this.cf = CommandFactory.getInstance();
+		this.cf = CommandFactory.INSTANCE;
 	}
 }

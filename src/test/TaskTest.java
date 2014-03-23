@@ -31,7 +31,7 @@ public class TaskTest {
 	public void testAddNewTaskJson() {
 		PandaLogger.getLogger().info("testAddNewTaskJson");
 		Command newAddCommand = new Command("add haha by 16-2-2014");
-		CommandFactory.getInstance().executeCommand(newAddCommand);
+		CommandFactory.INSTANCE.executeCommand(newAddCommand);
 		assertTrue(true);
 	}
 

@@ -40,7 +40,7 @@ public class CommandFactory {
 	private static Integer DELETE_PARA = 1;
 	private static Integer DELETE_OFFSET = 1;
 
-	private static CommandFactory INSTANCE ;
+	public static CommandFactory INSTANCE = new CommandFactory();
 	public final String UNDO_ADD = "add";
 	public final String UNDO_EDIT = "edit";
 	public final String UNDO_DONE = "done";
@@ -62,13 +62,6 @@ public class CommandFactory {
 		this.undoStack = new Stack<Command>();
 		this.storage = StorageHelper.INSTANCE;
 		this.fetch();
-	}
-	
-	public static CommandFactory getInstance() {
-		if(INSTANCE == null) {
-			return new CommandFactory();
-		}
-		return INSTANCE;
 	}
 	
 	/* populate tasks buffer and undo command stack */ 
@@ -367,7 +360,7 @@ public class CommandFactory {
 					}
 				}
 				tasks.get(listIndex).setMarkAsDelete();
-				syncTasks(tasks);
+				syncTasks();
 			}
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < tasks.size(); i++) {

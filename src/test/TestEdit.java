@@ -7,7 +7,7 @@ import org.junit.Test;
 
 public class TestEdit {
 
-	CommandFactory cFact = CommandFactory.getInstance();
+	CommandFactory cFact = CommandFactory.INSTANCE;
 	@Test
 	
 		public void testEdit() {
