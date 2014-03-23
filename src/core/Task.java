@@ -43,6 +43,7 @@ public class Task {
 		taskDescription = parser.getTaskDescription();
 		startDateTime = parser.getStartDateTime();
 		endDateTime = parser.getEndDateTime();
+		taskTags = parser.getHashTag();
 	}
 	
 //	public int getID() {
