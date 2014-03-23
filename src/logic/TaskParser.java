@@ -323,7 +323,8 @@ public class TaskParser {
 		System.out.println(outputString);
 	}
 
+	// Method will return the list of hash tags to Task.java
 	public ArrayList<String> getHashTag() {
-		return null;
+		return hashtags;
 	}
 }
