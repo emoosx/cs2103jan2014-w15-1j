@@ -13,21 +13,15 @@ import core.Task;
 // Task list is passed from the CommandFactory
 public class TaskLister {
 	
-	private List<Task> tasks;
-
-	public TaskLister(List<Task> tasks) {
-		this.tasks = tasks;
-	}
-	
 	// get all tasks that are not marked as deleted
-	public ArrayList<Task> getAllUndeletedTasks() {
+	public static ArrayList<Task> getAllUndeletedTasks(List<Task> original) {
 
 		Predicate<Task> undeletedTaskPredicate = new Predicate<Task>() {
 			public boolean apply(Task t) {
 				return t.getMarkAsDelete() == false;
 			}
 		};
-		Collection<Task> filteredTasks = Collections2.filter(tasks, undeletedTaskPredicate);
+		Collection<Task> filteredTasks = Collections2.filter(original, undeletedTaskPredicate);
 		ArrayList<Task> result = new ArrayList<Task>(filteredTasks);
 		return result;
 	}
