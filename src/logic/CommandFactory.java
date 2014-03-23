@@ -332,7 +332,7 @@ public class CommandFactory {
 			int taskInt = (Integer.parseInt(getFirstWord(userInput)) - EDIT_OFFSET);
 			Task editTask = new Task(obtainUserEditInput(userInput));
 			tasks.set(taskInt, editTask);
-			writeToJson();
+//			writeToJson();
 			StringBuilder sb = new StringBuilder();
 			sb.append(tasks.get(0).getTaskDescription());
 			sb.append(tasks.get(0).getTaskStartTime().getHourOfDay());
