@@ -11,6 +11,7 @@ import org.joda.time.MutableDateTime;
 
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
+
 import common.PandaLogger;
 
 /*
@@ -36,6 +37,7 @@ public class TaskParser {
 	private DateTime startDateTime;
 	private DateTime endDateTime;
 	private String taskDescription;
+	private ArrayList<String> hashtags;
 	
 	// mutable
 	private MutableDateTime mutableStartDateTime;
@@ -58,6 +60,7 @@ public class TaskParser {
 	// Constructor method for TaskParser
 	public TaskParser(String userInput) {
 		taskDescription = userInput;
+		hashtags = new ArrayList<String>();
 		startHour = null;
 		startMin = null;
 		endHour = null;
@@ -78,11 +81,11 @@ public class TaskParser {
 	// Method will then call other methods to initialize all date and time
 	// variables
 	public void parseTask() {
-		PandaLogger.getLogger().info("TaskParser.taskParse");
+		PandaLogger.getLogger().info("TaskParser.parseTask1");
 		PandaLogger.getLogger().info("taskDescription:" + taskDescription);
 		ArrayList<String> timeArray = RegExp.parseTime(taskDescription);
 		ArrayList<String> dateArray = RegExp.parseDate(taskDescription);
-		String hashtag = RegExp.parseHashtag(taskDescription);
+		hashtags = RegExp.parseHashtag(taskDescription);
 		taskDescription = RegExp.parseDescription(taskDescription);
 		initializeTime(timeArray);
 		initializeDate(dateArray);
@@ -93,9 +96,10 @@ public class TaskParser {
 		}
 	}
 
+	// Method combines the use of third party library (natty) to parse date, and regular expressions to parse time
 	public void parseTask2() {
 		PandaLogger.getLogger().info("TaskParser.parseTask2");
-
+		PandaLogger.getLogger().info("taskDescription:" + taskDescription);
 		Parser parser = new Parser();
 		ArrayList<String> timeArray = RegExp.parseTime(taskDescription);
 		List<DateGroup> groups = parser.parse(taskDescription);
@@ -104,9 +108,12 @@ public class TaskParser {
 
 		for (DateGroup group : groups) {
 			dates = group.getDates();
-			int line = group.getLine();
+			//int line = group.getLine();
 			matchingValue = group.getText();
-			System.out.println("Matching Value::\t" + matchingValue);
+			System.out.print("Matching Value::\t" + matchingValue+ ". ");
+			for(Date date : dates) {
+				System.out.println(date);
+			}
 		}
 //		taskDescription = RegExp.parseDescription(taskDescription);
 		System.out.println(taskDescription);
@@ -141,7 +148,7 @@ public class TaskParser {
                 PandaLogger.getLogger().info("MutableEndDateTime:" + mutableEndDateTime);
 			}
 		} else if(dates.size() == 2) {
-			PandaLogger.getLogger().info("Date.size() = 2");
+			//PandaLogger.getLogger().info("Date.size() = 2");
 			Collections.sort(dates);
 			mutableStartDateTime = new MutableDateTime(dates.get(0));
 			mutableEndDateTime = new MutableDateTime(dates.get(1));
@@ -310,9 +317,13 @@ public class TaskParser {
 				+ NUM_CALENDAR_MONTH_OFFSET;
 		startDay = endDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 	}
-
+	
 	// Method will print statement given string arguments
 	private void showToUser(String outputString) {
 		System.out.println(outputString);
+	}
+
+	public ArrayList<String> getHashTag() {
+		return null;
 	}
 }
