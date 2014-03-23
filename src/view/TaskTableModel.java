@@ -65,7 +65,7 @@ public class TaskTableModel extends AbstractTableModel {
 			DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM d, yyyy HH:mm");
 			return fmt.print(endTime);
 		} else if(columnIndex == 4) {
-			return null;
+			return l.get(rowIndex).getTaskTags();
 		}
 		return null;
 	}

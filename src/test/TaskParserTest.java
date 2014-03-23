@@ -30,7 +30,7 @@ public class TaskParserTest {
         "buy birthday presents for may and april by 4 march 10am",
         "download eath wind fire by september by 20th march 5pm",
         "2pm concert on 2/2/2014 6pm",
-        "2pm concert on 2/2/2014 at 6pm"
+        "2pm concert on 2014/2/22 at 6pm"
     };
     
 //	@Test
@@ -46,11 +46,13 @@ public class TaskParserTest {
 	
 	@Test
 	public void testInsaneDeadline() {
+		// "watch the day after tomorrow the day after tomorrow at 5pm",
 		MutableDateTime  endDateTime = new MutableDateTime();  
 		endDateTime.addDays(2);
 		endDateTime.setTime(17, 0, 0, 0);
-		testDeadlineTask(insaneDeadline[0], "watch the day after tomorrow", endDateTime);
 		
+		
+		testDeadlineTask(insaneDeadline[0], "watch the day after tomorrow", endDateTime);
 		endDateTime = new MutableDateTime();
 		endDateTime.addDays(1);
 		endDateTime.setTime(7, 54, 0, 0);
@@ -71,11 +73,11 @@ public class TaskParserTest {
 		endDateTime.setTime(18, 0, 0, 0);
 		testDeadlineTask(insaneDeadline[4], "2pm concert", endDateTime);
 		
+		//"2pm concert on 22/2/2014 at 6pm"
 		endDateTime = new MutableDateTime();
-		endDateTime.setDate(2014, 2, 2);
+		endDateTime.setDate(2014, 2, 22);
 		endDateTime.setTime(18, 0, 0, 0);
 		testDeadlineTask(insaneDeadline[5], "2pm concert", endDateTime);
-
 	}
 
 	public void testTimedTask(String input, String expectedDesc, DateTime expectedStartDateTime, DateTime expectedEndDateTime) {
