@@ -234,6 +234,8 @@ public class CommandFactory {
 				if(inputIndex != 0){
 				listIndex++;
 				}
+				}else{
+					listIndex++;
 				}
 			}
 			tasks.get(listIndex).setMarkAsDelete();	
@@ -402,8 +404,10 @@ public class CommandFactory {
 				while( inputIndex >0){
 					if(!tasks.get(listIndex).getMarkAsDelete()){
 					inputIndex--;
-					if(inputIndex != 0)
+					if(inputIndex != 0){
 					listIndex++;
+					}}else{
+						listIndex++;
 					}
 				}
 				tasks.get(listIndex).setMarkAsDelete();			
@@ -424,4 +428,6 @@ public class CommandFactory {
 			return FEEDBACK;
 		}
 	}
-}
+	}
+
+
