@@ -1,21 +1,13 @@
 package test;
 
 import static org.junit.Assert.assertTrue;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
-import logic.Command.COMMAND_TYPE;
+import logic.Command;
 import logic.CommandFactory;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import common.PandaLogger;
-
-import storage.StorageHelper;
-import core.Task;
 
 public class TaskTest {
 	
@@ -38,7 +30,8 @@ public class TaskTest {
 	@Test
 	public void testAddNewTaskJson() {
 		PandaLogger.getLogger().info("testAddNewTaskJson");
-		CommandFactory.INSTANCE.executeCommand(COMMAND_TYPE.ADD, "haha by 16-2-2014");
+		Command newAddCommand = new Command("add haha by 16-2-2014");
+		CommandFactory.INSTANCE.executeCommand(newAddCommand);
 		assertTrue(true);
 	}
 

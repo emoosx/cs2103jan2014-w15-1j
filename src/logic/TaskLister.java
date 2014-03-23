@@ -20,7 +20,7 @@ public class TaskLister {
 	}
 	
 	// get all tasks that are not marked as deleted
-	public ArrayList<Task> getAllTasks() {
+	public ArrayList<Task> getAllUndeletedTasks() {
 
 		Predicate<Task> undeletedTaskPredicate = new Predicate<Task>() {
 			public boolean apply(Task t) {
