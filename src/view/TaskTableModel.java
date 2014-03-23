@@ -10,18 +10,22 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import common.PandaLogger;
+
 import core.Task;
 
 @SuppressWarnings("serial")
 public class TaskTableModel extends AbstractTableModel {
 
+	// TODO delete marked column .. enabled only during development phase
 	private String[] columnNames = { "Task ID", "Description",
-			"Start Time", "End Time", "Tags" };
+			"Start Time", "End Time", "Tags" , "Marked"};
 	
 	private List<Task> l;
 	
 	public TaskTableModel() {
 		l = CommandFactory.getInstance().getTasks();
+		PandaLogger.getLogger().info("TaskTableModel: " + l.size());
 	}
 
 	@Override
@@ -66,6 +70,8 @@ public class TaskTableModel extends AbstractTableModel {
 			return fmt.print(endTime);
 		} else if(columnIndex == 4) {
 			return l.get(rowIndex).getTaskTags();
+		} else if (columnIndex == 5) {
+			return l.get(rowIndex).getMarkAsDelete();
 		}
 		return null;
 	}

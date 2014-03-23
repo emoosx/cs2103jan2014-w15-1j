@@ -46,7 +46,7 @@ public class CommandFactory {
 	public final String UNDO_ARCHIVEALL = "archiveall";
 
 	private List<Task> tasks;
-	private List<Task> tasksUpdated = new ArrayList<Task>();
+	private List<Task> filteredTasks;
 	private StorageHelper storage;
 	private Logger logger = PandaLogger.getLogger();
 	private int lastElementID = 0;
@@ -59,7 +59,6 @@ public class CommandFactory {
 		this.storage = StorageHelper.INSTANCE;
 		this.fetch(); // Make sure this comes after Storage singleton
 						// initialization
-		this.populateUndoStack();
 	}
 	
 	public static CommandFactory getInstance() {
@@ -72,6 +71,8 @@ public class CommandFactory {
 	// Method will fill task list from storage
 	private void fetch() {
 		this.tasks = this.storage.getAllTasks();
+		this.filteredTasks = TaskLister.getAllUndeletedTasks(this.tasks);
+		this.populateUndoStack();
 	}
 
 	// initialize and populate undoStack
@@ -81,7 +82,8 @@ public class CommandFactory {
 	}
 
 	public List<Task> getTasks() {
-		return tasks;
+		return this.filteredTasks;
+
 	}
 
 	public void process(Command command) {
@@ -157,11 +159,7 @@ public class CommandFactory {
 	private void doList(String rawText) {
 		assert (rawText != null);
 		logger.info("doList");
-		TaskLister lister = new TaskLister(tasks);
-		List<Task> tasks = lister.getAllUndeletedTasks();
-		List<Task> original = this.storage.getAllTasks();
-		logger.info("Original : " + original.size());
-		logger.info("Filtered : " + tasks.size());
+		this.filteredTasks  = TaskLister.getAllUndeletedTasks(tasks);
 		
 	}
 
