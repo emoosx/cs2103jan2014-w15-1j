@@ -38,7 +38,7 @@ public class TaskPandaUI extends JFrame {
 	private static final String PLACEHOLDER_DEFAULT = "Enter command";
 
 	public TaskPandaUI() {
-		this.commandFactory = CommandFactory.getInstance();
+		this.commandFactory = CommandFactory.INSTANCE;
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {

@@ -24,7 +24,7 @@ public class TaskTableModel extends AbstractTableModel {
 	private List<Task> l;
 	
 	public TaskTableModel() {
-		l = CommandFactory.getInstance().getTasks();
+		l = CommandFactory.INSTANCE.getTasks();
 		PandaLogger.getLogger().info("TaskTableModel: " + l.size());
 	}
 

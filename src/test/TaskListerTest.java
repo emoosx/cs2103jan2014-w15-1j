@@ -12,13 +12,12 @@ import logic.CommandFactory;
 import logic.TaskLister;
 
 import org.junit.Test;
-import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
 
 import core.Task;
 
 public class TaskListerTest {
 	
-	private List<Task> tasks = CommandFactory.getInstance().getTasks();
+	private List<Task> tasks = CommandFactory.INSTANCE.getTasks();
 
 	@Test
 	public void testGetAllUndeletedTasks() {
