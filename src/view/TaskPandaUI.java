@@ -110,8 +110,6 @@ public class TaskPandaUI extends JFrame {
 			basic.repaint();
 			pack();
 			tableModel.fireTableDataChanged();
-			basic.revalidate();
-			basic.repaint();
 		} else {
 			inputField.setBorder(BorderFactory.createLineBorder(Color.decode("#ff0000")));
 			inputField.setPlaceholder("Invalid Command!");

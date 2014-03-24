@@ -23,7 +23,7 @@ public class TaskTableModel extends AbstractTableModel {
 			"Start Time", "End Time", "Tags" , "Marked"};
 	
 	private List<Task> l;
-	private LinkedHashMap<Integer, Integer> map;
+	private LinkedHashMap<Integer, Integer> map = new LinkedHashMap<Integer, Integer>();
 	
 	private final int OFFSET = 1;
 	
@@ -40,7 +40,7 @@ public class TaskTableModel extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		return l.size();
+		return map.size();
 	}
 
 	@Override
@@ -58,7 +58,8 @@ public class TaskTableModel extends AbstractTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Task t = l.get(map.get(rowIndex));
 		if(columnIndex == 0) {
-			return rowIndex + OFFSET;
+			Integer idToDisplay = (Integer)map.keySet().toArray()[rowIndex];
+			return idToDisplay + OFFSET;
 		} else if(columnIndex == 1) {
 			return t.getTaskDescription();
 		} else if(columnIndex == 2) {

@@ -153,7 +153,7 @@ public class CommandFactory {
 	}
 
 	private void doAdd(String rawText) {
-		assert (rawText != null);
+		assert (rawText!=null);
 		Task newTask = new Task(rawText);
 		this.tasks.add(newTask);
 		this.populateTasksMapWithDefaultCriteria();		// regenerate the TaskMap
@@ -161,9 +161,8 @@ public class CommandFactory {
 	}
 
 	private void doList(String rawText) {
-		assert (rawText != null);
 		logger.info("doList");
-		logger.info(rawText);
+//		this.populateTasksMapWithDefaultCriteria();
 	}
 
 	/* remove the original task from tasksMap and replace it with new task */
