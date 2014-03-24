@@ -172,7 +172,7 @@ public class CommandFactory {
 		if (checkEditIndexInput(userInput)) {
 			int taskInt = (Integer.parseInt(getFirstWord(userInput)) - EDIT_OFFSET);
 			Task editTask = new Task(obtainUserEditInput(userInput));
-			this.tasks.set(taskInt, editTask);
+			this.tasks.set(tasksMap.get(taskInt), editTask);
 			syncTasks();
 		}
 	}
@@ -181,21 +181,10 @@ public class CommandFactory {
 	private void doDelete(String inputNumber) {
 		assert (inputNumber != null);
 		this.logger.info("doDelete:" + inputNumber);
-		int listIndex = 0;
 		if (checkDeleteInput(inputNumber)) {
 			int inputIndex = Integer.parseInt(inputNumber);
-			inputIndex = tasksMap.get(inputIndex);			// get the actual index
-			while (inputIndex > 0) {
-				if (!tasks.get(listIndex).getMarkAsDelete()) {
-					inputIndex--;
-					if (inputIndex != 0) {
-						listIndex++;
-					}
-				} else {
-					listIndex++;
-				}
-			}
-			tasks.get(listIndex).setMarkAsDelete();
+			inputIndex = tasksMap.get(inputIndex-1);			// get the actual index
+			tasks.get(inputIndex).setMarkAsDelete();
 			this.populateTasksMapWithDefaultCriteria();
 			syncTasks();
 		}
@@ -332,15 +321,17 @@ public class CommandFactory {
 		tasks.clear();
 		Task task1 = new Task("meeting1 on 27-2-2014 from 1pm to 2pm");
 		tasks.add(task1);
+		this.populateTasksMapWithDefaultCriteria();
 		if (checkEditIndexInput(userInput)) {
-			int taskInt = (Integer.parseInt(getFirstWord(userInput)) - EDIT_OFFSET);
+			int taskInt = (Integer.parseInt(getFirstWord(userInput)) -EDIT_OFFSET);
 			Task editTask = new Task(obtainUserEditInput(userInput));
-			tasks.set(taskInt, editTask);
-//			writeToJson();
+			int inputIndex = tasksMap.get(taskInt);
+			this.tasks.set(inputIndex, editTask);
+			syncTasks();
 			StringBuilder sb = new StringBuilder();
-			sb.append(tasks.get(0).getTaskDescription());
-			sb.append(tasks.get(0).getTaskStartTime().getHourOfDay());
-			sb.append(tasks.get(0).getTaskEndTime().getHourOfDay());
+			sb.append(tasks.get(inputIndex).getTaskDescription());
+			sb.append(tasks.get(inputIndex).getTaskStartTime().getHourOfDay());
+			sb.append(tasks.get(inputIndex).getTaskEndTime().getHourOfDay());
 			return sb.toString();
 		} else {
 			return FEEDBACK;
@@ -355,21 +346,13 @@ public class CommandFactory {
 		tasks.add(task1);
 		tasks.add(task2);
 		tasks.add(task3);
+		this.populateTasksMapWithDefaultCriteria();
 		if (checkDeleteInput(inputNumber)) {
-			int listIndex = 0;
 			if (checkDeleteInput(inputNumber)) {
 				int inputIndex = Integer.parseInt(inputNumber);
-				while (inputIndex > 0) {
-					if (!tasks.get(listIndex).getMarkAsDelete()) {
-						inputIndex--;
-						if (inputIndex != 0) {
-							listIndex++;
-						}
-					} else {
-						listIndex++;
-					}
-				}
-				tasks.get(listIndex).setMarkAsDelete();
+				inputIndex = tasksMap.get(inputIndex-1);			// get the actual index
+				tasks.get(inputIndex).setMarkAsDelete();
+				this.populateTasksMapWithDefaultCriteria();
 				syncTasks();
 			}
 			StringBuilder sb = new StringBuilder();
