@@ -1,12 +1,8 @@
 package logic;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.logging.Logger;
 
@@ -49,7 +45,7 @@ public class CommandFactory {
 	public final String UNDO_ARCHIVEALL = "archiveall";
 
 	private List<Task> tasks;
-	private List<Task> filteredTasks;
+	private LinkedHashMap<Integer, Integer> tasksMap;
 
 	private StorageHelper storage;
 	private Logger logger = PandaLogger.getLogger();
@@ -58,8 +54,8 @@ public class CommandFactory {
 
 	private CommandFactory() {
 		this.tasks = new ArrayList<Task>();
-		this.filteredTasks = new ArrayList<Task>();
 		this.undoStack = new Stack<Command>();
+		this.tasksMap = new LinkedHashMap<Integer, Integer>();
 		this.storage = StorageHelper.INSTANCE;
 		this.fetch();
 	}
@@ -67,7 +63,7 @@ public class CommandFactory {
 	/* populate tasks buffer and undo command stack */ 
 	private void fetch() {
 		this.tasks = this.storage.getAllTasks();
-		this.filteredTasks = TaskLister.getAllUndeletedTasks(this.tasks);
+		this.populateTasksMapWithDefaultCriteria();
 		this.populateUndoStack();
 	}
 
@@ -76,9 +72,21 @@ public class CommandFactory {
 		this.undoStack = new Stack<Command>();
 		// this.undoStack = this.undoStorage.getAllCommands();
 	}
+	
+	/* by default, display tasks which are not marked as deleted */
+	private void populateTasksMapWithDefaultCriteria() {
+		ArrayList<Integer> undeletedTasksIDs = Criteria.getAllUndeletedTasks(tasks);
+		for(int i = 0; i < undeletedTasksIDs.size(); i++) {
+			this.tasksMap.put(i, undeletedTasksIDs.get(i));
+		}
+	}
 
 	public List<Task> getTasks() {
 		return this.tasks;
+	}
+	
+	public LinkedHashMap<Integer, Integer> getTasksMap() {
+		return this.tasksMap;
 	}
 
 	public void process(Command command) {
@@ -148,13 +156,14 @@ public class CommandFactory {
 		assert (rawText != null);
 		Task newTask = new Task(rawText);
 		this.tasks.add(newTask);
+		this.populateTasksMapWithDefaultCriteria();		// regenerate the TaskMap
 		syncTasks();
 	}
 
 	private void doList(String rawText) {
 		assert (rawText != null);
 		logger.info("doList");
-		this.filteredTasks = TaskLister.getAllUndeletedTasks(tasks);
+		logger.info(rawText);
 	}
 
 	/* remove the original task from tasksMap and replace it with new task */
@@ -176,6 +185,7 @@ public class CommandFactory {
 		int listIndex = 0;
 		if (checkDeleteInput(inputNumber)) {
 			int inputIndex = Integer.parseInt(inputNumber);
+			inputIndex = tasksMap.get(inputIndex);			// get the actual index
 			while (inputIndex > 0) {
 				if (!tasks.get(listIndex).getMarkAsDelete()) {
 					inputIndex--;
@@ -187,6 +197,7 @@ public class CommandFactory {
 				}
 			}
 			tasks.get(listIndex).setMarkAsDelete();
+			this.populateTasksMapWithDefaultCriteria();
 			syncTasks();
 		}
 	}

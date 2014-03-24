@@ -1,5 +1,6 @@
 package view;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -22,9 +23,13 @@ public class TaskTableModel extends AbstractTableModel {
 			"Start Time", "End Time", "Tags" , "Marked"};
 	
 	private List<Task> l;
+	private LinkedHashMap<Integer, Integer> map;
+	
+	private final int OFFSET = 1;
 	
 	public TaskTableModel() {
 		l = CommandFactory.INSTANCE.getTasks();
+		map = CommandFactory.INSTANCE.getTasksMap();
 		PandaLogger.getLogger().info("TaskTableModel: " + l.size());
 	}
 
@@ -47,31 +52,33 @@ public class TaskTableModel extends AbstractTableModel {
 	public boolean isCellEditable(int row, int col) {
 		return false;
 	}
+	
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
+		Task t = l.get(map.get(rowIndex));
 		if(columnIndex == 0) {
-			return rowIndex + 1;
+			return rowIndex + OFFSET;
 		} else if(columnIndex == 1) {
-			return l.get(rowIndex).getTaskDescription();
+			return t.getTaskDescription();
 		} else if(columnIndex == 2) {
-			DateTime startTime = l.get(rowIndex).getTaskStartTime();
+			DateTime startTime = t.getTaskStartTime();
 			if(startTime == null) {
 				return null;
 			}
 			DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM d, yyyy HH:mm");
 			return fmt.print(startTime);
 		} else if(columnIndex == 3) {
-			DateTime endTime = l.get(rowIndex).getTaskEndTime();
+			DateTime endTime = t.getTaskEndTime();
 			if (endTime == null) {
 				return null;
 			}
 			DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM d, yyyy HH:mm");
 			return fmt.print(endTime);
 		} else if(columnIndex == 4) {
-			return l.get(rowIndex).getTaskTags();
+			return t.getTaskTags();
 		} else if (columnIndex == 5) {
-			return l.get(rowIndex).getMarkAsDelete();
+			return t.getMarkAsDelete();
 		}
 		return null;
 	}
