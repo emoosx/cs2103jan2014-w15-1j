@@ -13,6 +13,9 @@ public class RegExp {
 	private static final int INDEX_FIRST_CASE = 0;
 	private static final int INDEX_SECOND_CASE = 1;
 	private static final int INDEX_THIRD_CASE = 2;
+	private static final int INDEX_DAY = 0;
+	private static final int INDEX_MONTH = 1;
+	private static final int INDEX_YEAR = 2;
 	private static final int NUM_CENTURY = 2000;
 	private static final int NUM_TWO_DIGIT_YEAR = 100;
 	private static final int NUM_HOUR_INDEX = 0;
@@ -28,7 +31,12 @@ public class RegExp {
      */
     public static String[] regexDateArray = {
     	// Case 1: DD-MM-YY(YY) or DD/MM/YY(YY) 
-    	"\\bon\\s((([1-9]|[12]\\d|3[01])-([13578]|1[02])-(\\d{4}|\\d{2})|([1-9]|[12]\\d|30)-([1-9]|1[02])-(\\d{4}|\\d{2}))|(([1-9]|[12]\\d|3[01])/([13578]|1[02])/(\\d{4}|\\d{2})|([1-9]|[12]\\d|30)/([1-9]|1[02])/(\\d{4}|\\d{2})))\\b"};
+    	"\\bon\\s((([1-9]|[12]\\d|3[01])-([13578]|1[02])-(\\d{4}|\\d{2})|([1-9]|[12]\\d|30)-([1-9]|1[02])-(\\d{4}|\\d{2}))|(([1-9]|[12]\\d|3[01])/([13578]|1[02])/(\\d{4}|\\d{2})|([1-9]|[12]\\d|30)/([1-9]|1[02])/(\\d{4}|\\d{2})))\\b",
+    	// Case 2: partial text based dates (e.g. 15 march 2014, 2 feb)
+    	"\\b(?i)on\\s((([1-9]|[12]\\\\d|3[01])\\s(jan|january|mar|march|may|jul|july|aug|august|oct|october|dec|december)(\\s(\\d{4}|\\d{2}))?|([1-9]|[12]\\d|30)\\s(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)(\\s(\\d{4}|\\d{2}))?))\\b",
+    	// Case 3: pure text based relative dates (e.g. next Monday)
+    	"\\b(?i)on\\snext\\s(((mon|tues|wednes|thurs|fri|satur|sun)day)|(mon|tues|wed|thurs|fri|sat|sun))\\b"
+    	};
     
     /*
      *  Time Input Expressions
@@ -51,6 +59,10 @@ public class RegExp {
      */
     // Case 1: DD/MM/YY(YY) or DD-MM-YY(YY) or  
     public static String REGEX_DATESTRING_PATTERN_1 = "((([1-9]|[12]\\d|3[01])-([13578]|1[02])-(\\d{4}|\\d{2})|([1-9]|[12]\\d|30)-([1-9]|1[02])-(\\d{4}|\\d{2}))|(([1-9]|[12]\\d|3[01])/([13578]|1[02])/(\\d{4}|\\d{2})|([1-9]|[12]\\d|30)/([1-9]|1[02])/(\\d{4}|\\d{2})))\\b";
+    // Case 2: Partial text based dates (e.g. 15 march 2014, 2 feb)
+    public static String REGEX_DATESTRING_PATTERN_2 = "\\b(?i)((([1-9]|[12]\\\\d|3[01])\\s(jan|january|mar|march|may|jul|july|aug|august|oct|october|dec|december)(\\s(\\d{4}|\\d{2}))?|([1-9]|[12]\\d|30)\\s(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)(\\s(\\d{4}|\\d{2}))?))\\b";
+    // Case 3: pure text based relative dates (e.g. next Monday)
+    public static String REGEX_DATESTRING_PATTERN_3 = "\\b(?i)next\\s(((mon|tues|wednes|thurs|fri|satur|sun)day)|(mon|tues|wed|thurs|fri|sat|sun))\\b";
     
     /*
      *  Time Format Expressions for parsing raw time data
@@ -77,33 +89,53 @@ public class RegExp {
     	int[] date = new int[TOTAL_DATE_FIELDS];
 
     	// Case 1: DD-MM-YY(YY)
-    	Pattern pattern = Pattern.compile(REGEX_DATESTRING_PATTERN_1);
-    	Matcher matcher = pattern.matcher(dateString);
-    	if(matcher.find()) {
-    		
+    	if(dateString.matches(REGEX_DATESTRING_PATTERN_1)) {
     		String[] dateStringArray = dateString.split("[-/]");
-        	date[0] = Integer.parseInt(dateStringArray[0]);
-        	date[1] = Integer.parseInt(dateStringArray[1]);
-        	date[2] = Integer.parseInt(dateStringArray[2]);
-        	if(date[2] < NUM_TWO_DIGIT_YEAR) {
-        		date[2] += NUM_CENTURY;
+        	date[INDEX_DAY] = Integer.parseInt(dateStringArray[INDEX_DAY]);
+        	date[INDEX_MONTH] = Integer.parseInt(dateStringArray[INDEX_MONTH]);
+        	date[INDEX_YEAR] = Integer.parseInt(dateStringArray[INDEX_YEAR]);
+        	if(date[INDEX_YEAR] < NUM_TWO_DIGIT_YEAR) {
+        		date[INDEX_YEAR] += NUM_CENTURY;
         	}
         	return date;
     	}
+    	
+    	// Case 2: Partial text based dates (e.g. 15 march 2014, 2 feb)
+    	if(dateString.matches(REGEX_DATESTRING_PATTERN_2)) {
+    		String[] dateStringArray = dateString.split(" ");
+    		date[INDEX_DAY] = Integer.parseInt(dateStringArray[INDEX_DAY]); 
+    		date[INDEX_MONTH] = getMonthIndex(dateStringArray[INDEX_MONTH]);
+    		if(dateStringArray.length == 3) {
+    			date[INDEX_YEAR] = Integer.parseInt(dateStringArray[INDEX_YEAR]);
+    			if(date[INDEX_YEAR] < NUM_TWO_DIGIT_YEAR) {
+    				date[INDEX_YEAR] += NUM_CENTURY;
+    			}
+    		} else {
+    			date[INDEX_YEAR] = 2014;
+    		}
+    		return date;
+    	}
+    	
+    	/*
+    	// Case 3: pure text based relative dates (e.g. next Monday)
+    	return date;
+    	*/
+    	
+    	// asserting false because code should not reach here due to initial pattern filtering for date inputs
+    	assert(false);
 		return null;
     }
     
     /* Given a string of time format (eg. "5pm"),
-     * Method will check with all time string patterns to identify patterns and parses the string accordingly
+     * Method will check with all time string patterns to identify time patterns and parses the string accordingly
+     * Method uses string.matches() API instead of pattern and matcher in the regex API 
      * @return integer array with 2 elements: hour and minute 
      */
     public static int[] timeFromTimeString(String timeString) {
     	int[] time = new int[TOTAL_TIME_FIELDS];
     	
     	// Case 1: HH:MM am|pm
-    	Pattern pattern = Pattern.compile(REGEX_TIMESTRING_PATTERN_1);
-    	Matcher matcher = pattern.matcher(timeString);
-    	if(matcher.find()) {
+    	if(timeString.matches(REGEX_TIMESTRING_PATTERN_1)) {
     		String[] timeStringArray = timeString.split(":");
     		time[NUM_HOUR_INDEX] = Integer.parseInt(timeStringArray[NUM_HOUR_INDEX]);
     		if(timeStringArray[NUM_MIN_INDEX].contains(STRING_TIMEZONE_PM)) {
@@ -118,23 +150,21 @@ public class RegExp {
     	}
     	
     	// Case 2: HH am|pm
-    	pattern = Pattern.compile(REGEX_TIMESTRING_PATTERN_2);
-    	matcher = pattern.matcher(timeString);
-    	if(matcher.find()) {
+    	if(timeString.matches(REGEX_TIMESTRING_PATTERN_2)) {
     		if(timeString.contains(STRING_TIMEZONE_PM)) {
     			timeString = timeString.replace(STRING_TIMEZONE_PM, "");
     			time[NUM_HOUR_INDEX] = Integer.parseInt(timeString) % 12 + 12;
+    			time[NUM_MIN_INDEX] = 0;
     		} else {
     			timeString = timeString.replace(STRING_TIMEZONE_AM, "");
     			time[NUM_HOUR_INDEX] = Integer.parseInt(timeString);
+    			time[NUM_MIN_INDEX] = 0;
     		}
     		return time;
     	}
     	
     	// Case 3: HH:MM
-    	pattern = Pattern.compile(REGEX_TIMESTRING_PATTERN_3);
-    	matcher = pattern.matcher(timeString);
-    	if(matcher.find()) {
+    	if(timeString.matches(REGEX_TIMESTRING_PATTERN_3)) {
     		String[] timeStringArray = timeString.split(":");
     		time[NUM_HOUR_INDEX] = Integer.parseInt(timeStringArray[0]); 
     		time[NUM_MIN_INDEX] = Integer.parseInt(timeStringArray[1]);
@@ -142,20 +172,22 @@ public class RegExp {
     	}
     	
     	// Case 4: HHMM
-    	pattern = Pattern.compile(REGEX_TIMESTRING_PATTERN_4);
-    	matcher = pattern.matcher(timeString);
-    	if(matcher.find()) {
+    	if(timeString.matches(REGEX_TIMESTRING_PATTERN_4)) {
     		time[NUM_HOUR_INDEX] = Integer.parseInt(timeString.substring(0,2));
     		time[NUM_MIN_INDEX] = Integer.parseInt(timeString.substring(2,4));
     		return time;
     	}
     	
-    	// asserting false because code should not reach here due to initial pattern filtering of raw user input
+    	// asserting false because code should not reach here due to initial pattern filtering for time inputs
     	assert(false);
     	return null;
     }
     
-    // Method parses raw input into an array list of date strings 
+    /*
+     *  Method parses raw input into an array list of date strings
+     *  It will match user input with all supported date patterns 
+     *  @return an ArrayList<String> of dates 
+     */
     public static ArrayList<String> parseDate(String userInput) {
     	ArrayList<String> dateArray = new ArrayList<String>();
     	
@@ -167,22 +199,23 @@ public class RegExp {
     		return dateArray;
     	}
     	
-    	for(int i=0; i<regexDateArray.length; i++) {
-    		pattern = Pattern.compile(regexDateArray[i]);
-    		matcher = pattern.matcher(userInput);
-    		while(matcher.find()) {
-    			dateArray.add(matcher.group(2));
-    		}
-    		// size 1 = deadline tasks, size 2 = timed task
-    		if(dateArray.size() != 0) {
-    			break;
-    		}
+    	// Case 2: Partial text based date format (e.g. 12 march 14, 20 aug)
+    	pattern = Pattern.compile(regexDateArray[INDEX_SECOND_CASE]);
+    	matcher = pattern.matcher(userInput);
+    	if(matcher.find()) {
+    		dateArray.add(matcher.group(1));
+    		return dateArray;
     	}
+    	
+    	// Returning empty date array indicates that user input produces 0 date parameter
     	return dateArray;
     }
     
-    // Method will try to match all time regular expressions
-    // and parse the raw user input into an array list of time strings and return it
+    /*
+     *  Method parses raw input into an array list of time strings
+     *  It will match user input with all supported time patterns 
+     *  @return an ArrayList<String> of time
+     */
     public static ArrayList<String> parseTime(String userInput) {
     	ArrayList<String> timeArray = new ArrayList<String>();
     	
@@ -214,6 +247,7 @@ public class RegExp {
 			return timeArray;
 		}
 		
+		// Returning empty time array indicates that user input produces 0 time parameter
     	return timeArray; 
     }
 
@@ -236,6 +270,7 @@ public class RegExp {
 		// Replacing hashtags with ""
 		taskDescription = taskDescription.replaceAll(REGEX_HASHTAG, "");
 		
+		PandaLogger.getLogger().info("Task Description obtained: " + taskDescription);
 		return taskDescription.trim();
 	}
 	
@@ -245,7 +280,6 @@ public class RegExp {
 	 */
 	public static ArrayList<String> parseHashtag(String userInput) {
 		ArrayList<String> hashtag = new ArrayList<String>();
-		
 		Pattern pattern = Pattern.compile(REGEX_HASHTAG);
 		Matcher matcher = pattern.matcher(userInput);
 		while(matcher.find()) {
@@ -253,5 +287,54 @@ public class RegExp {
 		}
 		PandaLogger.getLogger().info("Hashtag obtained: " + hashtag);
 		return hashtag;
+	}
+	
+	/*
+	 *  Method changes DD-MM-YYYY format to MM-DD-YYYY to ensure correct parsing by NattyTime
+	 *  @return a modified userInput with switched date format
+	 */
+	public static String changeDateFormat(String userInput) {
+		Pattern pattern = Pattern.compile(REGEX_DATESTRING_PATTERN_1);
+		Matcher matcher = pattern.matcher(userInput);
+		while(matcher.find()) {
+			String tempDate = userInput.substring(matcher.start(), matcher.end());
+			String[] dateStringArray = tempDate.split("[-/]");
+			String newDate = dateStringArray[1] + "/" + dateStringArray[0] + "/" + dateStringArray[2];
+			PandaLogger.getLogger().info("Dates switched: " + tempDate + " to " + newDate);
+			userInput = userInput.replace(tempDate, newDate);
+		}
+		return userInput;
+	}
+	
+	/*
+	 * Method will return index of month given string format
+	 * @return integer corresponding to month
+	 */
+	public static int getMonthIndex(String month) {
+		month = month.toLowerCase();
+		if(month.equals("jan") || month.equals("january")) {
+			return 1;
+		} else if(month.equals("feb") || month.equals("february")) {
+			return 2;
+		} else if(month.equals("mar") || month.equals("march")) {
+			return 3;
+		} else if(month.equals("apr") || month.equals("april")) {
+			return 4;
+		} else if(month.equals("may")) {
+			return 5;
+		} else if(month.equals("jun") || month.equals("june")) {
+			return 6;
+		} else if(month.equals("jul") || month.equals("july")) {
+			return 7;
+		} else if(month.equals("aug") || month.equals("august")) {
+			return 8;
+		} else if(month.equals("sep") || month.equals("september")) {
+			return 9;
+		} else if(month.equals("oct") || month.equals("october")) {
+			return 10;
+		} else if(month.equals("nov") || month.equals("november")) {
+			return 11;
+		} else 
+			return 12;
 	}
 }
