@@ -1,12 +1,11 @@
 package logic;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 import java.util.logging.Logger;
 
-import logic.Command.COMMAND_TYPE;
 import storage.StorageHelper;
 
 import common.PandaLogger;
@@ -46,124 +45,70 @@ public class CommandFactory {
 	public final String UNDO_ARCHIVEALL = "archiveall";
 
 	private List<Task> tasks;
+	private LinkedHashMap<Integer, Integer> tasksMap;
+
 	private StorageHelper storage;
 	private Logger logger = PandaLogger.getLogger();
 
-	private Stack<Map<Integer, List<String>>> undoStack;
+	private Stack<Command> undoStack;
 
 	private CommandFactory() {
 		this.tasks = new ArrayList<Task>();
+		this.undoStack = new Stack<Command>();
+		this.tasksMap = new LinkedHashMap<Integer, Integer>();
 		this.storage = StorageHelper.INSTANCE;
-		this.fetch(); // Make sure this comes after Storage singleton
-						// initialization
+		this.fetch();
 	}
-
-	// Method will fill task list and undo history from storage
+	
+	/* populate tasks buffer and undo command stack */ 
 	private void fetch() {
 		this.tasks = this.storage.getAllTasks();
-		// this.tasks = this.storage.getAllTasks();
+		this.populateTasksMapWithDefaultCriteria();
+		this.populateUndoStack();
+	}
 
+	// initialize and populate undoStack
+	private void populateUndoStack() {
+		this.undoStack = new Stack<Command>();
+		// this.undoStack = this.undoStorage.getAllCommands();
+	}
+	
+	/* by default, display tasks which are not marked as deleted */
+	private void populateTasksMapWithDefaultCriteria() {
+		ArrayList<Integer> undeletedTasksIDs = Criteria.getAllUndeletedTasks(tasks);
+		for(int i = 0; i < undeletedTasksIDs.size(); i++) {
+			this.tasksMap.put(i, undeletedTasksIDs.get(i));
+		}
 	}
 
 	public List<Task> getTasks() {
-		return tasks;
+		return this.tasks;
 	}
-
-	public void undo() {
-		if (undoStack.size() == 0) {
-			return;
-		}
-
-		Map<Integer, List<String>> undoItem = undoStack.pop();
-
-		// get the command string from undoItem
-		String commandString = null;
-		this.doUndoAction(commandString);
-
-		// remove that entry record from the storage, pass the integerID
-		this.removeRecord(1);
-	}
-
-	private void doUndoAction(String cmd) {
-		switch (cmd) {
-		case UNDO_ADD:
-			break;
-		case UNDO_EDIT:
-			break;
-		case UNDO_DONE:
-			break;
-		case UNDO_ARCHIVE:
-			break;
-		case UNDO_DONEALL:
-			break;
-		case UNDO_ARCHIVEALL:
-			break;
-		}
-
-		// remove that entry record from the storage
-	}
-
-	private void removeRecord(int id) {
-
-	}
-
-	private void pushUndo(String cmd, Task task, List<Task> tasks) {
-
-		List<String> item = new ArrayList<String>();
-		item.add(cmd);
-
-		switch (cmd) {
-		case UNDO_ADD:
-			break;
-		case UNDO_EDIT:
-			break;
-		case UNDO_DONE:
-			break;
-		case UNDO_ARCHIVE:
-			break;
-		case UNDO_DONEALL:
-			break;
-		case UNDO_ARCHIVEALL:
-			break;
-		}
-
-		this.saveUndo(item);
-	}
-
-	public void writeToJson() {
-		StorageHelper.INSTANCE.clearFile();
-		storage.clearFile();
-		for (int i = 0; i < tasks.size(); i++) {
-			// storage.addNewTask(tasks.get(i));
-		}
-	}
-
-	/*
-	 * insert a new row into the undo stack of task collection
-	 */
-	private void saveUndo(List<String> item) {
-
+	
+	public LinkedHashMap<Integer, Integer> getTasksMap() {
+		return this.tasksMap;
 	}
 
 	public void process(Command command) {
-		executeCommand(command.command, command.rawText);
-
-		// call undo here
+		executeCommand(command);
 	}
 
-	public void executeCommand(COMMAND_TYPE command, String rawText) {
-		assert (rawText != null);
-		switch (command) {
+	public void executeCommand(Command command) {
+		assert (command.rawText != null);
+		switch (command.command) {
 		case ADD:
-			doAdd(rawText);
+			doAdd(command.rawText);
+			this.undoStack.push(command);
 			break;
 		case LIST:
-			doList(rawText);
+			doList(command.rawText);
 			break;
 		case EDIT:
-			doEdit(rawText);
+			doEdit(command.rawText);
+			this.undoStack.push(command);
 			break;
 		case UNDO:
+			doUndo();
 			break;
 		case ARCHIVE:
 			break;
@@ -174,7 +119,8 @@ public class CommandFactory {
 		case ARCHIVEALL:
 			break;
 		case DELETE:
-			doDelete(rawText);
+			doDelete(command.rawText);
+			this.undoStack.push(command);
 			break;
 		case HELP:
 			break;
@@ -183,41 +129,64 @@ public class CommandFactory {
 		}
 	}
 
+	private void doUndo() {
+		logger.info("doUndo");
+		Command lastCommand = this.undoStack.pop();
+		logger.info(lastCommand.toString());
+		executeUndo(lastCommand);
+		syncTasks();
+	}
+
+	private void executeUndo(Command command) {
+		assert (command.rawText == null);
+		switch (command.command) {
+		case ADD:
+			doDelete(String.valueOf(this.tasks.size()));
+			break;
+		case EDIT:
+			break;
+		case DELETE:
+			break;
+		default:
+			return;
+		}
+	}
+
 	private void doAdd(String rawText) {
-		assert (rawText != null);
+		assert (rawText!=null);
 		Task newTask = new Task(rawText);
 		this.tasks.add(newTask);
-		this.storage.writeTasks(tasks);
+		this.populateTasksMapWithDefaultCriteria();		// regenerate the TaskMap
+		syncTasks();
 	}
 
 	private void doList(String rawText) {
-		assert (rawText != null);
 		logger.info("doList");
-		List<Task> tasks = this.storage.getAllTasks();
-		logger.info("Task size: " + tasks.size());
-		logger.info("exit doList");
+//		this.populateTasksMapWithDefaultCriteria();
 	}
 
+	/* remove the original task from tasksMap and replace it with new task */
 	private void doEdit(String userInput) {
 		assert (userInput != null);
 		this.logger.info("doEdit:" + userInput);
 		if (checkEditIndexInput(userInput)) {
 			int taskInt = (Integer.parseInt(getFirstWord(userInput)) - EDIT_OFFSET);
 			Task editTask = new Task(obtainUserEditInput(userInput));
-			tasks.set(taskInt, editTask);
-			this.storage.writeTasks(tasks);
+			this.tasks.set(tasksMap.get(taskInt), editTask);
+			syncTasks();
 		}
 	}
+	
 
 	private void doDelete(String inputNumber) {
-		assert(inputNumber != null);
+		assert (inputNumber != null);
 		this.logger.info("doDelete:" + inputNumber);
 		if (checkDeleteInput(inputNumber)) {
-			int lineToRemove = Integer.parseInt(inputNumber) - DELETE_OFFSET;
-			String deletedString = tasks.get(lineToRemove).getTaskDescription();
-			tasks.remove(lineToRemove);
-			showToUser(String.format(MESSAGE_DELETED, deletedString));
-			this.storage.writeTasks(tasks);
+			int inputIndex = Integer.parseInt(inputNumber);
+			inputIndex = tasksMap.get(inputIndex-1);			// get the actual index
+			tasks.get(inputIndex).setMarkAsDelete();
+			this.populateTasksMapWithDefaultCriteria();
+			syncTasks();
 		}
 	}
 
@@ -352,15 +321,17 @@ public class CommandFactory {
 		tasks.clear();
 		Task task1 = new Task("meeting1 on 27-2-2014 from 1pm to 2pm");
 		tasks.add(task1);
+		this.populateTasksMapWithDefaultCriteria();
 		if (checkEditIndexInput(userInput)) {
-			int taskInt = (Integer.parseInt(getFirstWord(userInput)) - EDIT_OFFSET);
+			int taskInt = (Integer.parseInt(getFirstWord(userInput)) -EDIT_OFFSET);
 			Task editTask = new Task(obtainUserEditInput(userInput));
-			tasks.set(taskInt, editTask);
-			writeToJson();
+			int inputIndex = tasksMap.get(taskInt);
+			this.tasks.set(inputIndex, editTask);
+			syncTasks();
 			StringBuilder sb = new StringBuilder();
-			sb.append(tasks.get(0).getTaskDescription());
-			sb.append(tasks.get(0).getTaskStartTime().getHourOfDay());
-			sb.append(tasks.get(0).getTaskEndTime().getHourOfDay());
+			sb.append(tasks.get(inputIndex).getTaskDescription());
+			sb.append(tasks.get(inputIndex).getTaskStartTime().getHourOfDay());
+			sb.append(tasks.get(inputIndex).getTaskEndTime().getHourOfDay());
 			return sb.toString();
 		} else {
 			return FEEDBACK;
@@ -375,20 +346,32 @@ public class CommandFactory {
 		tasks.add(task1);
 		tasks.add(task2);
 		tasks.add(task3);
+		this.populateTasksMapWithDefaultCriteria();
 		if (checkDeleteInput(inputNumber)) {
-			int lineToRemove = Integer.parseInt(inputNumber) - DELETE_OFFSET;
-			String deletedString = tasks.get(lineToRemove).getTaskDescription();
-			tasks.remove(lineToRemove);
-			showToUser(String.format(MESSAGE_DELETED, deletedString));
-			writeToJson();
+			if (checkDeleteInput(inputNumber)) {
+				int inputIndex = Integer.parseInt(inputNumber);
+				inputIndex = tasksMap.get(inputIndex-1);			// get the actual index
+				tasks.get(inputIndex).setMarkAsDelete();
+				this.populateTasksMapWithDefaultCriteria();
+				syncTasks();
+			}
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < tasks.size(); i++) {
-				sb.append(tasks.get(i).getTaskDescription());
+				if (tasks.get(i).getMarkAsDelete()) {
+					int index = i + 1;
+					sb.append("task" + index + "deleted");
+				} else {
+					int index = i + 1;
+					sb.append("task" + index + "notdeleted");
+				}
 			}
 			return sb.toString();
 		} else {
 			return FEEDBACK;
 		}
+	}
 
+	private void syncTasks() {
+		this.storage.writeTasks(tasks);
 	}
 }

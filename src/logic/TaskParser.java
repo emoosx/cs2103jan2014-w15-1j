@@ -108,7 +108,6 @@ public class TaskParser {
 
 		for (DateGroup group : groups) {
 			dates = group.getDates();
-			//int line = group.getLine();
 			matchingValue = group.getText();
 			System.out.print("Matching Value::\t" + matchingValue+ ". ");
 			for(Date date : dates) {
@@ -146,6 +145,9 @@ public class TaskParser {
                 int[] time = RegExp.timeFromTimeString(timeArray.get(0));
                 mutableEndDateTime.setTime(time[0], time[1], 0, 0);
                 PandaLogger.getLogger().info("MutableEndDateTime:" + mutableEndDateTime);
+			}
+			else if(timeArray.size() == 2) {
+				mutableStartDateTime = new MutableDateTime(dates.get(1));
 			}
 		} else if(dates.size() == 2) {
 			//PandaLogger.getLogger().info("Date.size() = 2");
