@@ -9,7 +9,27 @@ public class Command {
 	public COMMAND_TYPE command;
 
 	public enum COMMAND_TYPE {
-		ADD, LIST, EDIT, UNDO, ARCHIVE, CLEAR, DONEALL, ARCHIVEALL, DELETE, HELP, INVALID
+		ADD ("add"), 
+		LIST ("list"), 
+		EDIT ("edit"), 
+		UNDO ("undo"), 
+		ARCHIVE ("archive"), 
+		CLEAR ("clear"), 
+		DONEALL ("doneall"), 
+		ARCHIVEALL ("archiveall"), 
+		DELETE ("delete"), 
+		HELP ("help"), 
+		INVALID ("invalid");
+		
+		private String commandName;
+
+		private COMMAND_TYPE(String commandName) {
+			this.commandName = commandName;
+		}
+		
+		private String getCommandName() {
+			return commandName;
+		}
 	}
 
 	// Constructor Method
@@ -33,7 +53,7 @@ public class Command {
 		this.command = determineCommandType(rawText[INDEX_COMMAND]);
 	}
 
-	// Method splits raw user input into command and user input
+	/* splits raw user input into (Command + user input) */
 	private String[] stripCommand(String commandText) {
 		assert(commandText != null);
 		String cmd, rawText;
@@ -55,29 +75,29 @@ public class Command {
 	// Method will determine command type given user command
 	private COMMAND_TYPE determineCommandType(String command) {
 		assert(command != null);
-		if(command.equalsIgnoreCase("add")) {
+		if(command.equalsIgnoreCase(COMMAND_TYPE.ADD.getCommandName())) {
 			return COMMAND_TYPE.ADD;
-		} else if (command.equalsIgnoreCase("list")) {
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.LIST.getCommandName())) {
 			return COMMAND_TYPE.LIST;
-		} else if (command.equalsIgnoreCase("edit")) {
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.EDIT.getCommandName())) {
 			return COMMAND_TYPE.EDIT;
-		} else if (command.equalsIgnoreCase("undo")) {
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.UNDO.getCommandName())) {
 			return COMMAND_TYPE.UNDO;
-		} else if (command.equalsIgnoreCase("archive")) {
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.ARCHIVE.getCommandName())) {
 			return COMMAND_TYPE.ARCHIVE;
-		} else if (command.equalsIgnoreCase("clear")) {
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.CLEAR.getCommandName())) {
 			return COMMAND_TYPE.CLEAR;
-		} else if (command.equalsIgnoreCase("doneall")) {
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.DONEALL.getCommandName())) {
 			return COMMAND_TYPE.DONEALL;
-		} else if (command.equalsIgnoreCase("archiveall")) {
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.ARCHIVEALL.getCommandName())) {
 			return COMMAND_TYPE.ARCHIVEALL;
-		} else if (command.equalsIgnoreCase("delete")) {
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.DELETE.getCommandName())) {
 			return COMMAND_TYPE.DELETE;
 		}
 		return COMMAND_TYPE.INVALID; 
 	}
-	
+
 	public String toString() {
-		return this.rawText;
+		return command.getCommandName() + " " + this.rawText;
 	}
 }
