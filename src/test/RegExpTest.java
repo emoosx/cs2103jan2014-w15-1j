@@ -40,11 +40,29 @@ public class RegExpTest {
 	public void testDateRegexDeadline() {
 		assertEquals("14-2-2014", RegExp.parseDate("add haha on 14-2-2014").get(0));
 		assertEquals("14-2-2014", RegExp.parseDate("add haha on 14-2-2014").get(0));
+		assertEquals("14 march 2014", RegExp.parseDate("add haha on 14 march 2014").get(0));
+		assertEquals("14 mar 2014", RegExp.parseDate("add haha on 14 mar 2014").get(0));
+		assertEquals("14 march 14", RegExp.parseDate("add haha on 14 march 14").get(0));
+		assertEquals("14 march", RegExp.parseDate("add haha on 14 march").get(0));
 	}
 	
 	@Test
 	public void testGetStringFromDateString() {
+		int[] date = new int[999];
+		date = RegExp.dateFromDateString("12 march 2014");
+		assertEquals(12,date[0]);
+		assertEquals(3,date[1]);
+		assertEquals(2014,date[2]);
 		
+		date = RegExp.dateFromDateString("12 MAR 14");
+		assertEquals(12,date[0]);
+		assertEquals(3,date[1]);
+		assertEquals(2014,date[2]);
+		
+		date = RegExp.dateFromDateString("31 JaN 14");
+		assertEquals(31,date[0]);
+		assertEquals(1,date[1]);
+		assertEquals(2014,date[2]);
 	}
 	
 	@Test
@@ -104,6 +122,23 @@ public class RegExpTest {
 	
 	@Test
 	public void testParseHashtag() {
-		assertEquals("#work", RegExp.parseHashtag("add ##### on 2/2/2014 from 2pm to 3pm #work"));
+		ArrayList<String> hashtags = new ArrayList<String>();
+		hashtags.add("#work");
+		assertEquals(hashtags, RegExp.parseHashtag("add ##### on 2/2/2014 from 2pm to 3pm #work"));
+	}
+	
+	@Test
+	public void testChangeDateFormat() {
+		assertEquals("2/22/2014", RegExp.changeDateFormat("22/2/2014"));
+		assertEquals("2/10/2014", RegExp.changeDateFormat("10/2/2014"));
+		assertEquals("10/10/2014", RegExp.changeDateFormat("10/10/2014"));
+		assertEquals("meeting on 2/22/2014", RegExp.changeDateFormat("meeting on 22/2/2014"));
+		assertEquals("from 1/11/2014 to 1/12/2014", RegExp.changeDateFormat("from 11/1/2014 to 12/1/2014"));
+		assertEquals("3/2/2014", RegExp.changeDateFormat("2/3/2014"));
+	}
+	
+	@Test
+	public void testMonthIndex() {
+		assertEquals(3, RegExp.getMonthIndex("march"));
 	}
 }

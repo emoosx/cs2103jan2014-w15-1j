@@ -108,7 +108,6 @@ public class TaskParser {
 
 		for (DateGroup group : groups) {
 			dates = group.getDates();
-			//int line = group.getLine();
 			matchingValue = group.getText();
 			System.out.print("Matching Value::\t" + matchingValue+ ". ");
 			for(Date date : dates) {
