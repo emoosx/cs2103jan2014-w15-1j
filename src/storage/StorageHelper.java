@@ -20,20 +20,20 @@ import common.PandaLogger;
 
 import core.Task;
 
+/* A singleton class to handle the persistence of Task objects
+ */
 public class StorageHelper {
 
-	// A singleton class
 	public static StorageHelper INSTANCE = new StorageHelper();
 
 	protected static final String FILENAME = "data.json";
-	private static final String ERROR_FILE_CREATION = "Error in file creation";
-	private static final String ERROR_TASK_ADDITION = "Error in task addition";
+	private static final String ERROR_FILE_CREATION = "Error in file creation of " + FILENAME;
+	private static final String ERROR_TASK_WRITE = "Error in writing tasks to " + FILENAME;
 	private static final String ERROR_FILE_IO = "Error in File IO";
 
 	private Gson gson;
 	private File file;
 
-	// Constructor method
 	private StorageHelper() {
 		this.file = createOrGetFile(FILENAME);
 		this.gson = new GsonBuilder()
@@ -49,7 +49,7 @@ public class StorageHelper {
 				this.file), "UTF-8")) {
 			gson.toJson(t, writer);
 		} catch (IOException e) {
-			throw new Error(ERROR_TASK_ADDITION);
+			throw new Error(ERROR_TASK_WRITE);
 		}
 	}
 
@@ -66,15 +66,6 @@ public class StorageHelper {
 	public ArrayList<Task> getAllTasks() {
 		PandaLogger.getLogger().info("getAllTasks");
 		ArrayList<Task> tasks = null;
-		// try{
-		// BufferedReader br = new BufferedReader(new FileReader(this.file));
-		// tasks = this.gson.fromJson(br, new
-		// TypeToken<List<Task>>(){}.getType());
-		// PandaLogger.getLogger().info(String.valueOf(tasks.size()));
-		// } catch(Exception e) {
-		// e.printStackTrace();
-		// throw new Error(ERROR_FILE_IO);
-		// }
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(this.file));
 			tasks = this.gson.fromJson(br, new TypeToken<List<Task>>() {
@@ -102,7 +93,6 @@ public class StorageHelper {
 		return file;
 	}
 
-	// Method clears all content of file
 	public void clearFile() {
 		file.delete();
 		this.file = createOrGetFile(FILENAME);

@@ -20,7 +20,7 @@ import common.PandaLogger;
 
 import core.Task;
 
-/* A singleton class to handle the persistence of Commands
+/* A singleton class to handle the persistence of Command objects
  * to support Undo/Redo feature
  */
 public class UndoStorage {
