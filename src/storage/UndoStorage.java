@@ -9,87 +9,66 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
-import org.joda.time.DateTime;
+import logic.Command;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import common.DateTimeTypeConverter;
 import common.PandaLogger;
 
 import core.Task;
 
+/* A singleton class to handle the persistence of Commands
+ * to support Undo/Redo feature
+ */
 public class UndoStorage {
 
-	// A singleton class
 	public static UndoStorage INSTANCE = new UndoStorage();
 
 	protected static final String FILENAME = "undoData.json";
-	private static final String ERROR_FILE_CREATION = "Error in file creation";
-	private static final String ERROR_TASK_ADDITION = "Error in task addition";
+	private static final String ERROR_FILE_CREATION = "Error in file creation of " + FILENAME;
+	private static final String ERROR_COMMAND_WRITE = "Error in writing commands to " + FILENAME;
 	private static final String ERROR_FILE_IO = "Error in File IO";
 
 	private Gson gson;
 	private File file;
 
-	// Constructor method
 	private UndoStorage() {
 		this.file = createOrGetFile(FILENAME);
 		this.gson = new GsonBuilder()
-				.registerTypeAdapter(DateTime.class,
-						new DateTimeTypeConverter())
 				.enableComplexMapKeySerialization().create();
 	}
-
-	public void writeTasks(List<Task> t) {
-		PandaLogger.getLogger().info(
-				"writeTasks: Length of Task array = " + t.size());
-		try (Writer writer = new OutputStreamWriter(new FileOutputStream(
+	
+	public void writeCommands(Stack<Command> c) {
+		PandaLogger.getLogger().info("writeCommands");
+		PandaLogger.getLogger().info("Total Commands to DB:" + c.size());
+		try(Writer writer = new OutputStreamWriter(new FileOutputStream(
 				this.file), "UTF-8")) {
-			gson.toJson(t, writer);
-		} catch (IOException e) {
-			throw new Error(ERROR_TASK_ADDITION);
+			gson.toJson(c, writer);
+		} catch(IOException e) {
+			throw new Error(ERROR_COMMAND_WRITE);
 		}
 	}
 
-	// public ArrayList<Task> getAll() {
-	// try(Reader reader = new
-	// InputStreamReader(JsonToJava.class.getResourceAsStream(this.file),
-	// "UTF-8")) {
-	// Gson gson = new GsonBuilder().create();
-	// } catch(IOException e) {
-	// throw new Error(ERROR_FILE_IO);
-	// }
-	// }
-
-	public ArrayList<Task> getAllTasks() {
-		PandaLogger.getLogger().info("getAllTasks");
-		ArrayList<Task> tasks = null;
-		// try{
-		// BufferedReader br = new BufferedReader(new FileReader(this.file));
-		// tasks = this.gson.fromJson(br, new
-		// TypeToken<List<Task>>(){}.getType());
-		// PandaLogger.getLogger().info(String.valueOf(tasks.size()));
-		// } catch(Exception e) {
-		// e.printStackTrace();
-		// throw new Error(ERROR_FILE_IO);
-		// }
+	public Stack<Command> getAllCommands() {
+		PandaLogger.getLogger().info("getAllCommands");
+		Stack<Command> commands = null;
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(this.file));
-			tasks = this.gson.fromJson(br, new TypeToken<List<Task>>() {
+			commands = this.gson.fromJson(br, new TypeToken<Stack<Command>>(){
 			}.getType());
-			if (tasks == null) {
-				return new ArrayList<Task>();
+			if(commands == null) {
+				return new Stack<Command>();
 			}
-			PandaLogger.getLogger().info(String.valueOf(tasks.size()));
-		} catch (Exception e) {
-			e.printStackTrace();
+			PandaLogger.getLogger().info("Total Commands From DB:" + commands.size());
+		} catch(Exception e) {
 			throw new Error(ERROR_FILE_IO);
 		}
-		return tasks;
+		return commands;
 	}
-
+	
 	private File createOrGetFile(String filename) {
 		file = new File(filename);
 		if (!file.isFile()) {
@@ -102,7 +81,6 @@ public class UndoStorage {
 		return file;
 	}
 
-	// Method clears all content of file
 	public void clearFile() {
 		file.delete();
 		this.file = createOrGetFile(FILENAME);
