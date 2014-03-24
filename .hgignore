@@ -5,6 +5,8 @@ bin/
 .swo
 .swp
 *.json
+*.png
+*.ucls
 .settings/
 .classpath
 panda.log*

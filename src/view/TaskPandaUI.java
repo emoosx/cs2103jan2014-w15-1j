@@ -90,7 +90,6 @@ public class TaskPandaUI extends JFrame {
 
 		JScrollPane scrollPane = new JScrollPane(table);
 		bottomPanel.add(scrollPane);
-		// basic.add(bottomPanel);
 
 		add(basic);
 		pack();

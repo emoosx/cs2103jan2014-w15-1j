@@ -13,13 +13,13 @@ import org.joda.time.DateTime;
 
 public class Task {
 
-//	protected int taskID;
+	private int taskID;
 	private String rawText;
-	protected String taskDescription;
-	protected ArrayList<String> taskTags;			// tags are in lowercase
-	protected DateTime startDateTime;
-	protected DateTime endDateTime;
-	protected boolean taskDone;
+	private String taskDescription;
+	private ArrayList<String> taskTags;			// tags are in lowercase
+	private DateTime startDateTime;
+	private DateTime endDateTime;
+	private boolean taskDone;
 	private DateTime taskCreatedTimestamp; 
 	//private boolean hasAlias;
 	private boolean markAsDelete;
@@ -48,13 +48,10 @@ public class Task {
 		taskTags = parser.getHashTag();
 	}
 	
-//	public int getID() {
-//		return this.taskID;
-//	}
-//
-//	public void setID(int id) {
-//		this.taskID = id;
-//	}
+	public void setID(int id) {
+		this.taskID = id;
+	}
+
 	public void setTaskDescription(String tDesc){
 		this.taskDescription = tDesc;
 	}
