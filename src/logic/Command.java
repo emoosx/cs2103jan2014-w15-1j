@@ -2,8 +2,8 @@ package logic;
 
 public class Command {
 	
-	private final int INDEX_COMMAND = 0;
-	private final int INDEX_RAWTEXT = 1;
+	private static final int INDEX_COMMAND = 0;
+	private static final int INDEX_RAWTEXT = 1;
 
 	public String rawText;
 	public COMMAND_TYPE command;
@@ -32,7 +32,6 @@ public class Command {
 		}
 	}
 
-	// Constructor Method
 	public Command(String commandText) {
 		this.rawText = commandText;
 		this.command = COMMAND_TYPE.INVALID;
@@ -72,7 +71,7 @@ public class Command {
 		return ans;
 	}
 
-	// Method will determine command type given user command
+	/* determine command type given user command */
 	private COMMAND_TYPE determineCommandType(String command) {
 		assert(command != null);
 		if(command.equalsIgnoreCase(COMMAND_TYPE.ADD.getCommandName())) {
