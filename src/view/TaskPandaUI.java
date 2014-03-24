@@ -90,7 +90,6 @@ public class TaskPandaUI extends JFrame {
 
 		JScrollPane scrollPane = new JScrollPane(table);
 		bottomPanel.add(scrollPane);
-		// basic.add(bottomPanel);
 
 		add(basic);
 		pack();
@@ -111,6 +110,8 @@ public class TaskPandaUI extends JFrame {
 			basic.repaint();
 			pack();
 			tableModel.fireTableDataChanged();
+			basic.revalidate();
+			basic.repaint();
 		} else {
 			inputField.setBorder(BorderFactory.createLineBorder(Color.decode("#ff0000")));
 			inputField.setPlaceholder("Invalid Command!");

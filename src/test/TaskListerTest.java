@@ -2,14 +2,9 @@ package test;
 
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import logic.CommandFactory;
-import logic.TaskLister;
 
 import org.junit.Test;
 
