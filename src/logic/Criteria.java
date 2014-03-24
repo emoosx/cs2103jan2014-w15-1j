@@ -38,6 +38,67 @@ public class Criteria {
 		return result;
 	}
 	
+
+	public static ArrayList<Integer> getAllUndeletedFloatingTasks(List <Task> tasks) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		for(Task t: tasks){
+			if(t.getMarkAsDelete() == false) {
+				if(t.getTaskStartTime() == null && t.getTaskEndTime()== null)
+				result.add(tasks.indexOf(t));
+			}
+		}
+		return result;
+	}
+	
+	public static ArrayList<Integer> getAllFloatingTasks(List <Task> tasks) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		for(Task t: tasks){
+				if(t.getTaskStartTime() == null && t.getTaskEndTime()== null)
+				result.add(tasks.indexOf(t));
+			}
+		return result;
+	}
+	
+	public static ArrayList<Integer> getAllUndeletedTimedTasks(List <Task> tasks, String keyword) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		for(Task t: tasks){
+			if(t.getMarkAsDelete() == false) {
+				if(t.getTaskStartTime() != null && t.getTaskEndTime() != null)
+				result.add(tasks.indexOf(t));
+			}
+		}
+		return result;
+	}
+	
+	public static ArrayList<Integer> getAllTimedTasks(List <Task> tasks, String keyword) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		for(Task t: tasks){
+				if(t.getTaskStartTime() != null && t.getTaskEndTime() != null)
+				result.add(tasks.indexOf(t));		
+		}
+		return result;
+	}
+	
+	public static ArrayList<Integer> getAllUndeletedDeadlineTasks(List <Task> tasks, String keyword) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		for(Task t: tasks){
+			if(t.getMarkAsDelete() == false) {
+				if(t.getTaskStartTime() == null && t.getTaskEndTime() != null)
+				result.add(tasks.indexOf(t));
+			}
+		}
+		return result;
+	}
+	
+	public static ArrayList<Integer> getAllDeadlineTasks(List <Task> tasks, String keyword) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		for(Task t: tasks){
+				if(t.getTaskStartTime() == null && t.getTaskEndTime() != null)
+				result.add(tasks.indexOf(t));
+		}
+		return result;
+	}
+	
 	public static ArrayList<Integer> getAllTaskforToday(List<Task> tasks) {
 		return new ArrayList<Integer>();
 	}
@@ -46,7 +107,5 @@ public class Criteria {
 		return new ArrayList<Integer>();
 	}
 	
-	public static ArrayList<Integer> getAllTasksContainingKeyword(List <Task> tasks, String keyword) {
-		return new ArrayList<Integer>();
-	}
+	
 }
