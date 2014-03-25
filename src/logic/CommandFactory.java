@@ -79,7 +79,7 @@ public class CommandFactory {
 	
 	/* by default, display tasks which are not marked as deleted */
 	private void populateTasksMapWithDefaultCriteria() {
-		ArrayList<Integer> undeletedTasksIDs = Criteria.getAllUndeletedTasks(tasks);
+		//ArrayList<Integer> undeletedTasksIDs = Criteria.getAllUndeletedTasks(tasks);
 		for(int i = 0; i < undeletedTasksIDs.size(); i++) {
 			this.tasksMap.put(i, undeletedTasksIDs.get(i));
 		}
