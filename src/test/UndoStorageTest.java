@@ -97,5 +97,4 @@ public class UndoStorageTest {
 		testStack.push(new AbstractMap.SimpleEntry<Integer, String>(4, "ccc"));
 		assertEquals("[1=aaa, 2=bbb, 3=ccc, 4=ddd, 4=edit woohoo, 4=ccc]", testStack.toString());
 	}
-
 }
