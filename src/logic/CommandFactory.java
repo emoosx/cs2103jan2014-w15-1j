@@ -395,6 +395,7 @@ public class CommandFactory {
 	}
 
 	private void syncTasks() {
+		this.undoStorage.writeCommands(undoStack);
 		this.storage.writeTasks(tasks);
 	}
 }
