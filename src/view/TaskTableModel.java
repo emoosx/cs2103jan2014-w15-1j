@@ -30,7 +30,6 @@ public class TaskTableModel extends AbstractTableModel {
 	public TaskTableModel() {
 		l = CommandFactory.INSTANCE.getTasks();
 		map = CommandFactory.INSTANCE.getTasksMap();
-		PandaLogger.getLogger().info("TaskTableModel: " + l.size());
 	}
 
 	@Override
@@ -52,7 +51,6 @@ public class TaskTableModel extends AbstractTableModel {
 	public boolean isCellEditable(int row, int col) {
 		return false;
 	}
-	
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {

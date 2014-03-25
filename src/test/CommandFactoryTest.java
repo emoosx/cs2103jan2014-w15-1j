@@ -40,10 +40,11 @@ public class CommandFactoryTest {
 		map.put(4,4);
 		map.put(5,5);
 		map.put(6,6);
-		System.out.println("Before:"+ map);
-		map = updateHashMapAfterDelete(map, 3);
+		map = updateHashMapAfterDelete2(map, 3);
 		System.out.println("After:"+ map);
-		fail("to be");
+		assertEquals("{0=0, 1=1, 2=2, 3=4, 4=5, 5=6}", map.toString());
+		map = updateHashMapAfterDelete2(map, 2);
+		assertEquals("{0=0, 1=1, 2=4, 3=5, 4=6}", map.toString());
 	}
 	
 	private LinkedHashMap<Integer, Integer> updateHashMapAfterDelete(LinkedHashMap<Integer, Integer> tasksMap, int fakeid) {
@@ -65,5 +66,17 @@ public class CommandFactoryTest {
 		}
 	 return temp;
 	}
-
+	
+	private LinkedHashMap<Integer, Integer> updateHashMapAfterDelete2(LinkedHashMap<Integer, Integer> tasksMap, int fakeid) {
+		LinkedHashMap<Integer, Integer> temp = new LinkedHashMap<Integer, Integer>();
+		for(int i = 0; i < tasksMap.size(); i++) {
+			if(i < fakeid) {
+				temp.put(i, tasksMap.get(i));
+			} else {
+				temp.put(i, tasksMap.get(i+1));
+			}
+		}
+		temp.remove(tasksMap.size()-1);
+		return temp;
+	}
 }
