@@ -359,7 +359,12 @@ public class RegExp {
 			return 10;
 		} else if(month.equals("nov") || month.equals("november")) {
 			return 11;
-		} else 
+		} else if(month.equals("dec") || month.equals("december")) {
 			return 12;
+		}
+		
+		// asserting false because parameter should be a valid date string
+		assert(false);
+		return -1;
 	}
 }
