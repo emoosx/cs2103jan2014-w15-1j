@@ -20,6 +20,7 @@ public class RegExpTest {
 		assertEquals("01:59", RegExp.parseTime("add haha by 01:59 14/2/2014").get(0));
 		assertEquals("2359", RegExp.parseTime("add haha by 2359 on 14-2-2014").get(0));
 		
+		// Boundary case for invalid input
 		ArrayList<String> list = new ArrayList<String>();
 		assertEquals(list, RegExp.parseTime("add haha by 1:59 on 14-2-2014"));
 	}
@@ -123,6 +124,17 @@ public class RegExpTest {
 	
 	@Test
 	public void testParseDescription() {
+		
+		// Partitioned test cases: floating tasks
+		assertEquals("meeting", RegExp.parseDescription("meeting"));
+		assertEquals("wash car", RegExp.parseDescription("wash car"));
+		
+		// Partitioned test cases: deadline tasks
+		assertEquals("add meeting", RegExp.parseDescription("add meeting by 10pm"));
+		assertEquals("meeting", RegExp.parseDescription("meeting by 2359"));
+		assertEquals("2pm concert", RegExp.parseDescription("2pm concert by 10:45pm"));
+		
+		// Partitioned test cases: timed tasks
 		assertEquals("add meeting", RegExp.parseDescription("add meeting from 5pm to 6pm"));
 		assertEquals("add from to from to", RegExp.parseDescription("add from to from to from 5:15pm to 6:15pm"));
 		assertEquals("add meeting", RegExp.parseDescription("add meeting on 14-2-2014 from 5pm to 6pm"));
@@ -133,8 +145,12 @@ public class RegExpTest {
 		ArrayList<String> hashtags = new ArrayList<String>();
 		hashtags.add("#work");
 		assertEquals(hashtags, RegExp.parseHashtag("add ##### on 2/2/2014 from 2pm to 3pm #work"));
+		
+		hashtags = new ArrayList<String>();
+		assertEquals(hashtags, RegExp.parseHashtag("add ##### on 2/2/2014 from 2pm to 3pm"));
 	}
 	
+	/*
 	@Test
 	public void testChangeDateFormat() {
 		assertEquals("2/22/2014", RegExp.changeDateFormat("22/2/2014"));
@@ -144,6 +160,7 @@ public class RegExpTest {
 		assertEquals("from 1/11/2014 to 1/12/2014", RegExp.changeDateFormat("from 11/1/2014 to 12/1/2014"));
 		assertEquals("3/2/2014", RegExp.changeDateFormat("2/3/2014"));
 	}
+	*/
 	
 	@Test
 	public void testMonthIndex() {
