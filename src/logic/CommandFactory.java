@@ -1,5 +1,6 @@
 package logic;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Stack;
 import java.util.logging.Logger;
 
 import storage.StorageHelper;
+import storage.UndoStorage;
 
 import common.PandaLogger;
 
@@ -22,6 +24,7 @@ public class CommandFactory {
 
 	private static Integer NUMBER_TASK_INDEX = 0;
 	private static Integer EDIT_OFFSET = 1;
+	private static Integer OFFSET = 1;
 
 	private static String FEEDBACK;
 	String userInputDesc;
@@ -48,15 +51,17 @@ public class CommandFactory {
 	private LinkedHashMap<Integer, Integer> tasksMap;
 
 	private StorageHelper storage;
+	private UndoStorage undoStorage;
 	private Logger logger = PandaLogger.getLogger();
 
-	private Stack<Command> undoStack;
+	private Stack<SimpleEntry<Integer, Command>> undoStack;
 
 	private CommandFactory() {
 		this.tasks = new ArrayList<Task>();
-		this.undoStack = new Stack<Command>();
-		this.tasksMap = new LinkedHashMap<Integer, Integer>();
+		this.undoStack = new Stack<SimpleEntry<Integer, Command>>();
+		this.tasksMap = new LinkedHashMap<Integer, Integer>(); // <ID to display, real ID in tasks>
 		this.storage = StorageHelper.INSTANCE;
+		this.undoStorage = UndoStorage.INSTANCE;
 		this.fetch();
 	}
 	
@@ -69,8 +74,7 @@ public class CommandFactory {
 
 	// initialize and populate undoStack
 	private void populateUndoStack() {
-		this.undoStack = new Stack<Command>();
-		// this.undoStack = this.undoStorage.getAllCommands();
+		this.undoStack = this.undoStorage.getAllCommands();
 	}
 	
 	/* by default, display tasks which are not marked as deleted */
@@ -97,15 +101,13 @@ public class CommandFactory {
 		assert (command.rawText != null);
 		switch (command.command) {
 		case ADD:
-			doAdd(command.rawText);
-			this.undoStack.push(command);
+			doAdd(command);
 			break;
 		case LIST:
-			doList(command.rawText);
+			doList(command);
 			break;
 		case EDIT:
-			doEdit(command.rawText);
-			this.undoStack.push(command);
+			doEdit(command);
 			break;
 		case UNDO:
 			doUndo();
@@ -119,8 +121,7 @@ public class CommandFactory {
 		case ARCHIVEALL:
 			break;
 		case DELETE:
-			doDelete(command.rawText);
-			this.undoStack.push(command);
+			doDelete(command);
 			break;
 		case HELP:
 			break;
@@ -131,42 +132,52 @@ public class CommandFactory {
 
 	private void doUndo() {
 		logger.info("doUndo");
-		Command lastCommand = this.undoStack.pop();
-		logger.info(lastCommand.toString());
-		executeUndo(lastCommand);
+		SimpleEntry<Integer, Command> lastEntry = this.undoStack.pop();
+		int taskid = lastEntry.getKey();
+		Command lastCommand = lastEntry.getValue();
+		logger.info("Last Command:" + lastCommand.toString());
+		executeUndo(taskid, lastCommand);
 		syncTasks();
 	}
 
-	private void executeUndo(Command command) {
+	private void executeUndo(int taskid, Command command) {
 		assert (command.rawText == null);
 		switch (command.command) {
 		case ADD:
-			doDelete(String.valueOf(this.tasks.size()));
+			doUndoAdd(taskid, command);
 			break;
 		case EDIT:
+			doUndoEdit(taskid, command);
 			break;
 		case DELETE:
+			doUndoDelete(taskid, command);
 			break;
 		default:
 			return;
 		}
 	}
 
-	private void doAdd(String rawText) {
-		assert (rawText!=null);
-		Task newTask = new Task(rawText);
+	private void doAdd(Command command) {
+		assert (command.rawText!=null);
+		Task newTask = new Task(command.rawText);
 		this.tasks.add(newTask);
 		this.populateTasksMapWithDefaultCriteria();		// regenerate the TaskMap
+		this.undoStack.push(new SimpleEntry<Integer, Command>(this.tasks.size() - OFFSET, command));
 		syncTasks();
 	}
+	
+	private void doUndoAdd(int taskid, Command command) {
+		
+	}
 
-	private void doList(String rawText) {
+	private void doList(Command command) {
 		logger.info("doList");
 //		this.populateTasksMapWithDefaultCriteria();
 	}
 
 	/* remove the original task from tasksMap and replace it with new task */
-	private void doEdit(String userInput) {
+	private void doEdit(Command command) {
+		String userInput = command.rawText;
 		assert (userInput != null);
 		this.logger.info("doEdit:" + userInput);
 		if (checkEditIndexInput(userInput)) {
@@ -175,10 +186,16 @@ public class CommandFactory {
 			this.tasks.set(tasksMap.get(taskInt), editTask);
 			syncTasks();
 		}
+		
+		// push the command with the id
 	}
 	
-
-	private void doDelete(String inputNumber) {
+	private void doUndoEdit(int taskid, Command command) {
+		
+	}
+	
+	private void doDelete(Command command) {
+		String inputNumber = command.rawText;
 		assert (inputNumber != null);
 		this.logger.info("doDelete:" + inputNumber);
 		if (checkDeleteInput(inputNumber)) {
@@ -188,6 +205,12 @@ public class CommandFactory {
 			this.populateTasksMapWithDefaultCriteria();
 			syncTasks();
 		}
+		
+		// push the command with the id
+	}
+	
+	private void doUndoDelete(int taskid, Command command) {
+		
 	}
 
 	// Method to check delete parameter
