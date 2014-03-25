@@ -1,8 +1,15 @@
 package logic;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.joda.time.MutableDateTime;
+
+import com.joestelmach.natty.DateGroup;
+import com.joestelmach.natty.Parser;
 
 import common.PandaLogger;
 
@@ -116,10 +123,19 @@ public class RegExp {
     		return date;
     	}
     	
-    	/*
     	// Case 3: pure text based relative dates (e.g. next Monday)
-    	return date;
-    	*/
+    	if(dateString.matches(REGEX_DATESTRING_PATTERN_3)) {
+    		Parser parser = new Parser();
+    		List<DateGroup> groups = parser.parse(dateString);
+    		for(DateGroup group: groups) {
+    			List<Date> dates = group.getDates();
+    			MutableDateTime tempDate = new MutableDateTime(dates.get(0));
+    			date[0] = tempDate.getDayOfMonth();
+    			date[1] = tempDate.getMonthOfYear();
+    			date[2] = tempDate.getYear();
+    		}
+    		return date;
+    	}
     	
     	// asserting false because code should not reach here due to initial pattern filtering for date inputs
     	assert(false);
@@ -211,7 +227,8 @@ public class RegExp {
     	pattern = Pattern.compile(regexDateArray[INDEX_THIRD_CASE]);
     	matcher = pattern.matcher(userInput);
     	if(matcher.find()) {
-    		
+    		dateArray.add(matcher.group(3));
+    		return dateArray;
     	}
     	
     	// Returning empty date array indicates that user input produces 0 date parameter
