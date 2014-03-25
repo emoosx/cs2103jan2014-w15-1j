@@ -64,6 +64,22 @@ public class RegExpTest {
 		assertEquals(1,date[1]);
 		assertEquals(2014,date[2]);
 		
+		date = RegExp.dateFromDateString("12-2-2014");
+		assertEquals(12,date[0]);
+		assertEquals(2,date[1]);
+		assertEquals(2014,date[2]);
+		
+		date = RegExp.dateFromDateString("12/2/2014");
+		assertEquals(12,date[0]);
+		assertEquals(2,date[1]);
+		assertEquals(2014,date[2]);
+		
+		date = RegExp.dateFromDateString("a/2/2014");
+		assertEquals(null, date);
+		
+		date = RegExp.dateFromDateString("31/14/9999");
+		assertEquals(null, date);
+		
 		/*
 		date = RegExp.dateFromDateString("next monday");
 		assertEquals(31,date[0]);
@@ -106,26 +122,6 @@ public class RegExpTest {
 	}
 	
 	@Test
-	public void testGetDateFromDateString() {
-		int[] date = new int[999];
-		date = RegExp.dateFromDateString("12-2-2014");
-		assertEquals(12,date[0]);
-		assertEquals(2,date[1]);
-		assertEquals(2014,date[2]);
-		
-		date = RegExp.dateFromDateString("12/2/2014");
-		assertEquals(12,date[0]);
-		assertEquals(2,date[1]);
-		assertEquals(2014,date[2]);
-		
-		date = RegExp.dateFromDateString("a/2/2014");
-		assertEquals(null, date);
-		
-		date = RegExp.dateFromDateString("31/14/9999");
-		assertEquals(null, date);
-	}
-	
-	@Test
 	public void testParseDescription() {
 		assertEquals("add meeting", RegExp.parseDescription("add meeting from 5pm to 6pm"));
 		assertEquals("add from to from to", RegExp.parseDescription("add from to from to from 5:15pm to 6:15pm"));
@@ -151,6 +147,10 @@ public class RegExpTest {
 	
 	@Test
 	public void testMonthIndex() {
+		assertEquals(1, RegExp.getMonthIndex("jan"));
+		assertEquals(1, RegExp.getMonthIndex("JAN"));
+		assertEquals(1, RegExp.getMonthIndex("january"));
+		assertEquals(1, RegExp.getMonthIndex("JANUARY"));
 		assertEquals(3, RegExp.getMonthIndex("march"));
 	}
 }
