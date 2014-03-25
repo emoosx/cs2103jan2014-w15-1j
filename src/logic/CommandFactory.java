@@ -2,8 +2,10 @@ package logic;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.logging.Logger;
 
@@ -167,7 +169,13 @@ public class CommandFactory {
 	}
 	
 	private void doUndoAdd(int taskid, Command command) {
-		
+		// remove it from the buffer
+		// remove the entry from the map
+		this.tasks.remove(taskid);
+		Integer fakeID = getFakeIDbyRealId(taskid);
+		assert(fakeID != null);
+		this.tasksMap.remove(fakeID);
+		syncTasks();
 	}
 
 	private void doList(Command command) {
@@ -196,15 +204,18 @@ public class CommandFactory {
 	
 	private void doDelete(Command command) {
 		String inputNumber = command.rawText;
+		System.out.println(inputNumber);
 		assert (inputNumber != null);
 		this.logger.info("doDelete:" + inputNumber);
 		if (checkDeleteInput(inputNumber)) {
-			int inputIndex = Integer.parseInt(inputNumber);
-			inputIndex = tasksMap.get(inputIndex-1);			// get the actual index
+			int inputIndex = Integer.parseInt(inputNumber);			// still fake id
+			this.updateHashMapAfterDelete(inputIndex);
+			inputIndex = tasksMap.get(inputIndex-OFFSET);			// get the actual index
 			tasks.get(inputIndex).setMarkAsDelete();
-			this.populateTasksMapWithDefaultCriteria();
 			syncTasks();
 		}
+		System.out.println(tasksMap);
+		
 		
 		// push the command with the id
 	}
@@ -393,9 +404,40 @@ public class CommandFactory {
 			return FEEDBACK;
 		}
 	}
+	
+
+	private Integer getFakeIDbyRealId(int realid) {
+		Integer removalKey = null;
+		for(Entry<Integer, Integer> entry: tasksMap.entrySet()) {
+			if(realid == entry.getValue()) {
+				removalKey = entry.getKey();
+			}
+		}
+		return removalKey;
+	}
 
 	private void syncTasks() {
 		this.undoStorage.writeCommands(undoStack);
 		this.storage.writeTasks(tasks);
+	}
+	
+	private void updateHashMapAfterDelete(int fakeid) {
+		LinkedHashMap<Integer, Integer> temp  = new LinkedHashMap<Integer, Integer>();
+
+		Iterator<Entry<Integer, Integer>> it = this.tasksMap.entrySet().iterator();
+		while(it.hasNext()) {
+			Entry<Integer, Integer> pair = (Entry<Integer, Integer>)it.next();
+			if(pair.getKey() < fakeid) {
+				temp.put(pair.getKey(), pair.getValue());
+			} else {
+				if(it.hasNext()) {
+                    int key = pair.getKey();
+                    Entry<Integer, Integer> next = (Entry<Integer, Integer>)it.next();
+                    int value = next.getValue();
+                    temp.put(key, value);
+				}
+			}
+		}
+		this.tasksMap = temp;
 	}
 }
