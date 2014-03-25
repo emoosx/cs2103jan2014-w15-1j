@@ -47,7 +47,7 @@ public class RegExpTest {
 	}
 	
 	@Test
-	public void testGetStringFromDateString() {
+	public void testGetDateFromDateString() {
 		int[] date = new int[999];
 		date = RegExp.dateFromDateString("12 march 2014");
 		assertEquals(12,date[0]);
@@ -63,6 +63,18 @@ public class RegExpTest {
 		assertEquals(31,date[0]);
 		assertEquals(1,date[1]);
 		assertEquals(2014,date[2]);
+		
+		/*
+		date = RegExp.dateFromDateString("next monday");
+		assertEquals(31,date[0]);
+		assertEquals(3,date[1]);
+		assertEquals(2014,date[2]);
+		
+		date = RegExp.dateFromDateString("next friday");
+		assertEquals(4,date[0]);
+		assertEquals(4,date[1]);
+		assertEquals(2014,date[2]);
+		*/
 	}
 	
 	@Test
