@@ -11,9 +11,7 @@ import java.util.logging.Logger;
 
 import storage.StorageHelper;
 import storage.UndoStorage;
-
 import common.PandaLogger;
-
 import core.Task;
 
 public class CommandFactory {
@@ -163,14 +161,17 @@ public class CommandFactory {
 		assert (command.rawText!=null);
 		Task newTask = new Task(command.rawText);
 		this.tasks.add(newTask);
-		this.populateTasksMapWithDefaultCriteria();		// regenerate the TaskMap
+		System.out.println("Before Add:" + tasksMap);
+		this.tasksMap.put(tasksMap.size(), tasks.size() - OFFSET);
+		System.out.println("After Add:" + tasksMap);
 		this.undoStack.push(new SimpleEntry<Integer, Command>(this.tasks.size() - OFFSET, command));
 		syncTasks();
 	}
 	
 	private void doUndoAdd(int taskid, Command command) {
-		// remove it from the buffer
-		// remove the entry from the map
+		/* remove it from the buffer
+		 * remove the entry from the map
+         */
 		this.tasks.remove(taskid);
 		Integer fakeID = getFakeIDbyRealId(taskid);
 		assert(fakeID != null);
@@ -203,25 +204,26 @@ public class CommandFactory {
 	}
 	
 	private void doDelete(Command command) {
-		String inputNumber = command.rawText;
-		System.out.println(inputNumber);
-		assert (inputNumber != null);
-		this.logger.info("doDelete:" + inputNumber);
-		if (checkDeleteInput(inputNumber)) {
-			int inputIndex = Integer.parseInt(inputNumber);			// still fake id
-			this.updateHashMapAfterDelete(inputIndex);
-			inputIndex = tasksMap.get(inputIndex-OFFSET);			// get the actual index
-			tasks.get(inputIndex).setMarkAsDelete();
+		String rawText = command.rawText;
+		assert(rawText != null);
+		if(checkDeleteInput(rawText)) {
+			int displayId = Integer.parseInt(rawText) - OFFSET;
+			int realId = tasksMap.get(displayId);
+
+			Task task = tasks.get(realId);
+			task.setMarkAsDelete();
+			updateHashMapAfterDelete(displayId);
+			
+			this.undoStack.push(new SimpleEntry<Integer, Command>(realId, command));
 			syncTasks();
 		}
-		System.out.println(tasksMap);
-		
-		
-		// push the command with the id
 	}
 	
 	private void doUndoDelete(int taskid, Command command) {
-		
+		Task t = tasks.get(taskid);
+		t.setMarkAsUndelete();
+		this.tasksMap.put(this.tasksMap.size(), taskid);
+		syncTasks();
 	}
 
 	// Method to check delete parameter
@@ -422,22 +424,16 @@ public class CommandFactory {
 	}
 	
 	private void updateHashMapAfterDelete(int fakeid) {
-		LinkedHashMap<Integer, Integer> temp  = new LinkedHashMap<Integer, Integer>();
-
-		Iterator<Entry<Integer, Integer>> it = this.tasksMap.entrySet().iterator();
-		while(it.hasNext()) {
-			Entry<Integer, Integer> pair = (Entry<Integer, Integer>)it.next();
-			if(pair.getKey() < fakeid) {
-				temp.put(pair.getKey(), pair.getValue());
+		LinkedHashMap<Integer, Integer> temp = new LinkedHashMap<Integer, Integer>();
+		for(int i = 0; i < tasksMap.size(); i++) {
+			if(i < fakeid) {
+				temp.put(i, tasksMap.get(i));
 			} else {
-				if(it.hasNext()) {
-                    int key = pair.getKey();
-                    Entry<Integer, Integer> next = (Entry<Integer, Integer>)it.next();
-                    int value = next.getValue();
-                    temp.put(key, value);
-				}
+				temp.put(i, tasksMap.get(i+1));
 			}
 		}
-		this.tasksMap = temp;
+		temp.remove(tasksMap.size()-1);
+		this.tasksMap.clear();
+		this.tasksMap.putAll(temp);
 	}
 }

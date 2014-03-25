@@ -100,6 +100,10 @@ public class Task {
 		this.markAsDelete = true;
 	}
 	
+	public void setMarkAsUndelete() {
+		this.markAsDelete = false;
+	}
+	
 	public boolean getMarkAsDelete(){
 	   return this.markAsDelete;	
 	}
@@ -110,6 +114,6 @@ public class Task {
 	
 	// Override method for toString
 	public String toString() {
-		return this.taskDescription;
+		return this.taskDescription + " " + this.markAsDelete;
 	}
 }
