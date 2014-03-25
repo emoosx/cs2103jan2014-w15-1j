@@ -17,12 +17,16 @@ public class TestEdit {
 	        testEditCommand("test for positive number", "Please key in a positive number", "-2 meetingchanged on 28-2-2014 from 3pm to 4pm");
 	        testEditCommand("test for invalid number format", "Please key in an integer", "one meetingchanged on 28-2-2014 from 3pm to 4pm");
 			testEditCommand("test edit", "meetingchanged1516", "1 meetingchanged on 28-2-2014 from 3pm to 4pm");
-	
+	        testUndoEditCommand("test undo edit", "meeting2");
 		}
 
 		private void testEditCommand(String description, String expected,
 				String input) {
 			assertEquals(description, expected, cFact.testEdit(input));
+		}
+		
+		private void testUndoEditCommand(String description, String expected){
+			assertEquals(description, expected, cFact.testUndoEdit());
 		}
 	}
 

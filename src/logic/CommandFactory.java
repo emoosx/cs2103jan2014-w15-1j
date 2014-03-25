@@ -192,16 +192,19 @@ public class CommandFactory {
 		if (checkEditIndexInput(userInput)) {
 			int taskInt = (Integer.parseInt(getFirstWord(userInput)) - EDIT_OFFSET);
 			Task editTask = new Task(obtainUserEditInput(userInput));
+			this.undoStack.push(new SimpleEntry<Integer, Command>(tasksMap.get(taskInt),command));
 			this.tasks.set(tasksMap.get(taskInt), editTask);
 			syncTasks();
 		}
-		
-		// push the command with the id
 	}
 	
 	private void doUndoEdit(int taskid, Command command) {
-		
+		Command oldCommand = obtainCommandFromStack(tasksMap.get(taskid));
+		String userInput = oldCommand.rawText;
+		Task oldTask = new Task(obtainUserEditInput(userInput));
+		this.tasks.set(taskid,oldTask);
 	}
+	
 	
 	private void doDelete(Command command) {
 		String rawText = command.rawText;
@@ -315,6 +318,23 @@ public class CommandFactory {
 		}
 	}
 
+	private Command obtainCommandFromStack(int taskid){
+		Stack<SimpleEntry<Integer, Command>> tempStack =new Stack<SimpleEntry<Integer, Command>>();
+        Command taskCommand;
+		while(!undoStack.isEmpty()){
+		SimpleEntry<Integer, Command> lastEntry = this.undoStack.pop();
+		tempStack.push(lastEntry);
+		if(taskid == lastEntry.getKey()){
+			taskCommand = lastEntry.getValue();
+			while(!tempStack.isEmpty()){
+				undoStack.push(tempStack.pop());
+			}
+			return taskCommand;
+		}
+		}
+	   return null;
+	}
+	
 	// remove task index from usercommand and return edit input
 	private String obtainUserEditInput(String userCommand) {
 		StringBuilder sb = new StringBuilder();
@@ -372,6 +392,43 @@ public class CommandFactory {
 		} else {
 			return FEEDBACK;
 		}
+	}
+
+	public String testUndoEdit(){
+		tasks.clear();
+		Command command1 = new Command("add meeting1 on 27-2-2014 from 1pm to 2pm");
+		Command command2 = new Command("add meeting2 on 27-2-2014 from 2pm to 3pm");
+		Task task1 = new Task(command1.rawText);
+		Task task2 = new Task(command2.rawText);
+		tasks.add(task1);
+		this.undoStack.push(new SimpleEntry<Integer, Command>(0,command1));	
+		tasks.add(task2);
+		this.undoStack.push(new SimpleEntry<Integer, Command>(1,command2));		
+		//  user edit task 2
+		Command editT = new Command("edit 3 meetingchanged by 3pm");
+		String userInput = obtainUserEditInput(editT.rawText);
+		Task editTask = new Task(userInput);
+		//  assume task int is real id
+		int taskInt = 1;
+		this.undoStack.push(new SimpleEntry<Integer, Command>(1,
+				obtainCommandFromStack(1)));
+		this.tasks.set(taskInt, editTask);
+		logger.info("task 2 info:" + tasks.get(taskInt).getTaskDescription());
+		syncTasks();
+		//doUndo()
+		logger.info("doUndo");
+		SimpleEntry<Integer, Command> lastEntry = this.undoStack.pop();
+		int taskid = lastEntry.getKey();
+		Command lastCommand = lastEntry.getValue();
+		logger.info("Last Command:" + lastCommand.toString());
+		//executeUndo(taskid, lastCommand);
+		String input = lastCommand.rawText;
+		Task oldTask = new Task(input);
+		logger.info("input:" + input);
+		this.tasks.set(taskid,oldTask);
+		syncTasks();
+		logger.info("task 2 info:" + tasks.get(taskid).getTaskDescription());
+		return tasks.get(taskid).getTaskDescription();
 	}
 
 	public String testDelete(String inputNumber) {
