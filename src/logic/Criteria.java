@@ -31,7 +31,7 @@ public class Criteria {
 	public static ArrayList<Integer> getAllUndeletedTasks(List<Task> tasks) {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		for(Task t: tasks) {
-			if(t.getMarkAsDelete() == false) {
+			if(t.getMarkAsDelete() == false && !t.getTaskDone()) {
 				result.add(tasks.indexOf(t));
 			}
 		}

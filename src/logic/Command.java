@@ -15,6 +15,7 @@ public class Command {
 		UNDO ("undo"), 
 		ARCHIVE ("archive"), 
 		CLEAR ("clear"), 
+		DONE ("done"),
 		DONEALL ("doneall"), 
 		ARCHIVEALL ("archiveall"), 
 		DELETE ("delete"), 
@@ -82,6 +83,8 @@ public class Command {
 			return COMMAND_TYPE.EDIT;
 		} else if (command.equalsIgnoreCase(COMMAND_TYPE.UNDO.getCommandName())) {
 			return COMMAND_TYPE.UNDO;
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.DONE.getCommandName())) {
+			return COMMAND_TYPE.DONE;
 		} else if (command.equalsIgnoreCase(COMMAND_TYPE.ARCHIVE.getCommandName())) {
 			return COMMAND_TYPE.ARCHIVE;
 		} else if (command.equalsIgnoreCase(COMMAND_TYPE.CLEAR.getCommandName())) {
