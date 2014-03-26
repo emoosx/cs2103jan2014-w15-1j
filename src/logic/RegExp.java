@@ -151,7 +151,6 @@ public class RegExp {
     			date[1] = tempDate.getMonthOfYear();
     			date[2] = tempDate.getYear();
     		}
-    		System.out.println("next monday: " + date);
     		return date;
     	}
     	
@@ -245,7 +244,7 @@ public class RegExp {
     	pattern = Pattern.compile(regexDateArray[INDEX_THIRD_CASE]);
     	matcher = pattern.matcher(userInput);
     	if(matcher.find()) {
-    		dateArray.add(matcher.group(3));
+    		dateArray.add(matcher.group(1));
     		return dateArray;
     	}
     	
