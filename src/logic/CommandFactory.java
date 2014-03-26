@@ -201,11 +201,19 @@ public class CommandFactory {
 		}
 	}
 	
+	//cater for single undo edit
 	private void doUndoEdit(int taskid, Command command) {
 		Command oldCommand = obtainCommandFromStack(tasksMap.get(taskid));
 		String userInput = oldCommand.rawText;
-		Task oldTask = new Task(obtainUserEditInput(userInput));
-		this.tasks.set(taskid,oldTask);
+		String com = getFirstWord(oldCommand.toString());
+		if(com == "add"){	
+			Task oldTask = new Task(userInput);
+			this.tasks.set(taskid,oldTask);
+		}else{
+			Task oldTask = new Task(obtainUserEditInput(userInput));
+			this.tasks.set(taskid,oldTask);
+		}
+		
 	}
 	
 	
@@ -436,8 +444,7 @@ public class CommandFactory {
 		Task editTask = new Task(userInput);
 		//  assume task int is real id
 		int taskInt = 1;
-		this.undoStack.push(new SimpleEntry<Integer, Command>(1,
-				obtainCommandFromStack(1)));
+		this.undoStack.push(new SimpleEntry<Integer, Command>(1,editT));;
 		this.tasks.set(taskInt, editTask);
 		logger.info("task 2 info:" + tasks.get(taskInt).getTaskDescription());
 		syncTasks();
@@ -445,13 +452,19 @@ public class CommandFactory {
 		logger.info("doUndo");
 		SimpleEntry<Integer, Command> lastEntry = this.undoStack.pop();
 		int taskid = lastEntry.getKey();
-		Command lastCommand = lastEntry.getValue();
+		Command lastCommand = this.obtainCommandFromStack(taskid);
 		logger.info("Last Command:" + lastCommand.toString());
 		//executeUndo(taskid, lastCommand);
 		String input = lastCommand.rawText;
-		Task oldTask = new Task(input);
+		String com = getFirstWord(lastCommand.toString());
+		if(com == "add"){	
+			Task oldTask = new Task(input);
+			this.tasks.set(taskid,oldTask);
+		}else{
+			Task oldTask = new Task(obtainUserEditInput(input));
+			this.tasks.set(taskid,oldTask);
+		}
 		logger.info("input:" + input);
-		this.tasks.set(taskid,oldTask);
 		syncTasks();
 		logger.info("task 2 info:" + tasks.get(taskid).getTaskDescription());
 		return tasks.get(taskid).getTaskDescription();
