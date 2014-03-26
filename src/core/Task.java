@@ -24,7 +24,6 @@ public class Task {
 	//private boolean hasAlias;
 	private boolean markAsDelete;
 
-	// Constructor method
 	public Task(String rawText) {
 		this.rawText = rawText;
 		this.taskDescription = null;

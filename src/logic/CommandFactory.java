@@ -72,14 +72,14 @@ public class CommandFactory {
 		this.populateUndoStack();
 	}
 
-	// initialize and populate undoStack
+	/* initialize and populate undoStack */
 	private void populateUndoStack() {
 		this.undoStack = this.undoStorage.getAllCommands();
 	}
 	
 	/* by default, display tasks which are not marked as deleted */
 	private void populateTasksMapWithDefaultCriteria() {
-		//ArrayList<Integer> undeletedTasksIDs = Criteria.getAllUndeletedTasks(tasks);
+		ArrayList<Integer> undeletedTasksIDs = Criteria.getAllUndeletedTasks(tasks);
 		for(int i = 0; i < undeletedTasksIDs.size(); i++) {
 			this.tasksMap.put(i, undeletedTasksIDs.get(i));
 		}
@@ -112,7 +112,8 @@ public class CommandFactory {
 		case UNDO:
 			doUndo();
 			break;
-		case ARCHIVE:
+		case DONE:
+			doDone(command);
 			break;
 		case CLEAR:
 			break;
@@ -152,6 +153,8 @@ public class CommandFactory {
 		case DELETE:
 			doUndoDelete(taskid, command);
 			break;
+		case DONE:
+			doUndoDone(taskid, command);
 		default:
 			return;
 		}
@@ -225,6 +228,29 @@ public class CommandFactory {
 	private void doUndoDelete(int taskid, Command command) {
 		Task t = tasks.get(taskid);
 		t.setMarkAsUndelete();
+		this.tasksMap.put(this.tasksMap.size(), taskid);
+		syncTasks();
+	}
+	
+	private void doDone(Command command) {
+		String rawText = command.rawText;
+		assert(rawText != null);
+		if(checkDeleteInput(rawText)) {
+			int displayId = Integer.parseInt(rawText) - OFFSET;
+			int realId = tasksMap.get(displayId);
+			
+			Task task = tasks.get(realId);
+			task.setTaskDone();
+			updateHashMapAfterDelete(displayId);
+			
+			this.undoStack.push(new SimpleEntry<Integer, Command>(realId, command));
+			syncTasks();
+		}
+	}
+	
+	private void doUndoDone(int taskid, Command command) {
+		Task t = tasks.get(taskid);
+		t.setTaskUndone();
 		this.tasksMap.put(this.tasksMap.size(), taskid);
 		syncTasks();
 	}

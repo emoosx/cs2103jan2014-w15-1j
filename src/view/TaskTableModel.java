@@ -20,7 +20,7 @@ public class TaskTableModel extends AbstractTableModel {
 
 	// TODO delete marked column .. enabled only during development phase
 	private String[] columnNames = { "Task ID", "Description",
-			"Start Time", "End Time", "Tags" , "Marked"};
+			"Start Time", "End Time", "Tags" };//, "Marked", "Done"};
 	
 	private List<Task> l;
 	private LinkedHashMap<Integer, Integer> map = new LinkedHashMap<Integer, Integer>();
@@ -76,9 +76,12 @@ public class TaskTableModel extends AbstractTableModel {
 			return fmt.print(endTime);
 		} else if(columnIndex == 4) {
 			return t.getTaskTags();
-		} else if (columnIndex == 5) {
-			return t.getMarkAsDelete();
 		}
+//		} else if (columnIndex == 5) {
+//			return t.getMarkAsDelete();
+//		} else if (columnIndex == 6) {
+//			return t.getTaskDone();
+//		}
 		return null;
 	}
 
