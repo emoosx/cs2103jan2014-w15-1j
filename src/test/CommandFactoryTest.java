@@ -1,10 +1,12 @@
 package test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+
+import logic.CommandFactory;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -13,6 +15,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class CommandFactoryTest {
+
+	private CommandFactory cf = CommandFactory.INSTANCE;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {

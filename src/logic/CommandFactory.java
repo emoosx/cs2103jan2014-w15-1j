@@ -2,16 +2,18 @@ package logic;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.logging.Logger;
 
+import logic.Command.COMMAND_TYPE;
 import storage.StorageHelper;
 import storage.UndoStorage;
+
 import common.PandaLogger;
+
 import core.Task;
 
 public class CommandFactory {
@@ -208,8 +210,8 @@ public class CommandFactory {
 	//cater for single undo edit
 	private void doUndoEdit(int taskid, Command command) {
 		Task oldTask = new Task(command.rawText);
-		this.tasks.set(taskid,oldTask);
-		syncTasks();	
+		this.tasks.set(taskid, oldTask);
+		syncTasks();
 	}
 	
 	private Command convertTaskToCommand(int taskid){
@@ -217,7 +219,8 @@ public class CommandFactory {
 		ArrayList<String> tags = oldTask.getTaskTags();
 	    //desc time date 
 		StringBuilder sb = new StringBuilder();
-		sb.append("edit " + oldTask.getTaskDescription());
+
+		sb.append(COMMAND_TYPE.EDIT.name().toLowerCase() + " " + oldTask.getTaskDescription());
 		//deadline
 	    if(oldTask.getTaskStartTime() == null && oldTask.getTaskEndTime() != null){
 			sb.append(" by " +oldTask.getTaskEndTime().toString());
