@@ -17,18 +17,35 @@ public class RegExp {
 
 	private static final int TOTAL_DATE_FIELDS = 3;
 	private static final int TOTAL_TIME_FIELDS = 2;
+	
 	private static final int INDEX_FIRST_CASE = 0;
 	private static final int INDEX_SECOND_CASE = 1;
 	private static final int INDEX_THIRD_CASE = 2;
 	private static final int INDEX_DAY = 0;
 	private static final int INDEX_MONTH = 1;
 	private static final int INDEX_YEAR = 2;
-	private static final int NUM_CENTURY = 2000;
+	
+	private static final int NUM_CURRENT_CENTURY = 2000;
 	private static final int NUM_TWO_DIGIT_YEAR = 100;
 	private static final int NUM_HOUR_INDEX = 0;
 	private static final int NUM_MIN_INDEX = 1;
 	private static final int NUM_START_TIME_GROUP = 1;
 	private static final int NUM_END_TIME_GROUP = 4;
+	private static final int NUM_MONTH_JANUARY = 1;
+	private static final int NUM_MONTH_FEBRUARY = 2;
+	private static final int NUM_MONTH_MARCH = 3;
+	private static final int NUM_MONTH_APRIL = 4;
+	private static final int NUM_MONTH_MAY = 5;
+	private static final int NUM_MONTH_JUNE = 6;
+	private static final int NUM_MONTH_JULY = 7;
+	private static final int NUM_MONTH_AUGUST = 8;
+	private static final int NUM_MONTH_SEPTEMBER = 9;
+	private static final int NUM_MONTH_OCTOBER = 10;
+	private static final int NUM_MONTH_NOVEMBER = 11;
+	private static final int NUM_MONTH_DECEMBER = 12;
+	private static final int NUM_CURRENT_YEAR = 2014;
+	
+	
 	private static final String STRING_TIMEZONE_AM = "am";
 	private static final String STRING_TIMEZONE_PM = "pm";
 	
@@ -69,7 +86,7 @@ public class RegExp {
     // Case 2: Partial text based dates (e.g. 15 march 2014, 2 feb)
     public static String REGEX_DATESTRING_PATTERN_2 = "\\b(?i)((([1-9]|[12]\\\\d|3[01])\\s(jan|january|mar|march|may|jul|july|aug|august|oct|october|dec|december)(\\s(\\d{4}|\\d{2}))?|([1-9]|[12]\\d|30)\\s(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)(\\s(\\d{4}|\\d{2}))?))\\b";
     // Case 3: pure text based relative dates (e.g. next Monday)
-    public static String REGEX_DATESTRING_PATTERN_3 = "\\b(?i)next\\s(((mon|tues|wednes|thurs|fri|satur|sun)day)|(mon|tues|wed|thurs|fri|sat|sun))\\b";
+    public static String REGEX_DATESTRING_PATTERN_3 = "\\b(?i)((on\\s)?next\\s((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))\\b";
     
     /*
      *  Time Format Expressions for parsing raw time data
@@ -102,7 +119,7 @@ public class RegExp {
         	date[INDEX_MONTH] = Integer.parseInt(dateStringArray[INDEX_MONTH]);
         	date[INDEX_YEAR] = Integer.parseInt(dateStringArray[INDEX_YEAR]);
         	if(date[INDEX_YEAR] < NUM_TWO_DIGIT_YEAR) {
-        		date[INDEX_YEAR] += NUM_CENTURY;
+        		date[INDEX_YEAR] += NUM_CURRENT_CENTURY;
         	}
         	return date;
     	}
@@ -115,10 +132,10 @@ public class RegExp {
     		if(dateStringArray.length == 3) {
     			date[INDEX_YEAR] = Integer.parseInt(dateStringArray[INDEX_YEAR]);
     			if(date[INDEX_YEAR] < NUM_TWO_DIGIT_YEAR) {
-    				date[INDEX_YEAR] += NUM_CENTURY;
+    				date[INDEX_YEAR] += NUM_CURRENT_CENTURY;
     			}
     		} else {
-    			date[INDEX_YEAR] = 2014;
+    			date[INDEX_YEAR] = NUM_CURRENT_YEAR;
     		}
     		return date;
     	}
@@ -134,6 +151,7 @@ public class RegExp {
     			date[1] = tempDate.getMonthOfYear();
     			date[2] = tempDate.getYear();
     		}
+    		System.out.println("next monday: " + date);
     		return date;
     	}
     	
@@ -338,29 +356,29 @@ public class RegExp {
 	public static int getMonthIndex(String month) {
 		month = month.toLowerCase();
 		if(month.equals("jan") || month.equals("january")) {
-			return 1;
+			return NUM_MONTH_JANUARY;
 		} else if(month.equals("feb") || month.equals("february")) {
-			return 2;
+			return NUM_MONTH_FEBRUARY;
 		} else if(month.equals("mar") || month.equals("march")) {
-			return 3;
+			return NUM_MONTH_MARCH;
 		} else if(month.equals("apr") || month.equals("april")) {
-			return 4;
+			return NUM_MONTH_APRIL;
 		} else if(month.equals("may")) {
-			return 5;
+			return NUM_MONTH_MAY;
 		} else if(month.equals("jun") || month.equals("june")) {
-			return 6;
+			return NUM_MONTH_JUNE;
 		} else if(month.equals("jul") || month.equals("july")) {
-			return 7;
+			return NUM_MONTH_JULY;
 		} else if(month.equals("aug") || month.equals("august")) {
-			return 8;
+			return NUM_MONTH_AUGUST;
 		} else if(month.equals("sep") || month.equals("september")) {
-			return 9;
+			return NUM_MONTH_SEPTEMBER;
 		} else if(month.equals("oct") || month.equals("october")) {
-			return 10;
+			return NUM_MONTH_OCTOBER;
 		} else if(month.equals("nov") || month.equals("november")) {
-			return 11;
+			return NUM_MONTH_NOVEMBER;
 		} else if(month.equals("dec") || month.equals("december")) {
-			return 12;
+			return NUM_MONTH_DECEMBER;
 		}
 		
 		// asserting false because parameter should be a valid date string
