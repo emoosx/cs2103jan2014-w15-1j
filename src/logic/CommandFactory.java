@@ -195,25 +195,57 @@ public class CommandFactory {
 		if (checkEditIndexInput(userInput)) {
 			int taskInt = (Integer.parseInt(getFirstWord(userInput)) - EDIT_OFFSET);
 			Task editTask = new Task(obtainUserEditInput(userInput));
-			this.undoStack.push(new SimpleEntry<Integer, Command>(tasksMap.get(taskInt),command));
+			// this.undoStack.push(new SimpleEntry<Integer,
+			// Command>(tasksMap.get(taskInt),command));
+			this.undoStack
+					.push(new SimpleEntry<Integer, Command>(tasksMap
+							.get(taskInt), convertTaskToCommand(tasksMap
+							.get(taskInt))));
 			this.tasks.set(tasksMap.get(taskInt), editTask);
+	
 			syncTasks();
 		}
 	}
 	
 	//cater for single undo edit
 	private void doUndoEdit(int taskid, Command command) {
-		Command oldCommand = obtainCommandFromStack(tasksMap.get(taskid));
-		String userInput = oldCommand.rawText;
-		String com = getFirstWord(oldCommand.toString());
-		if(com == "add"){	
-			Task oldTask = new Task(userInput);
-			this.tasks.set(taskid,oldTask);
-		}else{
-			Task oldTask = new Task(obtainUserEditInput(userInput));
-			this.tasks.set(taskid,oldTask);
-		}
+		//Command oldCommand = obtainCommandFromStack(tasksMap.get(taskid));
+		Task oldTask = new Task(command.rawText);
+		this.tasks.set(taskid,oldTask);
+		syncTasks();
+		//String userInput = oldCommand.rawText;
+		//String com = getFirstWord(oldCommand.toString());
+		//if(com == "add"){	
+		//	Task oldTask = new Task(userInput);
+		//	this.tasks.set(taskid,oldTask);
+		//}else{
+		//	Task oldTask = new Task(obtainUserEditInput(userInput));
+		//	this.tasks.set(taskid,oldTask);
+		//}
 		
+	}
+	
+	private Command convertTaskToCommand(int taskid){
+		Task oldTask = tasks.get(taskid);
+		ArrayList<String> tags = oldTask.getTaskTags();
+	    //desc time date 
+		StringBuilder sb = new StringBuilder();
+		sb.append("edit " + oldTask.getTaskDescription());
+		//deadline
+	    if(oldTask.getTaskStartTime() == null && oldTask.getTaskEndTime() != null){
+			sb.append(" by " +oldTask.getTaskEndTime().toString());
+		//timed
+		}else if(oldTask.getTaskStartTime() != null && oldTask.getTaskEndTime() != null){
+		sb.append(" from " +oldTask.getTaskStartTime().toString());
+		sb.append(" to " +oldTask.getTaskEndTime().toString());
+		}
+	    if(tags.size() != 0){
+	    	sb.append(" " + tags.get(0));
+	    }
+	    String rawText = sb.toString();
+		this.logger.info("string is :" + rawText);
+	    Command oldCommand = new Command(rawText);
+	    return oldCommand;
 	}
 	
 	
