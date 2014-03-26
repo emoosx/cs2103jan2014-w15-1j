@@ -195,8 +195,6 @@ public class CommandFactory {
 		if (checkEditIndexInput(userInput)) {
 			int taskInt = (Integer.parseInt(getFirstWord(userInput)) - EDIT_OFFSET);
 			Task editTask = new Task(obtainUserEditInput(userInput));
-			// this.undoStack.push(new SimpleEntry<Integer,
-			// Command>(tasksMap.get(taskInt),command));
 			this.undoStack
 					.push(new SimpleEntry<Integer, Command>(tasksMap
 							.get(taskInt), convertTaskToCommand(tasksMap
@@ -209,20 +207,9 @@ public class CommandFactory {
 	
 	//cater for single undo edit
 	private void doUndoEdit(int taskid, Command command) {
-		//Command oldCommand = obtainCommandFromStack(tasksMap.get(taskid));
 		Task oldTask = new Task(command.rawText);
 		this.tasks.set(taskid,oldTask);
-		syncTasks();
-		//String userInput = oldCommand.rawText;
-		//String com = getFirstWord(oldCommand.toString());
-		//if(com == "add"){	
-		//	Task oldTask = new Task(userInput);
-		//	this.tasks.set(taskid,oldTask);
-		//}else{
-		//	Task oldTask = new Task(obtainUserEditInput(userInput));
-		//	this.tasks.set(taskid,oldTask);
-		//}
-		
+		syncTasks();	
 	}
 	
 	private Command convertTaskToCommand(int taskid){
@@ -240,7 +227,9 @@ public class CommandFactory {
 		sb.append(" to " +oldTask.getTaskEndTime().toString());
 		}
 	    if(tags.size() != 0){
-	    	sb.append(" " + tags.get(0));
+	    	for(int i =0; i<tags.size(); i++){
+	    	sb.append(" " + tags.get(i));
+	    	}
 	    }
 	    String rawText = sb.toString();
 		this.logger.info("string is :" + rawText);
