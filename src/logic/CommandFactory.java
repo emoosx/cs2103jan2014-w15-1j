@@ -2,16 +2,18 @@ package logic;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.logging.Logger;
 
+import logic.Command.COMMAND_TYPE;
 import storage.StorageHelper;
 import storage.UndoStorage;
+
 import common.PandaLogger;
+
 import core.Task;
 
 public class CommandFactory {
@@ -203,16 +205,20 @@ public class CommandFactory {
 	
 	//cater for single undo edit
 	private void doUndoEdit(int taskid, Command command) {
-		Command oldCommand = obtainCommandFromStack(tasksMap.get(taskid));
+		Command oldCommand = obtainCommandFromStack2(tasksMap.get(taskid));
+		assert(oldCommand != null);
 		String userInput = oldCommand.rawText;
-		String com = getFirstWord(oldCommand.toString());
-		if(com == "add"){	
-			Task oldTask = new Task(userInput);
-			this.tasks.set(taskid,oldTask);
-		}else{
-			Task oldTask = new Task(obtainUserEditInput(userInput));
-			this.tasks.set(taskid,oldTask);
-		}
+		Task oldTask = new Task(userInput);
+		this.tasks.set(taskid, oldTask);
+		syncTasks();
+//		String com = getFirstWord(oldCommand.toString());
+//		if(com == "add"){	
+//			Task oldTask = new Task(userInput);
+//			this.tasks.set(taskid,oldTask);
+//		}else{
+//			Task oldTask = new Task(obtainUserEditInput(userInput));
+//			this.tasks.set(taskid,oldTask);
+//		}
 		
 	}
 	
@@ -367,6 +373,19 @@ public class CommandFactory {
 		}
 		}
 	   return null;
+	}
+	
+	private Command obtainCommandFromStack2(int taskid) {
+		Command result = null;
+		for(SimpleEntry<Integer, Command> entry: this.undoStack) {
+			if(entry.getKey() == taskid) {
+				if(entry.getValue().command == COMMAND_TYPE.ADD) {
+					result = entry.getValue();
+				}
+			}
+			
+		}
+		return result;
 	}
 	
 	// remove task index from usercommand and return edit input
