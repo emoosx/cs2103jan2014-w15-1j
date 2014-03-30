@@ -158,6 +158,7 @@ public class CommandFactory {
 		logger.info("Last Command:" + lastCommand.toString());
 		executeUndo(taskid, lastCommand);
 		syncTasks();
+		System.out.println("After undo:" + tasksMap);
 	}
 
 	private void executeUndo(int taskid, Command command) {
@@ -187,6 +188,7 @@ public class CommandFactory {
 		logger.info("Last Command:" + lastCommand.toString());
 		executeRedo(taskid, lastCommand);
 		syncTasks();
+		System.out.println("After redo:" + tasksMap);
 	}
 	
 	private void executeRedo(int taskid, Command command) {
@@ -345,6 +347,7 @@ public class CommandFactory {
 			Command delCommand = commandWithPreviousIndex(displayId);
 			this.undoStack.push(new SimpleEntry<Integer, Command>(realId, delCommand));
 			syncTasks();
+			System.out.println("After Delete:" + tasksMap);
 		}
 	}
 	
@@ -389,12 +392,26 @@ public class CommandFactory {
 	
 	private void doUndoDelete(int taskid, Command command) {
 		Task t = tasks.get(taskid);
+		
 		t.setMarkAsUndelete();
 		int prevID = Integer.parseInt(command.rawText);
 		updateHashMapAfterUndoDelete(taskid, prevID);
+		int displayID = this.getDisplayId(taskid);
+		this.redoStack.push(new SimpleEntry<Integer, Command>(taskid,convertDeletedTaskToCommand(displayID)));
 		syncTasks();
 	}
 	
+	private int getDisplayId(int realID) {
+		int displayID =0;
+		for (int i=0; i<tasksMap.size();i++) {
+		    if(tasksMap.get(i) == realID){
+		    displayID = i+ OFFSET;
+		    break;
+		    }
+		}
+		 return displayID;
+		}
+
 	private Command commandWithPreviousIndex(int displayId){
 		StringBuilder sb = new StringBuilder();
 		int prevIndex;
@@ -407,6 +424,15 @@ public class CommandFactory {
 		
 		Command delCommand = new Command(sb.toString());
 		return delCommand;
+	}
+	
+	private Command convertDeletedTaskToCommand(int taskid){
+		StringBuilder sb = new StringBuilder();
+		sb.append(COMMAND_TYPE.DELETE.name().toLowerCase() + " " + taskid);
+	    String rawText = sb.toString();
+		this.logger.info("string is :" + rawText);
+	    Command deletedCommand = new Command(rawText);
+	    return deletedCommand;
 	}
 	
 	
