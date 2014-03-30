@@ -2,6 +2,7 @@ package logic;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.EmptyStackException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -12,9 +13,7 @@ import logic.Command.COMMAND_TYPE;
 import storage.StorageHelper;
 import storage.UndoStorage;
 import storage.RedoStorage;
-
 import common.PandaLogger;
-
 import core.Task;
 
 public class CommandFactory {
@@ -152,6 +151,7 @@ public class CommandFactory {
 
 	private void doUndo() {
 		logger.info("doUndo");
+		if(!undoStack.isEmpty()){
 		SimpleEntry<Integer, Command> lastEntry = this.undoStack.pop();
 		int taskid = lastEntry.getKey();
 		Command lastCommand = lastEntry.getValue();
@@ -159,6 +159,9 @@ public class CommandFactory {
 		executeUndo(taskid, lastCommand);
 		syncTasks();
 		System.out.println("After undo:" + tasksMap);
+		}else{
+			  throw new EmptyStackException();
+		}
 	}
 
 	private void executeUndo(int taskid, Command command) {
@@ -182,6 +185,7 @@ public class CommandFactory {
 	
 	private void doRedo() {
 		logger.info("doRedo");
+		if(!redoStack.isEmpty()){
 		SimpleEntry<Integer, Command> lastEntry = this.redoStack.pop();
 		int taskid = lastEntry.getKey();
 		Command lastCommand = lastEntry.getValue();
@@ -189,6 +193,9 @@ public class CommandFactory {
 		executeRedo(taskid, lastCommand);
 		syncTasks();
 		System.out.println("After redo:" + tasksMap);
+		}else{
+			  throw new EmptyStackException();
+		}
 	}
 	
 	private void executeRedo(int taskid, Command command) {
@@ -302,8 +309,35 @@ public class CommandFactory {
 	//cater for single undo edit
 	private void doUndoEdit(int taskid, Command command) {
 		Task oldTask = new Task(command.rawText);
+		int displayID = this.getDisplayId(taskid);
+		this.redoStack.push(new SimpleEntry<Integer, Command>(taskid,convertEditedTaskToCommand(displayID)));
 		this.tasks.set(taskid, oldTask);
 		syncTasks();
+	}
+	
+	private Command convertEditedTaskToCommand(int taskid){
+		Task editedTask = tasks.get(tasksMap.get(taskid)-1);
+		ArrayList<String> tags = editedTask.getTaskTags();
+	    //desc time date 
+		StringBuilder sb = new StringBuilder();
+		sb.append(COMMAND_TYPE.EDIT.name().toLowerCase() + " " + taskid+ " "+ editedTask.getTaskDescription());
+		//deadline
+	    if(editedTask.getTaskStartTime() == null && editedTask.getTaskEndTime() != null){
+			sb.append(" by " +editedTask.getTaskEndTime().toString());
+		//timed
+		}else if(editedTask.getTaskStartTime() != null && editedTask.getTaskEndTime() != null){
+		sb.append(" from " +editedTask.getTaskStartTime().toString());
+		sb.append(" to " +editedTask.getTaskEndTime().toString());
+		}
+	    if(tags.size() != 0){
+	    	for(int i =0; i<tags.size(); i++){
+	    	sb.append(" " + tags.get(i));
+	    	}
+	    }
+	    String rawText = sb.toString();
+		this.logger.info("string is :" + rawText);
+	    Command oldCommand = new Command(rawText);
+	    return oldCommand;	
 	}
 	
 	private Command convertTaskToCommand(int taskid){
