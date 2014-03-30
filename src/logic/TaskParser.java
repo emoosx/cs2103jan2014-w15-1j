@@ -253,7 +253,7 @@ public class TaskParser {
 			finalizeFloatingTask();
 		// Case 2: Finalized as deadline task as long as 1 date or 1 time input is specified
 		} else if((startHour == null && endHour != null)
-				|| (startYear == null && endYear !=null)) {
+				|| (startYear == null && endYear !=null && startHour == null)) {
 			finalizeDeadlineTask();
 		// Case 3: Finalized timed task	
 		} else if(startHour != null && endHour != null) {
