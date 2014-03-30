@@ -247,22 +247,79 @@ public class CommandFactory {
 		if(checkDeleteInput(rawText)) {
 			int displayId = Integer.parseInt(rawText) - OFFSET;
 			int realId = tasksMap.get(displayId);
-
+  
 			Task task = tasks.get(realId);
 			task.setMarkAsDelete();
 			updateHashMapAfterDelete(displayId);
 			
-			this.undoStack.push(new SimpleEntry<Integer, Command>(realId, command));
+			Command delCommand = commandWithPreviousIndex(displayId);
+			this.undoStack.push(new SimpleEntry<Integer, Command>(realId, delCommand));
 			syncTasks();
+		}
+	}
+	
+	private void updateHashMapAfterUndoDelete(int realId, int prevId) {
+		LinkedHashMap<Integer, Integer> beforeID = new LinkedHashMap<Integer, Integer>();
+		LinkedHashMap<Integer, Integer> afterID = new LinkedHashMap<Integer, Integer>();
+		
+		if(prevId == -1){
+			for(int i = 0; i < tasksMap.size(); i++){
+				afterID.put(i, tasksMap.get(i));
+			}
+			int sizeAfterAdding = tasksMap.size() +1;
+			int indexOfAfterId =0;
+			tasksMap.clear();
+			tasksMap.put(0, realId);
+			for(int i =1; i<sizeAfterAdding;i++){
+				tasksMap.put(i, afterID.get(indexOfAfterId));
+				indexOfAfterId ++;
+			}
+		}else{
+		for(int i = 0;i<=prevId;i++){
+			beforeID.put(i, tasksMap.get(i));
+		}
+		int afterIndex= prevId+1;
+		int index = 0;
+		int sizeAfterAdding = tasksMap.size() +1;
+		for(int k=afterIndex;k<tasksMap.size(); k++){
+		afterID.put(index,tasksMap.get(k));	
+		}
+		tasksMap.clear();
+		int afterAddingIndex=0;
+		for(int l=0; l<beforeID.size();l++ ){
+		tasksMap.put(l, beforeID.get(l));
+		}
+		tasksMap.put(afterIndex,realId);
+		for(int k=afterIndex+1; k<sizeAfterAdding;k++){
+			tasksMap.put(k,afterID.get(afterAddingIndex));
+			afterAddingIndex++;
+		}
 		}
 	}
 	
 	private void doUndoDelete(int taskid, Command command) {
 		Task t = tasks.get(taskid);
 		t.setMarkAsUndelete();
-		this.tasksMap.put(this.tasksMap.size(), taskid);
+		int prevID = Integer.parseInt(command.rawText);
+		updateHashMapAfterUndoDelete(taskid, prevID);
 		syncTasks();
 	}
+	
+	private Command commandWithPreviousIndex(int displayId){
+		StringBuilder sb = new StringBuilder();
+		int prevIndex;
+		if(displayId != 0){
+			prevIndex = displayId -1;
+		}else{
+			prevIndex = -1;
+		}
+		sb.append("delete "+ prevIndex);
+		
+		Command delCommand = new Command(sb.toString());
+		return delCommand;
+	}
+	
+	
 	
 	private void doDone(Command command) {
 		String rawText = command.rawText;
