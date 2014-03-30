@@ -59,7 +59,7 @@ public class RegExp {
     	// Case 2: partial text based dates (e.g. 15 march 2014, 2 feb)
     	"\\b(?i)on\\s((([1-9]|[12]\\\\d|3[01])\\s(jan|january|mar|march|may|jul|july|aug|august|oct|october|dec|december)(\\s(\\d{4}|\\d{2}))?|([1-9]|[12]\\d|30)\\s(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)(\\s(\\d{4}|\\d{2}))?))\\b",
     	// Case 3: pure text based relative dates (e.g. next Monday)
-    	"\\b(?i)(((on\\s)?next\\s((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))|((on the day after )?tomorrow))\\b"
+    	"\\b(?i)(((on\\s)?(next\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))|((on the day after )?tomorrow))\\b"
     	};
     
     /*
@@ -86,7 +86,7 @@ public class RegExp {
     // Case 2: Partial text based dates (e.g. 15 march 2014, 2 feb)
     public static String REGEX_DATESTRING_PATTERN_2 = "\\b(?i)((([1-9]|[12]\\\\d|3[01])\\s(jan|january|mar|march|may|jul|july|aug|august|oct|october|dec|december)(\\s(\\d{4}|\\d{2}))?|([1-9]|[12]\\d|30)\\s(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)(\\s(\\d{4}|\\d{2}))?))\\b";
     // Case 3: pure text based relative dates (e.g. next Monday)
-    public static String REGEX_DATESTRING_PATTERN_3 = "\\b(?i)(((on\\s)?next\\s((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))|((on the day after )?tomorrow))\\b";
+    public static String REGEX_DATESTRING_PATTERN_3 = "\\b(?i)(((on\\s)?(next\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))|((on the day after )?tomorrow))\\b";
     
     /*
      *  Time Format Expressions for parsing raw time data
