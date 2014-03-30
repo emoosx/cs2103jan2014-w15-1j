@@ -391,8 +391,7 @@ public class CommandFactory {
 	}
 	
 	private void doUndoDelete(int taskid, Command command) {
-		Task t = tasks.get(taskid);
-		
+		Task t = tasks.get(taskid);	
 		t.setMarkAsUndelete();
 		int prevID = Integer.parseInt(command.rawText);
 		updateHashMapAfterUndoDelete(taskid, prevID);
@@ -448,16 +447,31 @@ public class CommandFactory {
 			task.setTaskDone();
 			updateHashMapAfterDelete(displayId);
 			
-			this.undoStack.push(new SimpleEntry<Integer, Command>(realId, command));
+			Command doneCommand = commandWithPreviousIndex(displayId);
+			this.undoStack.push(new SimpleEntry<Integer, Command>(realId, doneCommand));
 			syncTasks();
+			System.out.println("After Done:" + tasksMap);
 		}
 	}
 	
 	private void doUndoDone(int taskid, Command command) {
 		Task t = tasks.get(taskid);
 		t.setTaskUndone();
-		this.tasksMap.put(this.tasksMap.size(), taskid);
+		int prevID = Integer.parseInt(command.rawText);
+		updateHashMapAfterUndoDelete(taskid, prevID);
+		int displayID = this.getDisplayId(taskid);
+		this.redoStack.push(new SimpleEntry<Integer, Command>(taskid,convertDoneTaskToCommand(displayID)));
 		syncTasks();
+	}
+	
+
+	private Command convertDoneTaskToCommand(int displayID) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(COMMAND_TYPE.DONE.name().toLowerCase() + " " + displayID);
+	    String rawText = sb.toString();
+		this.logger.info("string is :" + rawText);
+	    Command doneCommand = new Command(rawText);
+	    return doneCommand;
 	}
 
 	// Method to check delete parameter
