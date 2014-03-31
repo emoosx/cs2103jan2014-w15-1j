@@ -21,16 +21,12 @@ public class RegExp {
 	private static final int INDEX_FIRST_CASE = 0;
 	private static final int INDEX_SECOND_CASE = 1;
 	private static final int INDEX_THIRD_CASE = 2;
-	private static final int INDEX_DAY = 0;
-	private static final int INDEX_MONTH = 1;
-	private static final int INDEX_YEAR = 2;
-	
-	private static final int NUM_CURRENT_CENTURY = 2000;
-	private static final int NUM_TWO_DIGIT_YEAR = 100;
+
 	private static final int NUM_HOUR_INDEX = 0;
 	private static final int NUM_MIN_INDEX = 1;
 	private static final int NUM_START_TIME_GROUP = 1;
 	private static final int NUM_END_TIME_GROUP = 4;
+	
 	private static final int NUM_MONTH_JANUARY = 1;
 	private static final int NUM_MONTH_FEBRUARY = 2;
 	private static final int NUM_MONTH_MARCH = 3;
@@ -44,7 +40,6 @@ public class RegExp {
 	private static final int NUM_MONTH_NOVEMBER = 11;
 	private static final int NUM_MONTH_DECEMBER = 12;
 	private static final int NUM_MONTH_INVALID = -1;
-	private static final int NUM_CURRENT_YEAR = 2014;
 	
 	private static final String STRING_JAN = "jan";
 	private static final String STRING_JANUARY = "january";
@@ -78,9 +73,9 @@ public class RegExp {
      */
     public static String[] regexDateArray = {
     	// Case 1: DD-MM-YY(YY) or DD/MM/YY(YY) 
-    	"\\bon\\s((([1-9]|[12]\\d|3[01])-([13578]|1[02])-(\\d{4}|\\d{2})|([1-9]|[12]\\d|30)-([1-9]|1[02])-(\\d{4}|\\d{2}))|(([1-9]|[12]\\d|3[01])/([13578]|1[02])/(\\d{4}|\\d{2})|([1-9]|[12]\\d|30)/([1-9]|1[02])/(\\d{4}|\\d{2})))\\b",
+    	"\\b(?i)(on\\s((0?[1-9]|[12]\\d|3[01])[-/](0?[13578]|1[02])[-/](\\d{4}|\\d{2})|(0?[1-9]|[12]\\d|30)[-/](0?[1-9]|1[02])[-/](\\d{4}|\\d{2})))\\b",
     	// Case 2: partial text based dates (e.g. 15 march 2014, 2 feb)
-    	"\\b(?i)on\\s((([1-9]|[12]\\\\d|3[01])\\s(jan|january|mar|march|may|jul|july|aug|august|oct|october|dec|december)(\\s(\\d{4}|\\d{2}))?|([1-9]|[12]\\d|30)\\s(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)(\\s(\\d{4}|\\d{2}))?))\\b",
+    	"\\b(?i)(on\\s)?(((0?[1-9]|[12]\\d|3[01])\\s(jan(uary)?|mar(ch)?|may|jul(y)?|aug(ust)?|oct(ober)?|dec(ember)?)(\\s(\\d{4}|\\d{2}))?|(0?[1-9]|[12]\\d|30)\\s(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(tember)?|oct(ober)?|nov(ember)?|dec(ember)?)(\\s(\\d{4}|\\d{2}))?))\\b",
     	// Case 3: pure text based relative dates (e.g. next Monday)
     	"\\b(?i)(((on\\s)?(next\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))|((on the day after )?tomorrow))\\b"
     	};
@@ -101,13 +96,13 @@ public class RegExp {
     	};
     
     /*
-     * Date Format Expression for parsing raw date data
+     * Date Format Patterns 
      * These formats are used mainly in the dateFromDateString method that convert date parameters into an int[] which contains 3 elements: year, month and day 
      */
     // Case 1: DD/MM/YY(YY) or DD-MM-YY(YY) or  
-    public static String REGEX_DATESTRING_PATTERN_1 = "((([1-9]|[12]\\d|3[01])-([13578]|1[02])-(\\d{4}|\\d{2})|([1-9]|[12]\\d|30)-([1-9]|1[02])-(\\d{4}|\\d{2}))|(([1-9]|[12]\\d|3[01])/([13578]|1[02])/(\\d{4}|\\d{2})|([1-9]|[12]\\d|30)/([1-9]|1[02])/(\\d{4}|\\d{2})))\\b";
+    public static String REGEX_DATESTRING_PATTERN_1 = "((0?[1-9]|[12]\\d|3[01])[-/](0?[13578]|1[02])[-/](\\d{4}|\\d{2})|(0?[1-9]|[12]\\d|30)[-/](0?[1-9]|1[02])[-/](\\d{4}|\\d{2}))";
     // Case 2: Partial text based dates (e.g. 15 march 2014, 2 feb)
-    public static String REGEX_DATESTRING_PATTERN_2 = "\\b(?i)((([1-9]|[12]\\\\d|3[01])\\s(jan|january|mar|march|may|jul|july|aug|august|oct|october|dec|december)(\\s(\\d{4}|\\d{2}))?|([1-9]|[12]\\d|30)\\s(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)(\\s(\\d{4}|\\d{2}))?))\\b";
+    public static String REGEX_DATESTRING_PATTERN_2 = "\\b(?i)(((0?[1-9]|[12]\\\\d|3[01])\\s(jan|january|mar|march|may|jul|july|aug|august|oct|october|dec|december)(\\s(\\d{4}|\\d{2}))?|(0?[1-9]|[12]\\d|30)\\s(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)(\\s(\\d{4}|\\d{2}))?))\\b";
     // Case 3: pure text based relative dates (e.g. next Monday)
     public static String REGEX_DATESTRING_PATTERN_3 = "\\b(?i)(((on\\s)?(next\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))|((on the day after )?tomorrow))\\b";
     
@@ -137,28 +132,29 @@ public class RegExp {
 
     	// Case 1: DD-MM-YY(YY)
     	if(dateString.matches(REGEX_DATESTRING_PATTERN_1)) {
-    		String[] dateStringArray = dateString.split("[-/]");
-        	date[INDEX_DAY] = Integer.parseInt(dateStringArray[INDEX_DAY]);
-        	date[INDEX_MONTH] = Integer.parseInt(dateStringArray[INDEX_MONTH]);
-        	date[INDEX_YEAR] = Integer.parseInt(dateStringArray[INDEX_YEAR]);
-        	if(date[INDEX_YEAR] < NUM_TWO_DIGIT_YEAR) {
-        		date[INDEX_YEAR] += NUM_CURRENT_CENTURY;
-        	}
-        	return date;
+    		dateString = changeDateFormat(dateString);
+    		Parser parser = new Parser();
+    		List<DateGroup> groups = parser.parse(dateString);
+    		for(DateGroup group: groups) {
+    			List<Date> dates = group.getDates();
+    			MutableDateTime tempDate = new MutableDateTime(dates.get(0));
+    			date[0] = tempDate.getDayOfMonth();
+    			date[1] = tempDate.getMonthOfYear();
+    			date[2] = tempDate.getYear();
+    		}
+    		return date;
     	}
     	
     	// Case 2: Partial text based dates (e.g. 15 march 2014, 2 feb)
     	if(dateString.matches(REGEX_DATESTRING_PATTERN_2)) {
-    		String[] dateStringArray = dateString.split(" ");
-    		date[INDEX_DAY] = Integer.parseInt(dateStringArray[INDEX_DAY]); 
-    		date[INDEX_MONTH] = getMonthIndex(dateStringArray[INDEX_MONTH]);
-    		if(dateStringArray.length == 3) {
-    			date[INDEX_YEAR] = Integer.parseInt(dateStringArray[INDEX_YEAR]);
-    			if(date[INDEX_YEAR] < NUM_TWO_DIGIT_YEAR) {
-    				date[INDEX_YEAR] += NUM_CURRENT_CENTURY;
-    			}
-    		} else {
-    			date[INDEX_YEAR] = NUM_CURRENT_YEAR;
+    		Parser parser = new Parser();
+    		List<DateGroup> groups = parser.parse(dateString);
+    		for(DateGroup group: groups) {
+    			List<Date> dates = group.getDates();
+    			MutableDateTime tempDate = new MutableDateTime(dates.get(0));
+    			date[0] = tempDate.getDayOfMonth();
+    			date[1] = tempDate.getMonthOfYear();
+    			date[2] = tempDate.getYear();
     		}
     		return date;
     	}
@@ -251,7 +247,7 @@ public class RegExp {
     	Pattern pattern = Pattern.compile(regexDateArray[INDEX_FIRST_CASE]);
     	Matcher matcher = pattern.matcher(userInput);
     	if(matcher.find()) {
-    		dateArray.add(matcher.group(1));
+    		dateArray.add(matcher.group(2));
     		return dateArray;
     	}
     	
@@ -259,7 +255,7 @@ public class RegExp {
     	pattern = Pattern.compile(regexDateArray[INDEX_SECOND_CASE]);
     	matcher = pattern.matcher(userInput);
     	if(matcher.find()) {
-    		dateArray.add(matcher.group(1));
+    		dateArray.add(matcher.group(2));
     		return dateArray;
     	}
     	
@@ -377,7 +373,7 @@ public class RegExp {
 	 */
 	public static int getMonthIndex(String month) {
 		month = month.toLowerCase();
-		if(month.equals("jan") || month.equals("january")) {
+		if(month.equals(STRING_JAN) || month.equals(STRING_JANUARY)) {
 			return NUM_MONTH_JANUARY;
 		} else if(month.equals(STRING_FEB) || month.equals(STRING_FEBRUARY)) {
 			return NUM_MONTH_FEBRUARY;
