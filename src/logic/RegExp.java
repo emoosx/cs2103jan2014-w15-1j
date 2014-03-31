@@ -43,9 +43,32 @@ public class RegExp {
 	private static final int NUM_MONTH_OCTOBER = 10;
 	private static final int NUM_MONTH_NOVEMBER = 11;
 	private static final int NUM_MONTH_DECEMBER = 12;
+	private static final int NUM_MONTH_INVALID = -1;
 	private static final int NUM_CURRENT_YEAR = 2014;
 	
-	
+	private static final String STRING_JAN = "jan";
+	private static final String STRING_JANUARY = "january";
+	private static final String STRING_FEB = "feb";
+	private static final String STRING_FEBRUARY = "february";
+	private static final String STRING_MAR = "mar";
+	private static final String STRING_MARCH = "march";
+	private static final String STRING_APR = "apr";
+	private static final String STRING_APRIL = "april";
+	private static final String STRING_MAY = "may";
+	private static final String STRING_JUN = "jun";
+	private static final String STRING_JUNE = "june";
+	private static final String STRING_JUL = "jul";
+	private static final String STRING_JULY = "july";
+	private static final String STRING_AUG = "aug";
+	private static final String STRING_AUGUST = "august";
+	private static final String STRING_SEP = "sep";
+	private static final String STRING_SEPTEMBER = "september";
+	private static final String STRING_OCT = "oct";
+	private static final String STRING_OCTOBER = "october";
+	private static final String STRING_NOV = "nov";
+	private static final String STRING_NOVEMBER = "november";
+	private static final String STRING_DEC = "dec";
+	private static final String STRING_DECEMBER = "december";
 	private static final String STRING_TIMEZONE_AM = "am";
 	private static final String STRING_TIMEZONE_PM = "pm";
 	
@@ -356,32 +379,32 @@ public class RegExp {
 		month = month.toLowerCase();
 		if(month.equals("jan") || month.equals("january")) {
 			return NUM_MONTH_JANUARY;
-		} else if(month.equals("feb") || month.equals("february")) {
+		} else if(month.equals(STRING_FEB) || month.equals(STRING_FEBRUARY)) {
 			return NUM_MONTH_FEBRUARY;
-		} else if(month.equals("mar") || month.equals("march")) {
+		} else if(month.equals(STRING_MAR) || month.equals(STRING_MARCH)) {
 			return NUM_MONTH_MARCH;
-		} else if(month.equals("apr") || month.equals("april")) {
+		} else if(month.equals(STRING_APR) || month.equals(STRING_APRIL)) {
 			return NUM_MONTH_APRIL;
-		} else if(month.equals("may")) {
+		} else if(month.equals(STRING_MAY)) {
 			return NUM_MONTH_MAY;
-		} else if(month.equals("jun") || month.equals("june")) {
+		} else if(month.equals(STRING_JUN) || month.equals(STRING_JUNE)) {
 			return NUM_MONTH_JUNE;
-		} else if(month.equals("jul") || month.equals("july")) {
+		} else if(month.equals(STRING_JUL) || month.equals(STRING_JULY)) {
 			return NUM_MONTH_JULY;
-		} else if(month.equals("aug") || month.equals("august")) {
+		} else if(month.equals(STRING_AUG) || month.equals(STRING_AUGUST)) {
 			return NUM_MONTH_AUGUST;
-		} else if(month.equals("sep") || month.equals("september")) {
+		} else if(month.equals(STRING_SEP) || month.equals(STRING_SEPTEMBER)) {
 			return NUM_MONTH_SEPTEMBER;
-		} else if(month.equals("oct") || month.equals("october")) {
+		} else if(month.equals(STRING_OCT) || month.equals(STRING_OCTOBER)) {
 			return NUM_MONTH_OCTOBER;
-		} else if(month.equals("nov") || month.equals("november")) {
+		} else if(month.equals(STRING_NOV) || month.equals(STRING_NOVEMBER)) {
 			return NUM_MONTH_NOVEMBER;
-		} else if(month.equals("dec") || month.equals("december")) {
+		} else if(month.equals(STRING_DEC) || month.equals(STRING_DECEMBER)) {
 			return NUM_MONTH_DECEMBER;
 		}
 		
 		// asserting false because parameter should be a valid date string
 		assert(false);
-		return -1;
+		return NUM_MONTH_INVALID;
 	}
 }
