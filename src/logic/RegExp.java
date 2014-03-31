@@ -450,6 +450,8 @@ public class RegExp {
      *  @returns task description:String
      */
 	public static String parseDescription(String taskDescription) {
+		// Replacing all hybrid date and time regex with ""
+		taskDescription = taskDescription.replaceAll(REGEX_HYBRID_PATTERN_1, "");
 		
 		// Replacing all matched time regex with ""
 		for(int i=0; i<regexTimeInputArray.length; i++) {
@@ -460,10 +462,7 @@ public class RegExp {
 		for(int i=0; i<regexDateInputArray.length; i++) {
 			taskDescription = taskDescription.replaceAll(regexDateInputArray[i], "");
     	}
-		
-		// Replacing all hybrid date and time regex with ""
-		taskDescription = taskDescription.replaceAll(REGEX_HYBRID_PATTERN_1, "");
-		
+
 		// Replacing hashtags with ""
 		taskDescription = taskDescription.replaceAll(REGEX_HASHTAG, "");
 		
