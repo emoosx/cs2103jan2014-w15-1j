@@ -86,7 +86,7 @@ public class TaskParser {
 		hashtags = RegExp.parseHashtag(taskDescription);
 		taskDescription = RegExp.parseDescription(taskDescription);
 		try {
-			initializeTimeAndDate(timeArray, dateArray);
+			initializeDateTimeObjects(timeArray, dateArray);
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 		}
@@ -162,26 +162,28 @@ public class TaskParser {
 	}
 */
 	
-	private void initializeTimeAndDate(ArrayList<String> timeArray, ArrayList<String> dateArray) {
+	private void initializeDateTimeObjects(ArrayList<String> timeArray, ArrayList<String> dateArray) {
 		PandaLogger.getLogger().info("Initializing time and date variables...");
 		initializeTime(timeArray);
 		initializeDate(dateArray);
 		finalizeDateTime();
 	}
 	
-	// Given an array of user time inputs, method will parse start and end time
-	// accordingly
+	/*
+	 * Given an array of user time inputs, method will parse and initialize 
+	 * the primitive time variables. 
+	 */
 	private void initializeTime(ArrayList<String> timeArray) {
 		// Case 0: user inputs a floating task
 		if (timeArray.isEmpty()) {
 			return;
-		// Case 1: Timed task
+		// Case 1: Timed task, initialize start and end time primitive variables
 		} else if(timeArray.size() == 2) {
 			int[] startTimeArray = RegExp.timeFromTimeString(timeArray.get(0));
 			initializeStartTime(startTimeArray);
 			int[] endTimeArray = RegExp.timeFromTimeString(timeArray.get(1));
 			initializeEndTime(endTimeArray);
-		// Case 2: Deadline task initialized as end time variable
+		// Case 2: Deadline task, initialize end time primitive variables
 		} else {
 			int[] endTimeArray = RegExp.timeFromTimeString(timeArray.get(0));
 			initializeEndTime(endTimeArray);
@@ -198,8 +200,10 @@ public class TaskParser {
 		endMin = endTimeArray[NUM_MIN_INDEX];
 	}
 
-	// Given an array of user date inputs, method will parse start and end date
-	// accordingly
+	/*
+	 * Given an array of user date inputs, method will parse and initialize 
+	 * the primitive date variables. 
+	 */
 	private void initializeDate(ArrayList<String> dateArray) {
 		// Case 0: user inputs a floating task
 		if (dateArray.isEmpty()) {
@@ -244,22 +248,21 @@ public class TaskParser {
 	/* 
 	 * Method will finalize all DateTime objects accordingly
 	 * Main function of this method is to set unspecified date or time to default settings
+	 * and to create DateTime objects for Task.java
 	 * Default time: 00:00, Default date: today
 	 */
 	private void finalizeDateTime() {
 		// Case 1: Finalized floating task
-		if(startHour == null && endHour == null
-				&& startYear == null && endYear == null) {
+		if(isFloatingTask()) {
 			finalizeFloatingTask();
 		// Case 2: Finalized as deadline task as long as 1 date or 1 time input is specified
-		} else if((startHour == null && endHour != null)
-				|| (startYear == null && endYear !=null && startHour == null)) {
+		} else if(isDeadlineTask()) {
 			finalizeDeadlineTask();
 		// Case 3: Finalized timed task	
-		} else if(startHour != null && endHour != null) {
-			finalizeTimedTask();
+	//	} else if(startHour != null && endHour != null) {
+			//finalizeTimedTask();
 		} else {
-			assert(false);
+			finalizeTimedTask();
 		}
 	}
 
@@ -319,5 +322,29 @@ public class TaskParser {
 
 	public ArrayList<String> getHashTag() {
 		return hashtags;
+	}
+	
+	/*
+	 *  Checks if user input matches that of a floating task
+	 *  @returns true if all date and time variables are null
+	 */
+	private Boolean isFloatingTask() {
+		if(startHour == null && endHour == null
+				&& startYear == null && endYear == null) {
+			return true;
+		}
+		return false;
+	}
+	
+	/*
+	 * Checks if user input matches that of a deadline task
+	 * @returns true if only one time or date input is specified
+	 */
+	private Boolean isDeadlineTask() {
+		if((startHour == null && endHour != null)	// only one time input is specified
+				|| (startYear == null && endYear !=null && startHour == null)) { // only one date input is specified
+			return true;
+		}
+		return false;
 	}
 }
