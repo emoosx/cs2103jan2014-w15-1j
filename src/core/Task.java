@@ -31,8 +31,8 @@ public class Task {
 		this.endDateTime = null;
 		this.taskCreatedTimestamp = new DateTime();
 		this.taskDone = false;
-		this.parse(this.rawText);
 		this.markAsDelete = false;
+		this.parse(this.rawText);
 	}
 	
 	// This method will update the necessary attributes of the task
@@ -123,6 +123,6 @@ public class Task {
 	// Override method for toString
 	@Override
 	public String toString() {
-		return this.taskDescription + " " + this.markAsDelete;
+		return this.taskDescription + " " + String.valueOf(this.endDateTime);
 	}
 }

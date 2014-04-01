@@ -7,17 +7,19 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.List;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import org.joda.time.DateTime;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+
 import common.DateTimeTypeConverter;
 import common.PandaLogger;
-
 import core.Task;
 
 /* A singleton class to handle the persistence of Task objects
@@ -42,7 +44,7 @@ public class StorageHelper {
 				.enableComplexMapKeySerialization().create();
 	}
 
-	public void writeTasks(List<Task> t) {
+	public void writeTasks(ObservableList<Task> t) {
 		PandaLogger.getLogger().info(
 				"writeTasks: Length of Task array = " + t.size());
 		try (Writer writer = new OutputStreamWriter(new FileOutputStream(
@@ -63,15 +65,15 @@ public class StorageHelper {
 	// }
 	// }
 
-	public ArrayList<Task> getAllTasks() {
+	public ObservableList<Task> getAllTasks() {
 		PandaLogger.getLogger().info("getAllTasks");
-		ArrayList<Task> tasks = null;
+		ObservableList<Task> tasks = null;
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(this.file));
-			tasks = this.gson.fromJson(br, new TypeToken<List<Task>>() {
+			tasks = this.gson.fromJson(br, new TypeToken<ObservableList<Task>>() {
 			}.getType());
 			if (tasks == null) {
-				return new ArrayList<Task>();
+				return FXCollections.observableArrayList();
 			}
 			PandaLogger.getLogger().info(String.valueOf(tasks.size()));
 		} catch (Exception e) {
