@@ -31,7 +31,6 @@ public class Task {
 		this.endDateTime = null;
 		this.taskCreatedTimestamp = new DateTime();
 		this.taskDone = false;
-		//this.hasAlias = false;
 		this.parse(this.rawText);
 		this.markAsDelete = false;
 	}
@@ -111,7 +110,18 @@ public class Task {
 		return taskTags;
 	}
 	
+	public String getLabel() {
+		if(this.startDateTime == null && this.endDateTime == null) {
+			return "F";
+		} else if(this.startDateTime == null) {
+			return "D";
+		} else {
+			return "T";
+		}
+	}
+	
 	// Override method for toString
+	@Override
 	public String toString() {
 		return this.taskDescription + " " + this.markAsDelete;
 	}
