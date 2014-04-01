@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Insets;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -16,14 +15,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import logic.Command;
 import logic.Command.COMMAND_TYPE;
 import logic.CommandFactory;
 
-import common.PandaLogger;
+import com.alee.laf.WebLookAndFeel;
 
 public class TaskPandaUI extends JFrame {
 
@@ -36,9 +37,16 @@ public class TaskPandaUI extends JFrame {
 	private Border cache;
 	
 	private static final String PLACEHOLDER_DEFAULT = "Enter command";
+	private static final int PADDING = 5;
+	private static final String COLOR_BG = "#FCFFFF";
 
 	public TaskPandaUI() {
 		this.commandFactory = CommandFactory.INSTANCE;
+		try {
+            UIManager.setLookAndFeel(WebLookAndFeel.class.getCanonicalName());
+		} catch(Exception e) {
+			throw new Error("Failed setting look and feel");
+		}
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -49,19 +57,23 @@ public class TaskPandaUI extends JFrame {
 	}
 
 	private void initUI() {
-
-		PandaLogger.getLogger().info("initUI");
 		basic = new JPanel();
+		basic.setOpaque(true);
+		basic.setBackground(new Color(255, 255, 255, 1));
 		basic.setLayout(new BoxLayout(basic, BoxLayout.Y_AXIS));
 		add(basic);
 
 		topPanel = new JPanel(new BorderLayout(0, 0));
 		inputField = new PlaceholderTextField(40);
+		inputField.setOpaque(false);
+		inputField.setBackground(new Color(236, 240, 241, 1));
 		inputField.setPlaceholder("Hello there!");
-		cache = inputField.getBorder();
 		inputField.setPreferredSize(new Dimension(450, 45));
+		inputField.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createLineBorder(Color.decode(COLOR_BG)),
+				BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING)));
 		inputField.setFont(new Font("Sans-Serif", Font.BOLD, 18));
-		inputField.setBorder(new EmptyBorder(new Insets(10, 10, 10, 10)));
+		
 		inputField.addKeyListener(new KeyAdapter() {
 			public void keyReleased(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -75,6 +87,26 @@ public class TaskPandaUI extends JFrame {
 
 			public void keyPressed(KeyEvent e) {
 			}
+		});
+		
+		inputField.getDocument().addDocumentListener(new DocumentListener() {
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				System.out.println("insertUpdate");
+				System.out.println(inputField.getText());
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				System.out.println("removeUPdate");
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				System.out.println("changedUpdate");
+			}
+			
 		});
 		JSeparator separator = new JSeparator();
 		separator.setForeground(Color.BLACK);
@@ -92,6 +124,7 @@ public class TaskPandaUI extends JFrame {
 		bottomPanel.add(scrollPane);
 
 		add(basic);
+		setUndecorated(true);	// Remove title bar
 		pack();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
@@ -101,8 +134,12 @@ public class TaskPandaUI extends JFrame {
 		assert (inputText != null);
 		Command command = new Command(inputText);
 		if (command.command != COMMAND_TYPE.INVALID) {
-
-			inputField.setBorder(cache);
+			inputField.setBorder(
+					BorderFactory.createCompoundBorder(
+							BorderFactory.createLineBorder(Color.decode(COLOR_BG)),
+							BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING)
+                    )
+            );
 			inputField.setPlaceholder(PLACEHOLDER_DEFAULT);
 			commandFactory.process(command);
 			basic.add(bottomPanel);
@@ -111,7 +148,9 @@ public class TaskPandaUI extends JFrame {
 			pack();
 			tableModel.fireTableDataChanged();
 		} else {
-			inputField.setBorder(BorderFactory.createLineBorder(Color.decode("#ff0000")));
+			inputField.setBorder(BorderFactory.createCompoundBorder(
+					BorderFactory.createLineBorder(Color.decode("#c0392b")), 
+					BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING)));
 			inputField.setPlaceholder("Invalid Command!");
 		}
 	}

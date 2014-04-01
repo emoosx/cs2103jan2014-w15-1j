@@ -1,25 +1,30 @@
 package view;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.text.Document;
 
 @SuppressWarnings("serial")
 public class PlaceholderTextField extends JTextField {
 
-    public static void main(final String[] args) {
-        final PlaceholderTextField tf = new PlaceholderTextField("");
-        tf.setColumns(20);
-        tf.setPlaceholder("All your base are belong to us!");
-        final Font f = tf.getFont();
-        tf.setFont(new Font(f.getName(), f.getStyle(), 30));
-        JOptionPane.showMessageDialog(null, tf);
-    }
+//    public static void main(final String[] args) {
+//        final PlaceholderTextField tf = new PlaceholderTextField("");
+//        tf.setColumns(20);
+//        tf.setPlaceholder("All your base are belong to us!");
+//        final Font f = tf.getFont();
+//        tf.setFont(new Font(f.getName(), f.getStyle(), 30));
+//        JOptionPane.showMessageDialog(null, tf);
+//    }
 
     private String placeholder;
 
     public PlaceholderTextField() {
+    	setOpaque(false);
     }
 
     public PlaceholderTextField(
@@ -48,12 +53,11 @@ public class PlaceholderTextField extends JTextField {
 
     @Override
     protected void paintComponent(final Graphics pG) {
-        super.paintComponent(pG);
 
+        super.paintComponent(pG);
         if (placeholder.length() == 0 || getText().length() > 0) {
             return;
         }
-
         final Graphics2D g = (Graphics2D) pG;
         g.setRenderingHint(
             RenderingHints.KEY_ANTIALIASING,
@@ -66,5 +70,4 @@ public class PlaceholderTextField extends JTextField {
     public void setPlaceholder(final String s) {
         placeholder = s;
     }
-
 }
