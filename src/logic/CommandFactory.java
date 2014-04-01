@@ -8,12 +8,12 @@ import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.logging.Logger;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import logic.Command.COMMAND_TYPE;
 import storage.StorageHelper;
 import storage.UndoStorage;
-
 import common.PandaLogger;
-
 import core.Task;
 
 public class CommandFactory {
@@ -49,8 +49,9 @@ public class CommandFactory {
 	public final String UNDO_DONEALL = "doneall";
 	public final String UNDO_ARCHIVEALL = "archiveall";
 
-	private List<Task> tasks;
-	private LinkedHashMap<Integer, Integer> tasksMap;
+//	private List<Task> tasks;
+	private ObservableList<Task> tasks;
+	private LinkedHashMap<Integer, Integer> tasksMap; // <displayId, realId>
 
 	private StorageHelper storage;
 	private UndoStorage undoStorage;
@@ -59,7 +60,8 @@ public class CommandFactory {
 	private Stack<SimpleEntry<Integer, Command>> undoStack;
 
 	private CommandFactory() {
-		this.tasks = new ArrayList<Task>();
+		this.tasks = FXCollections.observableArrayList();
+//		this.tasks = new ArrayList<Task>();
 		this.undoStack = new Stack<SimpleEntry<Integer, Command>>();
 		this.tasksMap = new LinkedHashMap<Integer, Integer>(); // <ID to display, real ID in tasks>
 		this.storage = StorageHelper.INSTANCE;
@@ -87,7 +89,7 @@ public class CommandFactory {
 		}
 	}
 
-	public List<Task> getTasks() {
+	public ObservableList<Task> getTasks() {
 		return this.tasks;
 	}
 	
@@ -186,7 +188,31 @@ public class CommandFactory {
 
 	private void doList(Command command) {
 		logger.info("doList");
-//		this.populateTasksMapWithDefaultCriteria();
+		ArrayList<Integer> result = new ArrayList<Integer>();
+
+		// some hard-coded cases for (tmw|today|this week|floating|timed|deadline)
+		if(command.rawText.equalsIgnoreCase("tmw") || command.rawText.equalsIgnoreCase("tomorrow")) {
+			result = Criteria.getAllTasksforTomorrow(tasks);
+		} else if(command.rawText.equalsIgnoreCase("today")) {
+			logger.info(tasks.toString());
+			result = Criteria.getAllTasksforToday(tasks);
+		} else if(command.rawText.equalsIgnoreCase("this week")) {
+			result = Criteria.getAllTasksforThisWeek(tasks);
+		} else if(command.rawText.equalsIgnoreCase("floating")) {
+			result = Criteria.getAllUndeletedFloatingTasks(tasks);
+		} else if(command.rawText.equalsIgnoreCase("deadline")) {
+			result = Criteria.getAllUndeletedDeadlineTasks(tasks);
+		} else if(command.rawText.equalsIgnoreCase("timed")) {
+			result = Criteria.getAllUndeletedTimedTasks(tasks);
+		} else {
+			// assume it as a timestamp
+			System.out.println("timestamp");
+		}
+
+		this.tasksMap.clear();
+		for(int i = 0; i < result.size(); i++) {
+			this.tasksMap.put(i, result.get(i));
+		}
 	}
 
 	/* remove the original task from tasksMap and replace it with new task */

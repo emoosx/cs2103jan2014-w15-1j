@@ -1,11 +1,10 @@
 package logic;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
+import org.joda.time.DateTime;
+import org.joda.time.MutableDateTime;
 
 import core.Task;
 
@@ -59,7 +58,7 @@ public class Criteria {
 		return result;
 	}
 	
-	public static ArrayList<Integer> getAllUndeletedTimedTasks(List <Task> tasks, String keyword) {
+	public static ArrayList<Integer> getAllUndeletedTimedTasks(List <Task> tasks) {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		for(Task t: tasks){
 			if(t.getMarkAsDelete() == false) {
@@ -70,7 +69,7 @@ public class Criteria {
 		return result;
 	}
 	
-	public static ArrayList<Integer> getAllTimedTasks(List <Task> tasks, String keyword) {
+	public static ArrayList<Integer> getAllTimedTasks(List <Task> tasks) {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		for(Task t: tasks){
 				if(t.getTaskStartTime() != null && t.getTaskEndTime() != null)
@@ -79,7 +78,7 @@ public class Criteria {
 		return result;
 	}
 	
-	public static ArrayList<Integer> getAllUndeletedDeadlineTasks(List <Task> tasks, String keyword) {
+	public static ArrayList<Integer> getAllUndeletedDeadlineTasks(List <Task> tasks) {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		for(Task t: tasks){
 			if(t.getMarkAsDelete() == false) {
@@ -90,7 +89,7 @@ public class Criteria {
 		return result;
 	}
 	
-	public static ArrayList<Integer> getAllDeadlineTasks(List <Task> tasks, String keyword) {
+	public static ArrayList<Integer> getAllDeadlineTasks(List <Task> tasks) {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		for(Task t: tasks){
 				if(t.getTaskStartTime() == null && t.getTaskEndTime() != null)
@@ -99,13 +98,41 @@ public class Criteria {
 		return result;
 	}
 	
-	public static ArrayList<Integer> getAllTaskforToday(List<Task> tasks) {
-		return new ArrayList<Integer>();
+	public static ArrayList<Integer> getAllTasksforToday(List<Task> tasks) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		DateTime today = new DateTime();
+		for(Task t: tasks) {
+			if(t.getMarkAsDelete() == false && t.getTaskDescription().startsWith("aa")) {
+//			   t.getTaskEndTime().withTimeAtStartOfDay().isEqual(today.withTimeAtStartOfDay())) {
+				result.add(tasks.indexOf(t));
+			}
+		}
+		return result;
 	}
 	
 	public static ArrayList<Integer> getAllTasksforTomorrow(List <Task> tasks) {
-		return new ArrayList<Integer>();
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		DateTime today = new DateTime();
+		DateTime tomorrow = today.plusDays(1);
+		for(Task t: tasks) {
+			if(t.getMarkAsDelete() == false && 
+               t.getTaskEndTime().withTimeAtStartOfDay().isEqual(tomorrow.withTimeAtStartOfDay())) {
+				result.add(tasks.indexOf(t));
+			}
+		}
+		return result;
 	}
 	
-	
+	public static ArrayList<Integer> getAllTasksforThisWeek(List <Task> tasks) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		DateTime today = new DateTime();
+		DateTime nextWeek = today.plusDays(1);
+		for(Task t: tasks) {
+			if(t.getMarkAsDelete() == false &&
+			   t.getTaskEndTime().withTimeAtStartOfDay().isEqual(nextWeek.withTimeAtStartOfDay())) {
+				result.add(tasks.indexOf(t));
+			}
+		}
+		return result;
+	}
 }

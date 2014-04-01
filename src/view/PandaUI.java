@@ -29,7 +29,8 @@ public class PandaUI extends Application {
 	private final int PADDING = 10;
 	
 	CommandFactory commandFactory = CommandFactory.INSTANCE;
-	ObservableList<Task> tasks = FXCollections.observableArrayList(commandFactory.getTasks());
+//	ObservableList<Task> tasks = FXCollections.observableArrayList(commandFactory.getTasks());
+	ObservableList<Task> tasks = commandFactory.getTasks();
 	ListView<Task> list = new ListView<Task>();
 	TextField inputField;
 	
@@ -69,7 +70,7 @@ public class PandaUI extends Application {
 						System.out.println("Invalid command");
 					} else{
 						commandFactory.process(command);
-						updateTasksList();
+//						updateTasksList();
 						inputField.clear();
 					}
 				}
