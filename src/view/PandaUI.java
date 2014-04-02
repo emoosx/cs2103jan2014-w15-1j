@@ -30,7 +30,7 @@ public class PandaUI extends Application {
 	
 	CommandFactory commandFactory = CommandFactory.INSTANCE;
 //	ObservableList<Task> tasks = FXCollections.observableArrayList(commandFactory.getTasks());
-	ObservableList<Task> tasks = commandFactory.getTasks();
+	ObservableList<Task> tasks = commandFactory.getDisplayTasks();
 	ListView<Task> list = new ListView<Task>();
 	TextField inputField;
 	
@@ -70,7 +70,7 @@ public class PandaUI extends Application {
 						System.out.println("Invalid command");
 					} else{
 						commandFactory.process(command);
-//						updateTasksList();
+						updateTasksList();
 						inputField.clear();
 					}
 				}
@@ -99,7 +99,7 @@ public class PandaUI extends Application {
 	}
 	
 	private void updateTasksList() {
-		tasks = FXCollections.observableArrayList(commandFactory.getTasks());
+		tasks = FXCollections.observableArrayList(commandFactory.getDisplayTasks());
 		list.setItems(tasks);
 	}
 }
