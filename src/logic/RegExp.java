@@ -76,7 +76,7 @@ public class RegExp {
     	// Case 1: DD-MM-YY(YY) or DD/MM/YY(YY) 
     	"\\b(?i)(on\\s((0?[1-9]|[12]\\d|3[01])[-/](0?[13578]|1[02])[-/](\\d{4}|\\d{2})|(0?[1-9]|[12]\\d|30)[-/](0?[1-9]|1[02])[-/](\\d{4}|\\d{2})))\\b",
     	// Case 2: partial text based dates (e.g. 15 march 2014, 2 feb)
-    	"\\b(?i)(on\\s)?(((0?[1-9]|[12]\\d|3[01])\\s(jan(uary)?|mar(ch)?|may|jul(y)?|aug(ust)?|oct(ober)?|dec(ember)?)(\\s(\\d{4}|\\d{2}))?|(0?[1-9]|[12]\\d|30)\\s(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(tember)?|oct(ober)?|nov(ember)?|dec(ember)?)(\\s(\\d{4}|\\d{2}))?))\\b",
+    	"\\b(?i)(on\\s)?(((0?[1-9]|[12]\\d|3[01])\\s(jan(uary)?|mar(ch)?|may|jul(y)?|aug(ust)?|oct(ober)?|dec(ember)?)(\\s\\d{4})?|(0?[1-9]|[12]\\d|30)\\s(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(tember)?|oct(ober)?|nov(ember)?|dec(ember)?)(\\s\\d{4})?))\\b",
     	// Case 3: pure text based relative dates (e.g. next Monday)
     	"\\b(?i)(((on\\s)?(next\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))|((on the day after )?tomorrow))\\b"
     	};
@@ -120,7 +120,7 @@ public class RegExp {
     	// Case 1: DD/MM/YY(YY) or DD-MM-YY(YY) or  
         "((0?[1-9]|[12]\\d|3[01])[-/](0?[13578]|1[02])[-/](\\d{4}|\\d{2})|(0?[1-9]|[12]\\d|30)[-/](0?[1-9]|1[02])[-/](\\d{4}|\\d{2}))",
         // Case 2: Partial text based dates (e.g. 15 march 2014, 2 feb)
-        "\\b(?i)(((0?[1-9]|[12]\\\\d|3[01])\\s(jan|january|mar|march|may|jul|july|aug|august|oct|october|dec|december)(\\s(\\d{4}|\\d{2}))?|(0?[1-9]|[12]\\d|30)\\s(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)(\\s(\\d{4}|\\d{2}))?))\\b",
+        "\\b(?i)(((0?[1-9]|[12]\\\\d|3[01])\\s(jan|january|mar|march|may|jul|july|aug|august|oct|october|dec|december)(\\s\\d{4})?|(0?[1-9]|[12]\\d|30)\\s(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)(\\s\\d{4})?))\\b",
         // Case 3: pure text based relative dates (e.g. next Monday)
         "\\b(?i)(((on\\s)?(next\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))|((on the day after )?tomorrow))\\b"
     };
@@ -156,7 +156,7 @@ public class RegExp {
      * 
      */
     // Case 1: (by/on/from/to/at) <date> <time>
-    public static String REGEX_HYBRID_PATTERN_1 = "\\b(by |on |from |to |at )(((0?[1-9]|[12]\\d|3[01])[-/](0?[13578]|1[02])[-/](\\d{4}|\\d{2})|(0?[1-9]|[12]\\d|30)[-/](0?[1-9]|1[02])[-/](\\d{4}|\\d{2}))|(((0?[1-9]|[12]\\d|3[01])\\s(jan(uary)?|mar(ch)?|may|jul(y)?|aug(ust)?|oct(ober)?|dec(ember)?)(\\s(\\d{4}|\\d{2}))?|(0?[1-9]|[12]\\d|30)\\s(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(tember)?|oct(ober)?|nov(ember)?|dec(ember)?)(\\s(\\d{4}|\\d{2}))?)))(\\s(([1-9]|1[0-2])(:[0-5][0-9])?[AaPp][Mm]|([0-1][0-9]|2[0-3]):?[0-5][0-9]))?\\b"; 
+    public static String REGEX_HYBRID_PATTERN_1 = "\\b(by |on |from |to |at )(((0?[1-9]|[12]\\d|3[01])[-/](0?[13578]|1[02])[-/](\\d{4}|\\d{2})|(0?[1-9]|[12]\\d|30)[-/](0?[1-9]|1[02])[-/](\\d{4}|\\d{2}))|(((0?[1-9]|[12]\\d|3[01])\\s(jan(uary)?|mar(ch)?|may|jul(y)?|aug(ust)?|oct(ober)?|dec(ember)?)(\\s\\d{4})?|(0?[1-9]|[12]\\d|30)\\s(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(tember)?|oct(ober)?|nov(ember)?|dec(ember)?)(\\s\\d{4})?)))(\\s(([1-9]|1[0-2])(:[0-5][0-9])?[AaPp][Mm]|([0-1][0-9]|2[0-3]):?[0-5][0-9]))?\\b"; 
     
     // Hash Tag Regular Expressions
     public static String REGEX_HASHTAG = "(?<=^|(?<=[^a-zA-Z0-9-\\.]))#([A-Za-z]+[A-Za-z0-9]+)";
@@ -386,8 +386,8 @@ public class RegExp {
     	pattern = Pattern.compile(REGEX_HYBRID_PATTERN_1);
     	matcher = pattern.matcher(userInput);
     	while(matcher.find()) {
-    		if(matcher.group(3) != null) {
-    			dateArray.add(matcher.group(3));
+    		if(matcher.group(2) != null) {
+    			dateArray.add(matcher.group(2));
     		}
     	}
     	// Returning empty date array indicates that user input produces 0 date parameter
@@ -437,8 +437,8 @@ public class RegExp {
 		matcher = pattern.matcher(userInput);
 		while(matcher.find()) {
 			// do not add if date is specified but time is not
-			if(matcher.group(38)!=null) {
-				timeArray.add(matcher.group(38));
+			if(matcher.group(36)!=null) {
+				timeArray.add(matcher.group(36));
 			}
 		}
 		// Returning empty time array indicates that user input produces 0 time parameter
