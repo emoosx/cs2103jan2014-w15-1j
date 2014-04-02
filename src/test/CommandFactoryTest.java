@@ -33,6 +33,18 @@ public class CommandFactoryTest {
 	@After
 	public void tearDown() throws Exception {
 	}
+	
+	@Test
+	public void test() {
+		LinkedHashMap<Integer, Integer> map = new LinkedHashMap<Integer, Integer>();
+		map.put(0,0);
+		map.put(1,1);
+		map.put(2,2);
+		map.put(3,3);
+		map.put(4,4);
+		map.put(5,5);
+		map.put(6,6);
+	}
 
 	@Test
 	public void testHashMapUpdate() {

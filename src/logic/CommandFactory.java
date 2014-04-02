@@ -3,7 +3,7 @@ package logic;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.logging.Logger;
@@ -13,7 +13,9 @@ import javafx.collections.ObservableList;
 import logic.Command.COMMAND_TYPE;
 import storage.StorageHelper;
 import storage.UndoStorage;
+
 import common.PandaLogger;
+
 import core.Task;
 
 public class CommandFactory {
@@ -50,7 +52,8 @@ public class CommandFactory {
 	public final String UNDO_ARCHIVEALL = "archiveall";
 
 //	private List<Task> tasks;
-	private ObservableList<Task> tasks;
+	private ArrayList<Task> tasks;
+	private ObservableList<Task> display;
 	private LinkedHashMap<Integer, Integer> tasksMap; // <displayId, realId>
 
 	private StorageHelper storage;
@@ -60,8 +63,8 @@ public class CommandFactory {
 	private Stack<SimpleEntry<Integer, Command>> undoStack;
 
 	private CommandFactory() {
-		this.tasks = FXCollections.observableArrayList();
-//		this.tasks = new ArrayList<Task>();
+		this.tasks = new ArrayList<Task>();
+		this.display = FXCollections.observableArrayList();
 		this.undoStack = new Stack<SimpleEntry<Integer, Command>>();
 		this.tasksMap = new LinkedHashMap<Integer, Integer>(); // <ID to display, real ID in tasks>
 		this.storage = StorageHelper.INSTANCE;
@@ -72,6 +75,7 @@ public class CommandFactory {
 	/* populate tasks buffer and undo command stack */ 
 	private void fetch() {
 		this.tasks = this.storage.getAllTasks();
+		this.display = FXCollections.observableArrayList(tasks);
 		this.populateTasksMapWithDefaultCriteria();
 		this.populateUndoStack();
 	}
@@ -89,8 +93,16 @@ public class CommandFactory {
 		}
 	}
 
-	public ObservableList<Task> getTasks() {
+	public ArrayList<Task> getTasks() {
 		return this.tasks;
+	}
+	
+	public ObservableList<Task> getDisplayTasks() {
+		this.display.clear();
+		for(Map.Entry<Integer, Integer> entry : tasksMap.entrySet()) {
+			this.display.add(tasks.get(entry.getValue()));
+		}
+		return FXCollections.observableArrayList(this.display);
 	}
 	
 	public LinkedHashMap<Integer, Integer> getTasksMap() {
@@ -189,9 +201,12 @@ public class CommandFactory {
 	private void doList(Command command) {
 		logger.info("doList");
 		ArrayList<Integer> result = new ArrayList<Integer>();
-
+		
 		// some hard-coded cases for (tmw|today|this week|floating|timed|deadline)
-		if(command.rawText.equalsIgnoreCase("tmw") || command.rawText.equalsIgnoreCase("tomorrow")) {
+		if(command.rawText == null || command.rawText.equals("")) {
+			result = Criteria.getAllUndeletedTasks(tasks);
+		}
+		else if(command.rawText.equalsIgnoreCase("tmw") || command.rawText.equalsIgnoreCase("tomorrow")) {
 			result = Criteria.getAllTasksforTomorrow(tasks);
 		} else if(command.rawText.equalsIgnoreCase("today")) {
 			logger.info(tasks.toString());
