@@ -38,7 +38,7 @@ public class PandaUI extends Application {
 	private static final String LIST_ID = "list";
 	// app
 	private static final int APP_WIDTH = 500;
-	private static final int APP_HEIGHT = 500;
+	private static final int APP_HEIGHT = 450;
 	private static final String CSS_PATH = "resources/css/style.css";
 	
 	CommandFactory commandFactory = CommandFactory.INSTANCE;
@@ -103,7 +103,7 @@ public class PandaUI extends Application {
 	private VBox addList() {
 
 		VBox vbox = new VBox();
-//		vbox.setSpacing(8);
+		vbox.setSpacing(8);
 		
         list.setItems(tasks);
         list.setCellFactory(new Callback<ListView<Task>, ListCell<Task>>() {
