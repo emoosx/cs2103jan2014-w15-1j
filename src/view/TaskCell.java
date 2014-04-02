@@ -17,7 +17,7 @@ public class TaskCell extends ListCell<Task> {
 
 	private static final String FONT_ROBOTO = "Roboto";
 	
-	private static final int GRID_HGAP = 10;
+	private static final int GRID_HGAP = 7;
 	private static final int GRID_VGAP = 4;
 	private static final String GRID_ID = "grid";
 	
@@ -52,7 +52,7 @@ public class TaskCell extends ListCell<Task> {
 	
 	private void configureGrid() {
 		grid.setHgap(GRID_HGAP);
-		grid.setVgap(GRID_VGAP);
+//		grid.setVgap(GRID_VGAP);
 		grid.setId(GRID_ID);
 	}
 	
@@ -76,7 +76,7 @@ public class TaskCell extends ListCell<Task> {
 	}
 	
 	private void addControlsToGrid() {
-		grid.add(icon, 0, 0, 1, 2);
+		grid.add(icon, 0, 0, 1, 3);
 		grid.add(name, 1, 0, 2, 1);
 		grid.add(startTimestamp, 1, 1);
 		grid.add(endTimestamp, 2, 1);
@@ -112,19 +112,24 @@ public class TaskCell extends ListCell<Task> {
 		icon.setText(label);
 		name.setText(task.getTaskDescription());
 		
-		DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM d, yyyy HH:mm");
+		DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM d, yy HH:mm");
 		DateTime start = task.getTaskStartTime();
 		if(start == null) {
-			startTimestamp.setText("start null");
+			startTimestamp.setText("");
 		} else {
 			startTimestamp.setText(fmt.print(start));
 		}
 		
 		DateTime end = task.getTaskEndTime();
 		if(end == null) {
-			endTimestamp.setText("end null");
+			endTimestamp.setText("");
 		} else {
-			endTimestamp.setText(fmt.print(end));
+			// TODO: rewrite it property with paddings
+			if(start != null) {
+				endTimestamp.setText("        " + fmt.print(end));
+			} else {
+                endTimestamp.setText(fmt.print(end));
+			}
 		}
 
 		setGraphic(grid);
