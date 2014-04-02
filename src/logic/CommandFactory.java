@@ -323,13 +323,18 @@ public class CommandFactory {
 			result = Criteria.getAllUndeletedTimedTasks(tasks);
 		} else {
 			// assume it as a timestamp
-			System.out.println("timestamp");
+			result = Criteria.getAllUndeletedTasks(tasks);
 		}
 
 		this.tasksMap.clear();
 		for(int i = 0; i < result.size(); i++) {
 			this.tasksMap.put(i, result.get(i));
 		}
+	}
+	
+	private void doSearch(Command command) {
+		ArrayList<Integer> results = new ArrayList<Integer>();
+		
 	}
 
 	/* remove the original task from tasksMap and replace it with new task */
