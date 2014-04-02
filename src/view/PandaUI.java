@@ -57,7 +57,7 @@ public class PandaUI extends Application {
 		inputField.textProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				
+				handleSearch(oldValue, newValue);
 			}
 		});
 		
@@ -98,6 +98,33 @@ public class PandaUI extends Application {
         return vbox;
 	}
 	
+	private void handleSearch(String oldValue, String newValue) {
+		// user pressed delete and reverse back to the old list
+		if(oldValue != null && (newValue.length() < oldValue.length())) {
+			updateTasksList();
+		}
+
+		String[] parts = newValue.toLowerCase().split(" ");
+		
+		
+		// create a temporary subentries matching list and replace it
+		ObservableList<Task> subentries = FXCollections.observableArrayList();
+		for(Task task: list.getItems()) {
+			boolean match = true;
+			for(String part: parts) {
+				if(!task.getTaskDescription().toLowerCase().contains(part)) {
+					match = false;
+					break;
+				}
+			}
+			if(match) {
+				subentries.add(task);
+			}
+		}
+		
+		list.setItems(subentries);
+		
+	}
 	private void updateTasksList() {
 		tasks = FXCollections.observableArrayList(commandFactory.getDisplayTasks());
 		list.setItems(tasks);

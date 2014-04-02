@@ -42,7 +42,7 @@ public class StorageHelper {
 				.enableComplexMapKeySerialization().create();
 	}
 
-	public void writeTasks(ArrayList<Task> t) {
+	public void writeTasks(List<Task> t) {
 		PandaLogger.getLogger().info(
 				"writeTasks: Length of Task array = " + t.size());
 		try (Writer writer = new OutputStreamWriter(new FileOutputStream(

@@ -102,11 +102,12 @@ public class Criteria {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		DateTime today = new DateTime();
 		for(Task t: tasks) {
-			if(t.getMarkAsDelete() == false && t.getTaskDescription().startsWith("aa")) {
-//			   t.getTaskEndTime().withTimeAtStartOfDay().isEqual(today.withTimeAtStartOfDay())) {
+			if(t.getMarkAsDelete()==false && t.getTaskEndTime() != null && 
+			   t.getTaskEndTime().withTimeAtStartOfDay().isEqual(today.withTimeAtStartOfDay())) {
 				result.add(tasks.indexOf(t));
 			}
 		}
+		System.out.println(result.size());
 		return result;
 	}
 	
@@ -115,7 +116,7 @@ public class Criteria {
 		DateTime today = new DateTime();
 		DateTime tomorrow = today.plusDays(1);
 		for(Task t: tasks) {
-			if(t.getMarkAsDelete() == false && 
+			if(t.getMarkAsDelete() == false && t.getTaskEndTime() != null &&
                t.getTaskEndTime().withTimeAtStartOfDay().isEqual(tomorrow.withTimeAtStartOfDay())) {
 				result.add(tasks.indexOf(t));
 			}
@@ -128,7 +129,7 @@ public class Criteria {
 		DateTime today = new DateTime();
 		DateTime nextWeek = today.plusDays(1);
 		for(Task t: tasks) {
-			if(t.getMarkAsDelete() == false &&
+			if(t.getMarkAsDelete() == false && t.getTaskEndTime() != null &&
 			   t.getTaskEndTime().withTimeAtStartOfDay().isEqual(nextWeek.withTimeAtStartOfDay())) {
 				result.add(tasks.indexOf(t));
 			}
