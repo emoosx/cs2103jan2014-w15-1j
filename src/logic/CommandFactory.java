@@ -2,7 +2,9 @@ package logic;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.EmptyStackException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
@@ -11,6 +13,7 @@ import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import logic.Command.COMMAND_TYPE;
+import storage.RedoStorage;
 import storage.StorageHelper;
 import storage.UndoStorage;
 
@@ -50,25 +53,32 @@ public class CommandFactory {
 	public final String UNDO_ARCHIVE = "archive";
 	public final String UNDO_DONEALL = "doneall";
 	public final String UNDO_ARCHIVEALL = "archiveall";
+	
 
 //	private List<Task> tasks;
-	private ArrayList<Task> tasks;
+	private List<Task> tasks;
 	private ObservableList<Task> display;
 	private LinkedHashMap<Integer, Integer> tasksMap; // <displayId, realId>
+	private List<Command> redoCommands;
 
 	private StorageHelper storage;
 	private UndoStorage undoStorage;
+	private RedoStorage redoStorage;
 	private Logger logger = PandaLogger.getLogger();
 
 	private Stack<SimpleEntry<Integer, Command>> undoStack;
+	private Stack<SimpleEntry<Integer, Command>> redoStack;
 
 	private CommandFactory() {
 		this.tasks = new ArrayList<Task>();
 		this.display = FXCollections.observableArrayList();
+		this.redoCommands = new ArrayList<Command>();
 		this.undoStack = new Stack<SimpleEntry<Integer, Command>>();
+		this.redoStack = new Stack<SimpleEntry<Integer, Command>>();
 		this.tasksMap = new LinkedHashMap<Integer, Integer>(); // <ID to display, real ID in tasks>
 		this.storage = StorageHelper.INSTANCE;
 		this.undoStorage = UndoStorage.INSTANCE;
+		this.redoStorage = RedoStorage.INSTANCE;
 		this.fetch();
 	}
 	
@@ -78,11 +88,17 @@ public class CommandFactory {
 		this.display = FXCollections.observableArrayList(tasks);
 		this.populateTasksMapWithDefaultCriteria();
 		this.populateUndoStack();
+		this.populateRedoStack();
 	}
 
 	/* initialize and populate undoStack */
 	private void populateUndoStack() {
 		this.undoStack = this.undoStorage.getAllCommands();
+	}
+	
+	/* initialize and populate redoStack */
+	private void populateRedoStack() {
+		this.redoStack = this.redoStorage.getAllCommands();
 	}
 	
 	/* by default, display tasks which are not marked as deleted */
@@ -93,7 +109,7 @@ public class CommandFactory {
 		}
 	}
 
-	public ArrayList<Task> getTasks() {
+	public List<Task> getTasks() {
 		return this.tasks;
 	}
 	
@@ -131,6 +147,9 @@ public class CommandFactory {
 		case DONE:
 			doDone(command);
 			break;
+		case REDO:
+			doRedo();
+			break;
 		case CLEAR:
 			break;
 		case DONEALL:
@@ -149,12 +168,17 @@ public class CommandFactory {
 
 	private void doUndo() {
 		logger.info("doUndo");
+		if(!undoStack.isEmpty()){
 		SimpleEntry<Integer, Command> lastEntry = this.undoStack.pop();
 		int taskid = lastEntry.getKey();
 		Command lastCommand = lastEntry.getValue();
 		logger.info("Last Command:" + lastCommand.toString());
 		executeUndo(taskid, lastCommand);
 		syncTasks();
+		System.out.println("After undo:" + tasksMap);
+		}else{
+			  throw new EmptyStackException();
+		}
 	}
 
 	private void executeUndo(int taskid, Command command) {
@@ -175,6 +199,83 @@ public class CommandFactory {
 			return;
 		}
 	}
+	
+	private void doRedo() {
+		logger.info("doRedo");
+		if(!redoStack.isEmpty()){
+		SimpleEntry<Integer, Command> lastEntry = this.redoStack.pop();
+		int taskid = lastEntry.getKey();
+		Command lastCommand = lastEntry.getValue();
+		logger.info("Last Command:" + lastCommand.toString());
+		executeRedo(taskid, lastCommand);
+		syncTasks();
+		System.out.println("After redo:" + tasksMap);
+		}else{
+			  throw new EmptyStackException();
+		}
+	}
+	
+	private void executeRedo(int taskid, Command command) {
+		assert (command.rawText == null);
+		switch (command.command) {
+		case ADD:
+			doRedoAdd(taskid, command);
+			break;
+		case EDIT:
+			doRedoEdit(taskid, command);
+			break;
+		case DELETE:
+			doRedoDelete(taskid, command);
+			break;
+		case DONE:
+			doRedoDone(taskid, command);
+		default:
+			return;
+		}
+	}
+	
+
+	private void doRedoDone(int taskid, Command command) {
+		doDone(command);	
+	}
+
+	private void doRedoDelete(int taskid, Command command) {
+	doDelete(command);
+	}
+
+	private void doRedoEdit(int taskid, Command command) {
+	doEdit(command);
+	}
+
+	private void doRedoAdd(int taskid, Command command) {
+	doAdd(command);
+	}
+	
+	private Command convertAddTaskToCommand(int taskid){
+		Task taskToAdd = tasks.get(taskid);
+		ArrayList<String> tags = taskToAdd.getTaskTags();
+	    //desc time date 
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(COMMAND_TYPE.ADD.name().toLowerCase() + " " + taskToAdd.getTaskDescription());
+		//deadline
+	    if(taskToAdd.getTaskStartTime() == null && taskToAdd.getTaskEndTime() != null){
+			sb.append(" by " +taskToAdd.getTaskEndTime().toString());
+		//timed
+		}else if(taskToAdd.getTaskStartTime() != null && taskToAdd.getTaskEndTime() != null){
+		sb.append(" from " +taskToAdd.getTaskStartTime().toString());
+		sb.append(" to " +taskToAdd.getTaskEndTime().toString());
+		}
+	    if(tags.size() != 0){
+	    	for(int i =0; i<tags.size(); i++){
+	    	sb.append(" " + tags.get(i));
+	    	}
+	    }
+	    String rawText = sb.toString();
+		this.logger.info("string is :" + rawText);
+	    Command oldCommand = new Command(rawText);
+	    return oldCommand;
+	}
 
 	private void doAdd(Command command) {
 		assert (command.rawText!=null);
@@ -191,6 +292,7 @@ public class CommandFactory {
 		/* remove it from the buffer
 		 * remove the entry from the map
          */
+		this.redoStack.push(new SimpleEntry<Integer, Command>(taskid,convertAddTaskToCommand(taskid)));
 		this.tasks.remove(taskid);
 		Integer fakeID = getFakeIDbyRealId(taskid);
 		assert(fakeID != null);
@@ -251,8 +353,35 @@ public class CommandFactory {
 	//cater for single undo edit
 	private void doUndoEdit(int taskid, Command command) {
 		Task oldTask = new Task(command.rawText);
+		int displayID = this.getDisplayId(taskid);
+		this.redoStack.push(new SimpleEntry<Integer, Command>(taskid,convertEditedTaskToCommand(displayID)));
 		this.tasks.set(taskid, oldTask);
 		syncTasks();
+	}
+	
+	private Command convertEditedTaskToCommand(int taskid){
+		Task editedTask = tasks.get(tasksMap.get(taskid)-1);
+		ArrayList<String> tags = editedTask.getTaskTags();
+	    //desc time date 
+		StringBuilder sb = new StringBuilder();
+		sb.append(COMMAND_TYPE.EDIT.name().toLowerCase() + " " + taskid+ " "+ editedTask.getTaskDescription());
+		//deadline
+	    if(editedTask.getTaskStartTime() == null && editedTask.getTaskEndTime() != null){
+			sb.append(" by " +editedTask.getTaskEndTime().toString());
+		//timed
+		}else if(editedTask.getTaskStartTime() != null && editedTask.getTaskEndTime() != null){
+		sb.append(" from " +editedTask.getTaskStartTime().toString());
+		sb.append(" to " +editedTask.getTaskEndTime().toString());
+		}
+	    if(tags.size() != 0){
+	    	for(int i =0; i<tags.size(); i++){
+	    	sb.append(" " + tags.get(i));
+	    	}
+	    }
+	    String rawText = sb.toString();
+		this.logger.info("string is :" + rawText);
+	    Command oldCommand = new Command(rawText);
+	    return oldCommand;	
 	}
 	
 	private Command convertTaskToCommand(int taskid){
@@ -296,6 +425,7 @@ public class CommandFactory {
 			Command delCommand = commandWithPreviousIndex(displayId);
 			this.undoStack.push(new SimpleEntry<Integer, Command>(realId, delCommand));
 			syncTasks();
+			System.out.println("After Delete:" + tasksMap);
 		}
 	}
 	
@@ -339,13 +469,26 @@ public class CommandFactory {
 	}
 	
 	private void doUndoDelete(int taskid, Command command) {
-		Task t = tasks.get(taskid);
+		Task t = tasks.get(taskid);	
 		t.setMarkAsUndelete();
 		int prevID = Integer.parseInt(command.rawText);
 		updateHashMapAfterUndoDelete(taskid, prevID);
+		int displayID = this.getDisplayId(taskid);
+		this.redoStack.push(new SimpleEntry<Integer, Command>(taskid,convertDeletedTaskToCommand(displayID)));
 		syncTasks();
 	}
 	
+	private int getDisplayId(int realID) {
+		int displayID =0;
+		for (int i=0; i<tasksMap.size();i++) {
+		    if(tasksMap.get(i) == realID){
+		    displayID = i+ OFFSET;
+		    break;
+		    }
+		}
+		 return displayID;
+		}
+
 	private Command commandWithPreviousIndex(int displayId){
 		StringBuilder sb = new StringBuilder();
 		int prevIndex;
@@ -358,6 +501,15 @@ public class CommandFactory {
 		
 		Command delCommand = new Command(sb.toString());
 		return delCommand;
+	}
+	
+	private Command convertDeletedTaskToCommand(int taskid){
+		StringBuilder sb = new StringBuilder();
+		sb.append(COMMAND_TYPE.DELETE.name().toLowerCase() + " " + taskid);
+	    String rawText = sb.toString();
+		this.logger.info("string is :" + rawText);
+	    Command deletedCommand = new Command(rawText);
+	    return deletedCommand;
 	}
 	
 	
@@ -373,16 +525,31 @@ public class CommandFactory {
 			task.setTaskDone();
 			updateHashMapAfterDelete(displayId);
 			
-			this.undoStack.push(new SimpleEntry<Integer, Command>(realId, command));
+			Command doneCommand = commandWithPreviousIndex(displayId);
+			this.undoStack.push(new SimpleEntry<Integer, Command>(realId, doneCommand));
 			syncTasks();
+			System.out.println("After Done:" + tasksMap);
 		}
 	}
 	
 	private void doUndoDone(int taskid, Command command) {
 		Task t = tasks.get(taskid);
 		t.setTaskUndone();
-		this.tasksMap.put(this.tasksMap.size(), taskid);
+		int prevID = Integer.parseInt(command.rawText);
+		updateHashMapAfterUndoDelete(taskid, prevID);
+		int displayID = this.getDisplayId(taskid);
+		this.redoStack.push(new SimpleEntry<Integer, Command>(taskid,convertDoneTaskToCommand(displayID)));
 		syncTasks();
+	}
+	
+
+	private Command convertDoneTaskToCommand(int displayID) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(COMMAND_TYPE.DONE.name().toLowerCase() + " " + displayID);
+	    String rawText = sb.toString();
+		this.logger.info("string is :" + rawText);
+	    Command doneCommand = new Command(rawText);
+	    return doneCommand;
 	}
 
 	// Method to check delete parameter
@@ -638,6 +805,7 @@ public class CommandFactory {
 
 	private void syncTasks() {
 		this.undoStorage.writeCommands(undoStack);
+		this.redoStorage.writeCommands(redoStack);
 		this.storage.writeTasks(tasks);
 	}
 	
