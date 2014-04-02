@@ -28,16 +28,18 @@ import core.Task;
 public class PandaUI extends Application {
 	
 	// input field
-	private final String IF_PLACEHOLDER = "Search";
-	private final int IF_HEIGHT = 70; 
-	private final int IF_WIDTH = 500;
-	private final String IF_ID = "inputField";
-	private final int PADDING = 10;
+	private static final String IF_PLACEHOLDER = "Search";
+	private static final int IF_HEIGHT = 70; 
+	private static final int IF_WIDTH = 500;
+	private static final String IF_ID = "inputField";
+	private static final int PADDING = 10;
 	
+	// listview
+	private static final String LIST_ID = "list";
 	// app
-	private final int APP_WIDTH = 500;
-	private final int APP_HEIGHT = 500;
-	private final String CSS_PATH = "resources/css/style.css";
+	private static final int APP_WIDTH = 500;
+	private static final int APP_HEIGHT = 500;
+	private static final String CSS_PATH = "resources/css/style.css";
 	
 	CommandFactory commandFactory = CommandFactory.INSTANCE;
 //	ObservableList<Task> tasks = FXCollections.observableArrayList(commandFactory.getTasks());
@@ -100,8 +102,7 @@ public class PandaUI extends Application {
 	private VBox addList() {
 
 		VBox vbox = new VBox();
-		vbox.setPadding(new Insets(PADDING));
-		vbox.setSpacing(8);
+//		vbox.setSpacing(8);
 		
         list.setItems(tasks);
         list.setCellFactory(new Callback<ListView<Task>, ListCell<Task>>() {
@@ -119,6 +120,7 @@ public class PandaUI extends Application {
 		if(oldValue != null && (newValue.length() < oldValue.length())) {
 			updateTasksList();
 		}
+		
 
 		String[] parts = newValue.toLowerCase().split(" ");
 		
