@@ -13,6 +13,7 @@ public class Command {
 		LIST ("list"), 
 		EDIT ("edit"), 
 		UNDO ("undo"), 
+		REDO ("redo"),
 		ARCHIVE ("archive"), 
 		CLEAR ("clear"), 
 		DONE ("done"),
@@ -21,6 +22,7 @@ public class Command {
 		DELETE ("delete"), 
 		HELP ("help"), 
 		INVALID ("invalid");
+		
 		
 		private String commandName;
 
@@ -83,6 +85,8 @@ public class Command {
 			return COMMAND_TYPE.EDIT;
 		} else if (command.equalsIgnoreCase(COMMAND_TYPE.UNDO.getCommandName())) {
 			return COMMAND_TYPE.UNDO;
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.REDO.getCommandName())) {
+			return COMMAND_TYPE.REDO;
 		} else if (command.equalsIgnoreCase(COMMAND_TYPE.DONE.getCommandName())) {
 			return COMMAND_TYPE.DONE;
 		} else if (command.equalsIgnoreCase(COMMAND_TYPE.ARCHIVE.getCommandName())) {
