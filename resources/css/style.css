@@ -1,0 +1,11 @@
+#inputField {
+	-fx-background-color: #EA5A5E;
+	-fx-text-fill: #FFFFFF;
+	-fx-font: 18px "Sans-Serif";
+	-fx-padding: 15px 10px 15px 10px;
+	-fx-font-weight: bold;
+	-fx-background-radius: 0, 0, 0, 0;
+	-fx-effect: dropshadow(three-pass-box, #5A1D1D, 10, 0.5, 0, 1);
+	-fx-prompt-text-fill: #DADADA;
+}
+
