@@ -1,0 +1,12 @@
+syntax: glob
+.metadata/
+bin/
+.DS_Store
+.swo
+.swp
+*.json
+*.png
+*.ucls
+.settings/
+.classpath
+panda.log*
