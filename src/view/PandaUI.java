@@ -61,6 +61,7 @@ public class PandaUI extends Application {
         File file = new File(CSS_PATH);
         scene.getStylesheets().add("file:///" + file.getAbsolutePath());
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.show();
 	}
 	

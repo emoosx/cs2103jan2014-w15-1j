@@ -6,6 +6,11 @@ import javafx.scene.control.ListCell;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import core.Task;
 
 public class TaskCell extends ListCell<Task> {
@@ -25,14 +30,23 @@ public class TaskCell extends ListCell<Task> {
 	
 	private static final String NAME_ID = "taskDescription";
 	
+	private static final String START_ID = "start";
+	private static final String END_ID = "end";
+	
 	private GridPane grid = new GridPane();
 	private Label icon = new Label();
 	private Label name = new Label();
+	private Label startTimestamp = new Label();
+	private Label endTimestamp = new Label();
+	
+
 	
 	public TaskCell() {
 		configureGrid();
 		configureIcon();
 		configureName();
+		configureStartTimestamp();
+		configureEndTimestamp();
 		addControlsToGrid();
 	}
 	
@@ -40,7 +54,6 @@ public class TaskCell extends ListCell<Task> {
 		grid.setHgap(GRID_HGAP);
 		grid.setVgap(GRID_VGAP);
 		grid.setId(GRID_ID);
-//		grid.setPadding(new Insets(0, 10, 0, 10));
 	}
 	
 	private void configureIcon() {
@@ -53,9 +66,21 @@ public class TaskCell extends ListCell<Task> {
 		name.setId(NAME_ID);
 	}
 	
+	private void configureStartTimestamp() {
+		startTimestamp.setId(START_ID);
+
+	}
+	
+	private void configureEndTimestamp() {
+		endTimestamp.setId(END_ID);
+	}
+	
 	private void addControlsToGrid() {
 		grid.add(icon, 0, 0, 1, 2);
-		grid.add(name, 1, 1);
+		grid.add(name, 1, 0, 2, 1);
+		grid.add(startTimestamp, 1, 1);
+		grid.add(endTimestamp, 2, 1);
+//		grid.gridLinesVisibleProperty().set(true);		// debugging purpose
 	}
 
 	@Override
@@ -75,6 +100,7 @@ public class TaskCell extends ListCell<Task> {
 	
 	private void addContent(Task task) {
 		setText(null);
+
 		String label = task.getLabel();
 		if(label.equals("T")) {
 			icon.setId(ICON_TIMED_ID);
@@ -84,7 +110,23 @@ public class TaskCell extends ListCell<Task> {
 			icon.setId(ICON_FLOATING_ID);
 		}
 		icon.setText(label);
-		name.setText(task.toString());
+		name.setText(task.getTaskDescription());
+		
+		DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM d, yyyy HH:mm");
+		DateTime start = task.getTaskStartTime();
+		if(start == null) {
+			startTimestamp.setText("start null");
+		} else {
+			startTimestamp.setText(fmt.print(start));
+		}
+		
+		DateTime end = task.getTaskEndTime();
+		if(end == null) {
+			endTimestamp.setText("end null");
+		} else {
+			endTimestamp.setText(fmt.print(end));
+		}
+
 		setGraphic(grid);
 	}
 	
