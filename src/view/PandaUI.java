@@ -1,5 +1,7 @@
 package view;
 
+import java.io.File;
+
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -25,8 +27,17 @@ import core.Task;
 
 public class PandaUI extends Application {
 	
-	private final String TXT_PLACEHOLDER = "Search";
+	// input field
+	private final String IF_PLACEHOLDER = "Search";
+	private final int IF_HEIGHT = 70; 
+	private final int IF_WIDTH = 500;
+	private final String IF_ID = "inputField";
 	private final int PADDING = 10;
+	
+	// app
+	private final int APP_WIDTH = 500;
+	private final int APP_HEIGHT = 500;
+	private final String CSS_PATH = "resources/css/style.css";
 	
 	CommandFactory commandFactory = CommandFactory.INSTANCE;
 //	ObservableList<Task> tasks = FXCollections.observableArrayList(commandFactory.getTasks());
@@ -44,16 +55,20 @@ public class PandaUI extends Application {
         border.setTop(addInputField());
         border.setCenter(addList());
         
-        primaryStage.setScene(new Scene(border, 300, 250));
+        Scene scene = new Scene(border, APP_WIDTH, APP_HEIGHT);
+        File file = new File(CSS_PATH);
+        scene.getStylesheets().add("file:///" + file.getAbsolutePath());
+        primaryStage.setScene(scene);
         primaryStage.show();
 	}
 	
 	private HBox addInputField() {
 		HBox hbox = new HBox();
-		hbox.setPadding(new Insets(PADDING, PADDING, PADDING, PADDING));
-
 		inputField = new TextField();
-		inputField.setPromptText(TXT_PLACEHOLDER);
+		inputField.setPromptText(IF_PLACEHOLDER);
+		inputField.setPrefColumnCount(50);
+		inputField.setPrefSize(IF_WIDTH, IF_HEIGHT);
+		inputField.setId(IF_ID);
 		inputField.textProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -67,6 +82,7 @@ public class PandaUI extends Application {
 				if(e.getCode() == KeyCode.ENTER) {
 					Command command = new Command(inputField.getText());
 					if(command.command == COMMAND_TYPE.INVALID) {
+						// invalid command
 						System.out.println("Invalid command");
 					} else{
 						commandFactory.process(command);
