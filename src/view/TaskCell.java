@@ -12,6 +12,19 @@ public class TaskCell extends ListCell<Task> {
 
 	private static final String FONT_ROBOTO = "Roboto";
 	
+	private static final int GRID_HGAP = 10;
+	private static final int GRID_VGAP = 4;
+	private static final String GRID_ID = "grid";
+	
+	private static final String ICON_CLASS = "icon";
+	private static final String ICON_TIMED_ID = "timed";
+	private static final String ICON_DEADLINE_ID = "deadline";
+	private static final String ICON_FLOATING_ID = "floating";
+	private static final int ICON_HEIGHT = 35;
+	private static final int ICON_WIDTH = ICON_HEIGHT;
+	
+	private static final String NAME_ID = "taskDescription";
+	
 	private GridPane grid = new GridPane();
 	private Label icon = new Label();
 	private Label name = new Label();
@@ -24,17 +37,20 @@ public class TaskCell extends ListCell<Task> {
 	}
 	
 	private void configureGrid() {
-		grid.setHgap(10);
-		grid.setVgap(4);
-		grid.setPadding(new Insets(0, 10, 0, 10));
+		grid.setHgap(GRID_HGAP);
+		grid.setVgap(GRID_VGAP);
+		grid.setId(GRID_ID);
+//		grid.setPadding(new Insets(0, 10, 0, 10));
 	}
 	
 	private void configureIcon() {
 		icon.setFont(Font.font(FONT_ROBOTO, FontWeight.BOLD, 24));
+		icon.setPrefSize(ICON_WIDTH, ICON_HEIGHT);
+		icon.getStyleClass().add(ICON_CLASS);
 	}
 	
 	private void configureName() {
-
+		name.setId(NAME_ID);
 	}
 	
 	private void addControlsToGrid() {
@@ -59,7 +75,15 @@ public class TaskCell extends ListCell<Task> {
 	
 	private void addContent(Task task) {
 		setText(null);
-		icon.setText(task.getLabel());
+		String label = task.getLabel();
+		if(label.equals("T")) {
+			icon.setId(ICON_TIMED_ID);
+		}else if(label.equals("D")) {
+			icon.setId(ICON_DEADLINE_ID);
+		} else {
+			icon.setId(ICON_FLOATING_ID);
+		}
+		icon.setText(label);
 		name.setText(task.toString());
 		setGraphic(grid);
 	}
