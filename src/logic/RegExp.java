@@ -78,7 +78,7 @@ public class RegExp {
     	// Case 2: partial text based dates (e.g. 15 march 2014, 2 feb)
     	"\\b(?i)(on\\s)?(((0?[1-9]|[12]\\d|3[01])\\s(jan(uary)?|mar(ch)?|may|jul(y)?|aug(ust)?|oct(ober)?|dec(ember)?)(\\s\\d{4})?|(0?[1-9]|[12]\\d|30)\\s(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(tember)?|oct(ober)?|nov(ember)?|dec(ember)?)(\\s\\d{4})?))\\b",
     	// Case 3: pure text based relative dates (e.g. next Monday)
-    	"\\b(?i)(((on\\s)?(next\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))|((on the day after )?tomorrow))\\b"
+    	"\\b(?i)((((on|by)\\s)?(next\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))|((on the day after )?tomorrow))\\b"
     	};
     
     /*
@@ -122,7 +122,7 @@ public class RegExp {
         // Case 2: Partial text based dates (e.g. 15 march 2014, 2 feb)
         "\\b(?i)(((0?[1-9]|[12]\\\\d|3[01])\\s(jan|january|mar|march|may|jul|july|aug|august|oct|october|dec|december)(\\s\\d{4})?|(0?[1-9]|[12]\\d|30)\\s(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)(\\s\\d{4})?))\\b",
         // Case 3: pure text based relative dates (e.g. next Monday)
-        "\\b(?i)(((on\\s)?(next\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))|((on the day after )?tomorrow))\\b"
+        "\\b(?i)((((on|by)\\s)?(next\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))|((on the day after )?tomorrow))\\b"
     };
     
     /*
@@ -408,7 +408,6 @@ public class RegExp {
 		if(matcher.find()) {
 			timeArray.add(matcher.group(NUM_START_TIME_GROUP));
 			timeArray.add(matcher.group(NUM_END_TIME_GROUP));
-			System.out.println("NULL ADDED HERE 1");
 			return timeArray;
 		}
     	
@@ -418,7 +417,6 @@ public class RegExp {
 		if(matcher.find()) {
 			timeArray.add(matcher.group(NUM_START_TIME_GROUP));
 			timeArray.add(matcher.group(NUM_END_TIME_GROUP));
-			System.out.println("NULL ADDED HERE 2");
 			return timeArray;
 		}
 		
@@ -450,19 +448,20 @@ public class RegExp {
      *  @returns task description:String
      */
 	public static String parseDescription(String taskDescription) {
+		System.out.println("1. parsing description:" + taskDescription);
 		// Replacing all hybrid date and time regex with ""
 		taskDescription = taskDescription.replaceAll(REGEX_HYBRID_PATTERN_1, "");
-		
+		System.out.println("2. parsing description:" + taskDescription);
 		// Replacing all matched time regex with ""
 		for(int i=0; i<regexTimeInputArray.length; i++) {
 			taskDescription = taskDescription.replaceAll(regexTimeInputArray[i], "");
 		}
-		
+		System.out.println("3. parsing description:" + taskDescription);
     	// Replacing all matched date regex with ""
 		for(int i=0; i<regexDateInputArray.length; i++) {
 			taskDescription = taskDescription.replaceAll(regexDateInputArray[i], "");
     	}
-
+		System.out.println("4. parsing description:" + taskDescription);
 		// Replacing hashtags with ""
 		taskDescription = taskDescription.replaceAll(REGEX_HASHTAG, "");
 		
