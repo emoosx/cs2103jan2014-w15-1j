@@ -43,7 +43,6 @@ public class RegExpTest {
 		assertEquals("14-2-2014", RegExp.parseDate("add haha on 14-2-2014").get(0));
 		assertEquals("14 march 2014", RegExp.parseDate("add haha on 14 march 2014").get(0));
 		assertEquals("14 mar 2014", RegExp.parseDate("add haha on 14 mar 2014").get(0));
-		assertEquals("14 march 14", RegExp.parseDate("add haha on 14 march 14").get(0));
 		assertEquals("14 march", RegExp.parseDate("add haha on 14 march").get(0));
 	}
 	
@@ -55,12 +54,12 @@ public class RegExpTest {
 		assertEquals(3,date[1]);
 		assertEquals(2014,date[2]);
 		
-		date = RegExp.dateFromDateString("12 MAR 14");
+		date = RegExp.dateFromDateString("12 MAR 2014");
 		assertEquals(12,date[0]);
 		assertEquals(3,date[1]);
 		assertEquals(2014,date[2]);
 		
-		date = RegExp.dateFromDateString("31 JaN 14");
+		date = RegExp.dateFromDateString("31 JaN 2014");
 		assertEquals(31,date[0]);
 		assertEquals(1,date[1]);
 		assertEquals(2014,date[2]);
@@ -82,13 +81,13 @@ public class RegExpTest {
 		assertEquals(null, date);
 		
 		/*
-		date = RegExp.dateFromDateString("next monday");
-		assertEquals(31,date[0]);
-		assertEquals(3,date[1]);
+		date = RegExp.dateFromDateString("on next monday");
+		assertEquals(7,date[0]);
+		assertEquals(4,date[1]);
 		assertEquals(2014,date[2]);
 		
-		date = RegExp.dateFromDateString("next friday");
-		assertEquals(4,date[0]);
+		date = RegExp.dateFromDateString("by next friday");
+		assertEquals(11,date[0]);
 		assertEquals(4,date[1]);
 		assertEquals(2014,date[2]);
 		*/
