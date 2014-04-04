@@ -357,6 +357,8 @@ public class CommandFactory {
 	
 	//cater for single undo edit
 	private void doUndoEdit(int taskid, Command command) {
+		System.out.println("undo edit:"+taskid);
+		System.out.println(command.rawText);
 		Task oldTask = new Task(command.rawText);
 		int displayID = this.getDisplayId(taskid);
 		this.redoStack.push(new SimpleEntry<Integer, Command>(taskid,convertEditedTaskToCommand(displayID)));
@@ -365,7 +367,9 @@ public class CommandFactory {
 	}
 	
 	private Command convertEditedTaskToCommand(int taskid){
-		Task editedTask = tasks.get(tasksMap.get(taskid)-1);
+		// taskid = realid
+		System.out.println(taskid);
+		Task editedTask = tasks.get(tasksMap.get(taskid));
 		ArrayList<String> tags = editedTask.getTaskTags();
 	    //desc time date 
 		StringBuilder sb = new StringBuilder();
@@ -435,6 +439,8 @@ public class CommandFactory {
 	}
 	
 	private void updateHashMapAfterUndoDelete(int realId, int prevId) {
+		System.out.println("realId:" + realId);
+		System.out.println("prevId:" + prevId);
 		LinkedHashMap<Integer, Integer> beforeID = new LinkedHashMap<Integer, Integer>();
 		LinkedHashMap<Integer, Integer> afterID = new LinkedHashMap<Integer, Integer>();
 		
@@ -459,6 +465,7 @@ public class CommandFactory {
 		int sizeAfterAdding = tasksMap.size() +1;
 		for(int k=afterIndex;k<tasksMap.size(); k++){
 		afterID.put(index,tasksMap.get(k));	
+		index++;
 		}
 		tasksMap.clear();
 		int afterAddingIndex=0;
@@ -478,6 +485,7 @@ public class CommandFactory {
 		t.setMarkAsUndelete();
 		int prevID = Integer.parseInt(command.rawText);
 		updateHashMapAfterUndoDelete(taskid, prevID);
+		System.out.println("after restoring:" + this.tasksMap);
 		int displayID = this.getDisplayId(taskid);
 		this.redoStack.push(new SimpleEntry<Integer, Command>(taskid,convertDeletedTaskToCommand(displayID)));
 		syncTasks();
@@ -815,6 +823,7 @@ public class CommandFactory {
 	}
 	
 	private void updateHashMapAfterDelete(int fakeid) {
+		System.out.println("before undo:" + tasksMap);
 		LinkedHashMap<Integer, Integer> temp = new LinkedHashMap<Integer, Integer>();
 		for(int i = 0; i < tasksMap.size(); i++) {
 			if(i < fakeid) {
@@ -826,5 +835,6 @@ public class CommandFactory {
 		temp.remove(tasksMap.size()-1);
 		this.tasksMap.clear();
 		this.tasksMap.putAll(temp);
+		System.out.println("after undo: + tasksMap");
 	}
 }

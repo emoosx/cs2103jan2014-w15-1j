@@ -91,6 +91,7 @@ public class PandaUI extends Application {
 						commandFactory.process(command);
 						updateTasksList();
 						inputField.clear();
+						list.scrollTo(tasks.size()-1);
 					}
 				}
 			}
@@ -106,6 +107,7 @@ public class PandaUI extends Application {
 		vbox.setSpacing(8);
 		
         list.setItems(tasks);
+        list.setId(LIST_ID);
         list.setCellFactory(new Callback<ListView<Task>, ListCell<Task>>() {
         	@Override
         	public ListCell<Task> call(ListView<Task> param) {
@@ -145,7 +147,8 @@ public class PandaUI extends Application {
 		
 	}
 	private void updateTasksList() {
-		tasks = FXCollections.observableArrayList(commandFactory.getDisplayTasks());
+		tasks = commandFactory.getDisplayTasks();
+//		tasks = FXCollections.observableArrayList(commandFactory.getDisplayTasks());
 		list.setItems(tasks);
 	}
 }
