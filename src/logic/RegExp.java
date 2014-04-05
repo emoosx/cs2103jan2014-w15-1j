@@ -76,7 +76,7 @@ public class RegExp {
     	// Case 1: DD-MM-YY(YY) or DD/MM/YY(YY) 
     	"\\b(?i)(on\\s((0?[1-9]|[12]\\d|3[01])[-/](0?[13578]|1[02])[-/](\\d{4}|\\d{2})|(0?[1-9]|[12]\\d|30)[-/](0?[1-9]|1[02])[-/](\\d{4}|\\d{2})))\\b",
     	// Case 2: partial text based dates (e.g. 15 march 2014, 2 feb)
-    	"\\b(?i)(on\\s)?(((0?[1-9]|[12]\\d|3[01])\\s(jan(uary)?|mar(ch)?|may|jul(y)?|aug(ust)?|oct(ober)?|dec(ember)?)(\\s\\d{4})?|(0?[1-9]|[12]\\d|30)\\s(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(tember)?|oct(ober)?|nov(ember)?|dec(ember)?)(\\s\\d{4})?))\\b",
+    	"\\b(?i)(on\\s)(((0?[1-9]|[12]\\d|3[01])\\s(jan(uary)?|mar(ch)?|may|jul(y)?|aug(ust)?|oct(ober)?|dec(ember)?)(\\s\\d{4})?|(0?[1-9]|[12]\\d|30)\\s(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(tember)?|oct(ober)?|nov(ember)?|dec(ember)?)(\\s\\d{4})?))\\b",
     	// Case 3: pure text based relative dates (e.g. next Monday)
     	"\\b(?i)((((on|by)\\s)?((next|this)\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))|((on the day after )?tomorrow))\\b"
     	};
@@ -450,20 +450,16 @@ public class RegExp {
      *  @returns task description:String
      */
 	public static String parseDescription(String taskDescription) {
-		System.out.println("1. parsing description:" + taskDescription);
 		// Replacing all hybrid date and time regex with ""
 		taskDescription = taskDescription.replaceAll(REGEX_HYBRID_PATTERN_1, "");
-		System.out.println("2. parsing description:" + taskDescription);
 		// Replacing all matched time regex with ""
 		for(int i=0; i<regexTimeInputArray.length; i++) {
 			taskDescription = taskDescription.replaceAll(regexTimeInputArray[i], "");
 		}
-		System.out.println("3. parsing description:" + taskDescription);
     	// Replacing all matched date regex with ""
 		for(int i=0; i<regexDateInputArray.length; i++) {
 			taskDescription = taskDescription.replaceAll(regexDateInputArray[i], "");
     	}
-		System.out.println("4. parsing description:" + taskDescription);
 		// Replacing hashtags with ""
 		taskDescription = taskDescription.replaceAll(REGEX_HASHTAG, "");
 		
