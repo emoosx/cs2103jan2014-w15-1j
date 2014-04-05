@@ -254,16 +254,19 @@ public class TaskParser {
 	private void finalizeDateTime() {
 		// Case 1: Finalized floating task
 		if(isFloatingTask()) {
+			System.out.println("FINALIZING FLOATING");
 			finalizeFloatingTask();
 		// Case 2: Finalized as deadline task as long as 1 date or 1 time input is specified
 		} else if(isDeadlineTask()) {
+			System.out.println("FINALIZING DEADLINE");
 			finalizeDeadlineTask();
 		// Case 3: Finalized timed task	
-	//	} else if(startHour != null && endHour != null) {
-			//finalizeTimedTask();
 		} else {
+			System.out.println("FINALIZING TIMED");
 			finalizeTimedTask();
 		}
+		System.out.println("Start date: " + startHour + ":" + startMin + " " + startDay + "/" + startMonth + "/" + startYear);
+		System.out.println("End date: " + endHour + ":" + endMin + " " + endDay + "/" + endMonth + "/" + endYear);
 	}
 
 	// Method will finalize the 2 DateTime objects to null
@@ -274,7 +277,6 @@ public class TaskParser {
 
 	// Method will finalize date and time if variables fits that of a timed task
 	private void finalizeTimedTask() {
-		if (startHour != null && endHour != null) {
 			// if one date is given, task will be assumed to start and end on
 			// the only date given
 			if (endYear != null && startYear == null) {
@@ -287,11 +289,16 @@ public class TaskParser {
 			if (endYear == null && startYear == null) {
 				initializeDateToToday();
 			}
+			if(startHour == null) {
+				initializeStartTimeToMidnight();
+			}
+			if(endHour == null) {
+				initializeEndTimeToMidnight();
+			}
 			startDateTime = new DateTime(startYear, startMonth, startDay,
 					startHour, startMin);
 			endDateTime = new DateTime(endYear, endMonth, endDay, endHour,
 					endMin);
-		}
 	}
 
 	// Method will finalize date and time if variables fits that of a deadline task
@@ -319,6 +326,17 @@ public class TaskParser {
 		startHour = endHour = 0;
 		startMin = endMin = 0; 
 	}
+	
+	private void initializeStartTimeToMidnight() {
+		startHour = 0;
+		startMin = 0; 
+	}
+	
+	private void initializeEndTimeToMidnight() {
+		endHour = 0;
+		endMin = 0; 
+	}
+	
 
 	public ArrayList<String> getHashTag() {
 		return hashtags;
@@ -341,10 +359,34 @@ public class TaskParser {
 	 * @returns true if only one time or date input is specified
 	 */
 	private Boolean isDeadlineTask() {
+		// Only one time input specified by user
+		if(startHour == null && endHour != null) {
+			// If there are 2 dates, return false as user indicated timed task
+			if(endYear!= null && startYear != null) {
+				return false;
+			}
+		}
+		// Only one date input specified by user
+		if(startYear == null && endYear != null) {
+			// If there are 2 times, return false as user indicated timed task
+			if(startHour!= null && endHour!=null) {
+				return false;
+			}
+		}
+		if(startYear != null && endYear != null) {
+			return false;
+		}
+		if(startHour != null && endHour != null) {
+			return false;
+		}
+		return true;
+		
+		/*
 		if((startHour == null && endHour != null)	// only one time input is specified
 				|| (startYear == null && endYear !=null && startHour == null)) { // only one date input is specified
 			return true;
 		}
 		return false;
+		*/
 	}
 }
