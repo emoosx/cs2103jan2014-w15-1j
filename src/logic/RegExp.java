@@ -13,6 +13,13 @@ import com.joestelmach.natty.Parser;
 
 import common.PandaLogger;
 
+/*
+ * RegExp class contains regular expression patterns of supported time and date formats
+ * It is called by TaskParser.java to extract time and date values from input strings
+ * RegExp will match and extract matched date and time patterns to return to TaskParser in string forms (e.g. "next Thursday")
+ * Written by A0101810A - Tan Zheng Jie (Matthew)
+ */
+
 public class RegExp {
 
 	private static final int TOTAL_DATE_FIELDS = 3;
@@ -64,8 +71,6 @@ public class RegExp {
 	private static final String STRING_NOVEMBER = "november";
 	private static final String STRING_DEC = "dec";
 	private static final String STRING_DECEMBER = "december";
-	private static final String STRING_TIMEZONE_AM = "am";
-	private static final String STRING_TIMEZONE_PM = "pm";
 	
     /*
      *  Date Input Expressions
@@ -96,7 +101,6 @@ public class RegExp {
     	// Case 4: "at/by TIME", where TIME can be HH:MM or HHMM, H is between 0-23 and MM is between 0-59
     	"\\b(at|by)\\s(([0-1][0-9]|2[0-3]):?[0-5][0-9])\\b"
     	};
-    
     
     /*
      * Date Format Patterns 
@@ -130,6 +134,7 @@ public class RegExp {
      *  These patterns contains purely time formats, without any keywords such as "from", "by", etc.
      *  These patterns are used to identify and parse time formats into an integer array of 2 elements: hour and minute
      */
+    /*
     private static String[] regexTimeArray = {
     	// Case 1: HH:MM (am/pm)
     	"([1-9]|1[0-2]):[0-5][0-9][AaPp][Mm]",
@@ -140,6 +145,7 @@ public class RegExp {
     	// Case 4: HHMM
     	"([0-1][0-9]|2[0-3])[0-5][0-9]"
     };
+    */
     /*
     // Case 1: HH:MM (am/pm)
     public static String REGEX_TIMESTRING_PATTERN_1 = "([1-9]|1[0-2]):[0-5][0-9][AaPp][Mm]";
@@ -158,7 +164,7 @@ public class RegExp {
     // Case 1: (by/on/from/to/at) <date> <time>
     public static String REGEX_HYBRID_PATTERN_1 = "\\b(by |on |from |to |at )(((0?[1-9]|[12]\\d|3[01])[-/](0?[13578]|1[02])[-/](\\d{4}|\\d{2})|(0?[1-9]|[12]\\d|30)[-/](0?[1-9]|1[02])[-/](\\d{4}|\\d{2}))|(((0?[1-9]|[12]\\d|3[01])\\s(jan(uary)?|mar(ch)?|may|jul(y)?|aug(ust)?|oct(ober)?|dec(ember)?)(\\s\\d{4})?|(0?[1-9]|[12]\\d|30)\\s(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(tember)?|oct(ober)?|nov(ember)?|dec(ember)?)(\\s\\d{4})?)))(\\s(([1-9]|1[0-2])(:[0-5][0-9])?[AaPp][Mm]|([0-1][0-9]|2[0-3]):?[0-5][0-9]))?\\b";
     // Case 2: (by/on/from/to/at) <relative date> <time>
-    public static String REGEX_HYBRID_PATTERL_2 = "";
+    public static String REGEX_HYBRID_PATTERN_2 = "\\b(?i)(by |on |from |to |at )(((next|this)?\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?))|(the day after )?tomorrow)(\\s(([1-9]|1[0-2])(:[0-5][0-9])?[AaPp][Mm]|([0-1][0-9]|2[0-3]):?[0-5][0-9]))?\\b";
     
     // Hash Tag Regular Expressions
     public static String REGEX_HASHTAG = "(?<=^|(?<=[^a-zA-Z0-9-\\.]))#([A-Za-z]+[A-Za-z0-9]+)";
@@ -170,75 +176,21 @@ public class RegExp {
      */
     public static int[] dateFromDateString(String dateString) {
     	int[] date = new int[TOTAL_DATE_FIELDS];
-    	/*
-    	for(int i=0; i<regexDateArray.length; i++) {
-    		if(dateString.matches(regexDateArray[i])) {
-    	*/
-        		dateString = changeDateFormat(dateString);
-        		Parser parser = new Parser();
-        		List<DateGroup> groups = parser.parse(dateString);
-        		for(DateGroup group: groups) {
-        			List<Date> dates = group.getDates();
-        			MutableDateTime tempDate = new MutableDateTime(dates.get(0));
-        			date[0] = tempDate.getDayOfMonth();
-        			date[1] = tempDate.getMonthOfYear();
-        			date[2] = tempDate.getYear();
-        		}
-        		return date;
-        /*		
-    		}
-    	}
-    	*/
-    		
-    	/*
-    	// Case 1: DD-MM-YY(YY)
-    	if(dateString.matches(REGEX_DATESTRING_PATTERN_1)) {
-    		dateString = changeDateFormat(dateString);
-    		Parser parser = new Parser();
-    		List<DateGroup> groups = parser.parse(dateString);
-    		for(DateGroup group: groups) {
-    			List<Date> dates = group.getDates();
-    			MutableDateTime tempDate = new MutableDateTime(dates.get(0));
-    			date[0] = tempDate.getDayOfMonth();
-    			date[1] = tempDate.getMonthOfYear();
-    			date[2] = tempDate.getYear();
-    		}
-    		return date;
-    	}
     	
-    	// Case 2: Partial text based dates (e.g. 15 march 2014, 2 feb)
-    	if(dateString.matches(REGEX_DATESTRING_PATTERN_2)) {
-    		Parser parser = new Parser();
-    		List<DateGroup> groups = parser.parse(dateString);
-    		for(DateGroup group: groups) {
-    			List<Date> dates = group.getDates();
-    			MutableDateTime tempDate = new MutableDateTime(dates.get(0));
-    			date[0] = tempDate.getDayOfMonth();
-    			date[1] = tempDate.getMonthOfYear();
-    			date[2] = tempDate.getYear();
-    		}
-    		return date;
-    	}
-    	
-    	// Case 3: pure text based relative dates (e.g. next Monday)
-    	if(dateString.matches(REGEX_DATESTRING_PATTERN_3)) {
-    		Parser parser = new Parser();
-    		List<DateGroup> groups = parser.parse(dateString);
-    		for(DateGroup group: groups) {
-    			List<Date> dates = group.getDates();
-    			MutableDateTime tempDate = new MutableDateTime(dates.get(0));
-    			date[0] = tempDate.getDayOfMonth();
-    			date[1] = tempDate.getMonthOfYear();
-    			date[2] = tempDate.getYear();
-    		}
-    		return date;
-    	}
-    	*/
-    	// asserting false because code should not reach here due to initial pattern filtering for date inputs
-        /*
-    	assert(false);
-		return null;
-		*/
+    	// Overcoming NattyTime limitation (parses as MM/DD/YYYY) 
+		dateString = changeDateFormat(dateString);
+		
+		// Calling NattyTime parser
+		Parser parser = new Parser();
+		List<DateGroup> groups = parser.parse(dateString);
+		for(DateGroup group: groups) {
+			List<Date> dates = group.getDates();
+			MutableDateTime tempDate = new MutableDateTime(dates.get(0));
+			date[0] = tempDate.getDayOfMonth();
+			date[1] = tempDate.getMonthOfYear();
+			date[2] = tempDate.getYear();
+		}
+		return date;
     }
     
     /* Given a string of time format (eg. "5pm"),
@@ -247,119 +199,17 @@ public class RegExp {
      */
     public static int[] timeFromTimeString(String timeString) {
     	int[] time = new int[TOTAL_TIME_FIELDS];
-    	
-    	/*
-    	for(int i=0; i<regexTimeArray.length; i++) {
-    		if(timeString.matches(regexTimeArray[i])) {
-    	*/
-        		Parser parser = new Parser();
-        		List<DateGroup> groups = parser.parse(timeString);
-        		for(DateGroup group: groups) {
-        			List<Date> dates = group.getDates();
-        			MutableDateTime tempTime = new MutableDateTime(dates.get(0));
-        			time[0] = tempTime.getHourOfDay();
-        			time[1] = tempTime.getMinuteOfHour();
-        		}
-        		return time;
-        /*
-    		}
-    	}
-    	/*
-    	
-    	/*
-    	// Case 1: HH:MM am|pm
-    	if(timeString.matches(REGEX_TIMESTRING_PATTERN_1)) {
-    		Parser parser = new Parser();
-    		List<DateGroup> groups = parser.parse(timeString);
-    		for(DateGroup group: groups) {
-    			List<Date> dates = group.getDates();
-    			MutableDateTime tempTime = new MutableDateTime(dates.get(0));
-    			time[0] = tempTime.getHourOfDay();
-    			time[1] = tempTime.getMinuteOfHour();
-    		}
-    		return time;
-    		
-    		String[] timeStringArray = timeString.split(":");
-    		time[NUM_HOUR_INDEX] = Integer.parseInt(timeStringArray[NUM_HOUR_INDEX]);
-    		if(timeStringArray[NUM_MIN_INDEX].contains(STRING_TIMEZONE_PM)) {
-    			timeStringArray[NUM_MIN_INDEX] = timeStringArray[NUM_MIN_INDEX].replace(STRING_TIMEZONE_PM, "");
-    			time[NUM_HOUR_INDEX] = (time[NUM_HOUR_INDEX] % 12) + 12;
-    			time[NUM_MIN_INDEX] = Integer.parseInt(timeStringArray[1]);
-    		} else {
-    			timeStringArray[NUM_MIN_INDEX] = timeStringArray[NUM_MIN_INDEX].replace(STRING_TIMEZONE_AM, "");
-    			time[NUM_MIN_INDEX] = Integer.parseInt(timeStringArray[NUM_MIN_INDEX]);
-    		}
-    		return time;
-    		
-    	}
-    	
-    	// Case 2: HH am|pm
-    	if(timeString.matches(REGEX_TIMESTRING_PATTERN_2)) {
-    		Parser parser = new Parser();
-    		List<DateGroup> groups = parser.parse(timeString);
-    		for(DateGroup group: groups) {
-    			List<Date> dates = group.getDates();
-    			MutableDateTime tempTime = new MutableDateTime(dates.get(0));
-    			time[0] = tempTime.getHourOfDay();
-    			time[1] = tempTime.getMinuteOfHour();
-    		}
-    		return time;
-    		
-    		if(timeString.contains(STRING_TIMEZONE_PM)) {
-    			timeString = timeString.replace(STRING_TIMEZONE_PM, "");
-    			time[NUM_HOUR_INDEX] = Integer.parseInt(timeString) % 12 + 12;
-    			time[NUM_MIN_INDEX] = 0;
-    		} else {
-    			timeString = timeString.replace(STRING_TIMEZONE_AM, "");
-    			time[NUM_HOUR_INDEX] = Integer.parseInt(timeString);
-    			time[NUM_MIN_INDEX] = 0;
-    		}
-    		return time;
-    		
-    	}
-    	
-    	// Case 3: HH:MM
-    	if(timeString.matches(REGEX_TIMESTRING_PATTERN_3)) {
-    		Parser parser = new Parser();
-    		List<DateGroup> groups = parser.parse(timeString);
-    		for(DateGroup group: groups) {
-    			List<Date> dates = group.getDates();
-    			MutableDateTime tempTime = new MutableDateTime(dates.get(0));
-    			time[0] = tempTime.getHourOfDay();
-    			time[1] = tempTime.getMinuteOfHour();
-    		}
-    		return time;
-    		
-    		String[] timeStringArray = timeString.split(":");
-    		time[NUM_HOUR_INDEX] = Integer.parseInt(timeStringArray[0]); 
-    		time[NUM_MIN_INDEX] = Integer.parseInt(timeStringArray[1]);
-    		return time;
-    		
-    	}
-    	
-    	// Case 4: HHMM
-    	if(timeString.matches(REGEX_TIMESTRING_PATTERN_4)) {
-    		Parser parser = new Parser();
-    		List<DateGroup> groups = parser.parse(timeString);
-    		for(DateGroup group: groups) {
-    			List<Date> dates = group.getDates();
-    			MutableDateTime tempTime = new MutableDateTime(dates.get(0));
-    			time[0] = tempTime.getHourOfDay();
-    			time[1] = tempTime.getMinuteOfHour();
-    		}
-    		return time;
-    		
-    		time[NUM_HOUR_INDEX] = Integer.parseInt(timeString.substring(0,2));
-    		time[NUM_MIN_INDEX] = Integer.parseInt(timeString.substring(2,4));
-    		return time;
-    		
-    	}
-    	*/
-    	// asserting false because code should not reach here due to initial pattern filtering for time inputs
-        /*
-    	assert(false);
-    	return null;
-    	*/
+
+    	// Calling NattyTime parser
+		Parser parser = new Parser();
+		List<DateGroup> groups = parser.parse(timeString);
+		for(DateGroup group: groups) {
+			List<Date> dates = group.getDates();
+			MutableDateTime tempTime = new MutableDateTime(dates.get(0));
+			time[0] = tempTime.getHourOfDay();
+			time[1] = tempTime.getMinuteOfHour();
+		}
+		return time;
     }
     
     /*
@@ -369,12 +219,38 @@ public class RegExp {
      */
     public static ArrayList<String> parseDate(String userInput) {
     	ArrayList<String> dateArray = new ArrayList<String>();
+
+    	
     	
     	// Case 1: "on DD-MM-YY(YY) or DD/MM/YY(YY)"
     	Pattern pattern = Pattern.compile(regexDateInputArray[INDEX_FIRST_CASE]);
     	Matcher matcher = pattern.matcher(userInput);
     	if(matcher.find()) {
     		dateArray.add(matcher.group(2));
+    		return dateArray;
+    	}
+    	
+    	// Case 4: in the form of hybrid input (eg. from <date> <time> to <date> <time>) 
+    	pattern = Pattern.compile(REGEX_HYBRID_PATTERN_1);
+    	matcher = pattern.matcher(userInput);
+    	while(matcher.find()) {
+    		if(matcher.group(2) != null) {
+    			dateArray.add(matcher.group(2));
+    		}
+    	}
+    	if(dateArray.size() > 0) {
+    		return dateArray;
+    	}
+    	
+    	// Case 5: in the form of relative date hybrid input (eg. from next wed 12pm to next thurs 1pm) 
+    	pattern = Pattern.compile(REGEX_HYBRID_PATTERN_2);
+    	matcher = pattern.matcher(userInput);   	
+    	while(matcher.find()) {
+    		if(matcher.group(2) != null) {
+    			dateArray.add(matcher.group(2));
+    		}
+    	}
+    	if(dateArray.size() > 0) {
     		return dateArray;
     	}
     	
@@ -393,15 +269,7 @@ public class RegExp {
     		dateArray.add(matcher.group(1));
     		return dateArray;
     	}
-    	
-    	// Case 4: in the form of hybrid input (eg. from <date> <time> to <date> <time>) 
-    	pattern = Pattern.compile(REGEX_HYBRID_PATTERN_1);
-    	matcher = pattern.matcher(userInput);
-    	while(matcher.find()) {
-    		if(matcher.group(2) != null) {
-    			dateArray.add(matcher.group(2));
-    		}
-    	}
+
     	// Returning empty date array indicates that user input produces 0 date parameter
     	return dateArray;
     }
@@ -451,6 +319,18 @@ public class RegExp {
 				timeArray.add(matcher.group(36));
 			}
 		}
+    	if(timeArray.size() > 0) {
+    		return timeArray;
+    	}
+    	
+    	// Case 5: in the form of relative date hybrid input (eg. from next wed 12pm to next thurs 1pm) 
+    	pattern = Pattern.compile(REGEX_HYBRID_PATTERN_2);
+    	matcher = pattern.matcher(userInput);   	
+    	while(matcher.find()) {
+    		if(matcher.group(15) != null) {
+    			timeArray.add(matcher.group(15));
+    		}
+    	}
 		// Returning empty time array indicates that user input produces 0 time parameter
     	return timeArray; 
     }
@@ -462,6 +342,8 @@ public class RegExp {
 	public static String parseDescription(String taskDescription) {
 		// Replacing all hybrid date and time regex with ""
 		taskDescription = taskDescription.replaceAll(REGEX_HYBRID_PATTERN_1, "");
+		taskDescription = taskDescription.replaceAll(REGEX_HYBRID_PATTERN_2, "");
+		
 		// Replacing all matched time regex with ""
 		for(int i=0; i<regexTimeInputArray.length; i++) {
 			taskDescription = taskDescription.replaceAll(regexTimeInputArray[i], "");
