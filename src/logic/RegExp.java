@@ -165,14 +165,15 @@ public class RegExp {
     
     /*
      *  Given a time string such as 5:15pm,
-     *  Method will check with all date string patterns to identify patterns and parses the string accordingly 
+     *  Method parses the string accordingly using NattyTime library 
      *  @return integer array of 3 elements: year, month and day
      */
     public static int[] dateFromDateString(String dateString) {
     	int[] date = new int[TOTAL_DATE_FIELDS];
-
+    	/*
     	for(int i=0; i<regexDateArray.length; i++) {
     		if(dateString.matches(regexDateArray[i])) {
+    	*/
         		dateString = changeDateFormat(dateString);
         		Parser parser = new Parser();
         		List<DateGroup> groups = parser.parse(dateString);
@@ -184,8 +185,10 @@ public class RegExp {
         			date[2] = tempDate.getYear();
         		}
         		return date;
+        /*		
     		}
     	}
+    	*/
     		
     	/*
     	// Case 1: DD-MM-YY(YY)
@@ -232,20 +235,23 @@ public class RegExp {
     	}
     	*/
     	// asserting false because code should not reach here due to initial pattern filtering for date inputs
+        /*
     	assert(false);
 		return null;
+		*/
     }
     
     /* Given a string of time format (eg. "5pm"),
-     * Method will check with all time string patterns to identify time patterns and parses the string accordingly
-     * Method uses string.matches() API instead of pattern and matcher in the regex API 
+     * Method will parse the string accordingly using NattyTime
      * @return integer array with 2 elements: hour and minute 
      */
     public static int[] timeFromTimeString(String timeString) {
     	int[] time = new int[TOTAL_TIME_FIELDS];
     	
+    	/*
     	for(int i=0; i<regexTimeArray.length; i++) {
     		if(timeString.matches(regexTimeArray[i])) {
+    	*/
         		Parser parser = new Parser();
         		List<DateGroup> groups = parser.parse(timeString);
         		for(DateGroup group: groups) {
@@ -255,8 +261,10 @@ public class RegExp {
         			time[1] = tempTime.getMinuteOfHour();
         		}
         		return time;
+        /*
     		}
     	}
+    	/*
     	
     	/*
     	// Case 1: HH:MM am|pm
@@ -348,8 +356,10 @@ public class RegExp {
     	}
     	*/
     	// asserting false because code should not reach here due to initial pattern filtering for time inputs
+        /*
     	assert(false);
     	return null;
+    	*/
     }
     
     /*
@@ -436,7 +446,7 @@ public class RegExp {
 		pattern = Pattern.compile(REGEX_HYBRID_PATTERN_1);
 		matcher = pattern.matcher(userInput);
 		while(matcher.find()) {
-			// do not add if date is specified but time is not
+			// As pattern contains both time and date, this condition does not add time if date is specified but time is not
 			if(matcher.group(36)!=null) {
 				timeArray.add(matcher.group(36));
 			}
