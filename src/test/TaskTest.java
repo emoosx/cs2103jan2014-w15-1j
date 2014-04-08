@@ -123,6 +123,7 @@ public class TaskTest {
 			assertEquals(task.getTaskStartTime().getMonthOfYear(), expectedStart.getMonthOfYear());
 			assertEquals(task.getTaskStartTime().getDayOfMonth(), expectedStart.getDayOfMonth());
 			assertEquals(task.getTaskStartTime().getHourOfDay(), expectedStart.getHourOfDay());
+			assertEquals(task.getTaskStartTime().getMinuteOfHour(), expectedStart.getMinuteOfHour());
 		}
 		
 		// Asserting end date time
@@ -133,6 +134,7 @@ public class TaskTest {
 			assertEquals(task.getTaskEndTime().getMonthOfYear(), expectedEnd.getMonthOfYear());
 			assertEquals(task.getTaskEndTime().getDayOfMonth(), expectedEnd.getDayOfMonth());
 			assertEquals(task.getTaskEndTime().getHourOfDay(), expectedEnd.getHourOfDay());
+			assertEquals(task.getTaskEndTime().getMinuteOfHour(), expectedEnd.getMinuteOfHour());
 		}
 	}
 }
