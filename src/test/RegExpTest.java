@@ -12,17 +12,25 @@ public class RegExpTest {
 	
 	@Test
 	public void testTimeRegexDeadline() {
-		assertEquals("2:15pm", RegExp.parseTime("add haha by 2:15pm 14/2/2014").get(0));
-		assertEquals("5:15pm", RegExp.parseTime("add haha by 5:15pm 14/2/2014").get(0));
-		assertEquals("5pm", RegExp.parseTime("add haha by 5pm 14/2/2014").get(0));
-		assertEquals("12am", RegExp.parseTime("add haha by 12am 14/2/2014").get(0));
-		assertEquals("23:59", RegExp.parseTime("add haha by 23:59 14/2/2014").get(0));
-		assertEquals("01:59", RegExp.parseTime("add haha by 01:59 14/2/2014").get(0));
-		assertEquals("2359", RegExp.parseTime("add haha by 2359 on 14-2-2014").get(0));
+		assertEquals("2:15pm", RegExp.parseTime("add haha by 2:15pm").get(0));
+		assertEquals("5:15pm", RegExp.parseTime("add haha by 5:15pm").get(0));
+		assertEquals("5pm", RegExp.parseTime("add haha by 5pm").get(0));
+		assertEquals("12am", RegExp.parseTime("add haha by 12am").get(0));
+		assertEquals("23:59", RegExp.parseTime("add haha by 23:59").get(0));
+		assertEquals("01:59", RegExp.parseTime("add haha by 01:59").get(0));
+		assertEquals("2359", RegExp.parseTime("add haha by 2359").get(0));
 		
 		// Boundary case for invalid input
 		ArrayList<String> list = new ArrayList<String>();
-		assertEquals(list, RegExp.parseTime("add haha by 1:59 on 14-2-2014"));
+		assertEquals(list, RegExp.parseTime("add haha by 1:59"));
+		assertEquals(list, RegExp.parseTime("add haha by 12:60pm"));
+		assertEquals(list, RegExp.parseTime("add haha by 11:60am"));
+		assertEquals(list, RegExp.parseTime("add haha at 13:00am"));
+		
+		// Partition: inputs with no time input
+		assertEquals(list, RegExp.parseTime("add haha by tomorrow"));
+		assertEquals(list, RegExp.parseTime("add meeting"));
+		assertEquals(list, RegExp.parseTime("add deadline by 5/4/2014"));
 	}
 	
 	@Test
@@ -35,20 +43,71 @@ public class RegExpTest {
 		
 		assertEquals("15:15", RegExp.parseTime("add haha on 14/2/2014 from 15:15 to 16:45").get(0));
 		assertEquals("16:45", RegExp.parseTime("add haha on 14/2/2014 from 15:15 to 16:45").get(1));
+		
+		assertEquals("15:15", RegExp.parseTime("add haha from 1/2/2014 15:15 to 1/2/2014 16:45").get(0));
+		assertEquals("16:45", RegExp.parseTime("add haha from 1 jan 15:15 to 3 jan 16:45").get(1));
+		
+		// Boundary case for invalid inputs
+		assertEquals(0, RegExp.parseTime("add haha from 11:60am to 12pm").size());
+		assertEquals(0, RegExp.parseTime("add haha from 23:59 to 24:00").size());
+		
 	}
 	
 	@Test
 	public void testDateRegexDeadline() {
+		// Partitioned format: on DD-/MM-/YYYY
+		assertEquals("14-2-14", RegExp.parseDate("add haha on 14-2-14").get(0));
 		assertEquals("14-2-2014", RegExp.parseDate("add haha on 14-2-2014").get(0));
-		assertEquals("14-2-2014", RegExp.parseDate("add haha on 14-2-2014").get(0));
+		
+		assertEquals("14/2/14", RegExp.parseDate("add haha on 14/2/14").get(0));
+		assertEquals("14/2/2014", RegExp.parseDate("add haha on 14/2/2014").get(0));
+		
+		// Partitioned format: by DD-/MM-/YYYY
+		assertEquals("14-2-14", RegExp.parseDate("add haha by 14-2-14").get(0));
+		assertEquals("14-2-2014", RegExp.parseDate("add haha by 14-2-2014").get(0));
+		
+		assertEquals("14/2/14", RegExp.parseDate("add haha by 14/2/14").get(0));
+		assertEquals("14/2/2014", RegExp.parseDate("add haha by 14/2/2014").get(0));
+		
+		// Boundary case for invalid inputs
+		assertEquals(0, RegExp.parseDate("add haha on 31/2/2014").size());
+		assertEquals(0, RegExp.parseDate("add haha on 55/2/2014").size());
+		
+		assertEquals(0, RegExp.parseDate("add haha on 31/4/2014").size());
+		assertEquals(0, RegExp.parseDate("add haha on 60/4/2014").size());
+		
+		assertEquals(0, RegExp.parseDate("add haha on 31/6/2014").size());
+		assertEquals(0, RegExp.parseDate("add haha on 45/6/2014").size());
+		
+		assertEquals(0, RegExp.parseDate("add haha on 31/9/2014").size());
+		assertEquals(0, RegExp.parseDate("add haha on 77/9/2014").size());
+		
+		assertEquals(0, RegExp.parseDate("add haha on 31/11/2014").size());
+		assertEquals(0, RegExp.parseDate("add haha on 35/11/2014").size());
+		
+		assertEquals(0, RegExp.parseDate("add haha on 20/13/2014").size());
+		
+		// Partitioned format: DD mmm YYYY
 		assertEquals("14 march 2014", RegExp.parseDate("add haha on 14 march 2014").get(0));
 		assertEquals("14 mar 2014", RegExp.parseDate("add haha on 14 mar 2014").get(0));
 		assertEquals("14 march", RegExp.parseDate("add haha on 14 march").get(0));
+		
+	}
+	
+	@Test
+	public void testDateRegexTimed() {
+		assertEquals("14 mar", RegExp.parseDate("add camp from 14 mar 5pm to 16 mar 6pm").get(0));
+		assertEquals("16 mar", RegExp.parseDate("add camp from 14 mar 5pm to 16 mar 6pm").get(1));
+		
+		assertEquals("14 mar", RegExp.parseDate("add camp from 14 mar to 16 mar").get(0));
+		assertEquals("16 mar", RegExp.parseDate("add camp from 14 mar to 16 mar").get(1));
 	}
 	
 	@Test
 	public void testGetDateFromDateString() {
 		int[] date = new int[999];
+		
+		// Partitioned test cases: DD mmm format
 		date = RegExp.dateFromDateString("12 march 2014");
 		assertEquals(12,date[0]);
 		assertEquals(3,date[1]);
@@ -64,6 +123,7 @@ public class RegExpTest {
 		assertEquals(1,date[1]);
 		assertEquals(2014,date[2]);
 		
+		// Partitioned test cases: DD/MM/YY format
 		date = RegExp.dateFromDateString("12-2-2014");
 		assertEquals(12,date[0]);
 		assertEquals(2,date[1]);
@@ -73,12 +133,6 @@ public class RegExpTest {
 		assertEquals(12,date[0]);
 		assertEquals(2,date[1]);
 		assertEquals(2014,date[2]);
-		
-		date = RegExp.dateFromDateString("a/2/2014");
-		assertEquals(null, date);
-		
-		date = RegExp.dateFromDateString("31/14/9999");
-		assertEquals(null, date);
 		
 		/*
 		date = RegExp.dateFromDateString("on next monday");
@@ -111,8 +165,8 @@ public class RegExpTest {
 		time = RegExp.timeFromTimeString("1pm");
 		assertEquals(13,time[0]);
 		
-		time = RegExp.timeFromTimeString("haha");
-		assertEquals(null, time);
+//		time = RegExp.timeFromTimeString("haha");
+//		assertEquals(null, time);
 		
 //		time = RegExp.timeFromTimeString("45:45pm");
 //		assertEquals(null, time);
