@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
-import org.joda.time.MutableDateTime;
+import org.joda.time.Interval;
 
 import core.Task;
 
@@ -142,6 +142,24 @@ public class Criteria {
 		for(Task t: tasks) {
 			if(t.getTaskTags().contains(rawText)) {
 				result.add(tasks.indexOf(t));
+			}
+		}
+		return result;
+	}
+	
+	public static ArrayList<Integer> getAllUndeletedTasksWithTimestamp(List<Task> tasks, DateTime inputDate) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		for(Task t: tasks) {
+			if(t.getTaskStartTime() == null && t.getTaskEndTime() != null) {
+				if(t.getTaskEndTime().withTimeAtStartOfDay().isEqual(inputDate.withTimeAtStartOfDay())) {
+					result.add(tasks.indexOf(t));
+				}
+
+			} else if(t.getTaskStartTime() != null && t.getTaskEndTime() != null) {
+                Interval interval = new Interval(t.getTaskStartTime(), t.getTaskEndTime());
+                if(interval.contains(inputDate)) {
+                	result.add(tasks.indexOf(t));
+                }
 			}
 		}
 		return result;

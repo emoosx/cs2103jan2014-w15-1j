@@ -28,11 +28,14 @@ import core.Task;
 public class PandaUI extends Application {
 	
 	// input field
-	private static final String IF_PLACEHOLDER = "Search";
+	private static final String IF_PLACEHOLDER = "Get Busy!";
 	private static final int IF_HEIGHT = 70; 
 	private static final int IF_WIDTH = 500;
 	private static final String IF_ID = "inputField";
 	private static final int PADDING = 10;
+	
+	private static final int OFFSET = 1;
+	private static final int COMMAND_INDEX = 0;
 	
 	// listview
 	private static final String LIST_ID = "tasklist";
@@ -75,7 +78,7 @@ public class PandaUI extends Application {
 		inputField.textProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				//handleSearch(oldValue, newValue);
+				handleSearch(oldValue, newValue);
 			}
 		});
 		
@@ -91,7 +94,7 @@ public class PandaUI extends Application {
 						commandFactory.process(command);
 						updateTasksList();
 						inputField.clear();
-						list.scrollTo(tasks.size()-1);
+						list.scrollTo(tasks.size()-OFFSET);
 					}
 				}
 			}
@@ -124,6 +127,13 @@ public class PandaUI extends Application {
 			updateTasksList();
 		}
 		
+		String[] pieces  = newValue.split("\\s+");
+		if((!pieces[COMMAND_INDEX].equalsIgnoreCase(COMMAND_TYPE.SEARCH.name())) || pieces.length <= 1) {
+			updateTasksList();
+		} else {
+			newValue = pieces[1];
+		
+		
 
 		String[] parts = newValue.toLowerCase().split(" ");
 		
@@ -145,6 +155,7 @@ public class PandaUI extends Application {
 		}
 		
 		list.setItems(subentries);
+		}
 		
 	}
 	private void updateTasksList() {
