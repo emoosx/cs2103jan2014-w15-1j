@@ -35,7 +35,7 @@ public class PandaUI extends Application {
 	private static final int PADDING = 10;
 	
 	// listview
-	private static final String LIST_ID = "list";
+	private static final String LIST_ID = "tasklist";
 	// app
 	private static final int APP_WIDTH = 500;
 	private static final int APP_HEIGHT = 450;
@@ -75,7 +75,7 @@ public class PandaUI extends Application {
 		inputField.textProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				handleSearch(oldValue, newValue);
+				//handleSearch(oldValue, newValue);
 			}
 		});
 		
