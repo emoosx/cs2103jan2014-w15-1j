@@ -54,9 +54,7 @@ public class CommandFactory {
 	public final String UNDO_ADD = "add";
 	public final String UNDO_EDIT = "edit";
 	public final String UNDO_DONE = "done";
-	public final String UNDO_ARCHIVE = "archive";
 	public final String UNDO_DONEALL = "doneall";
-	public final String UNDO_ARCHIVEALL = "archiveall";
 	
 	// DateTime printing
   	private static final DateTimeFormatter dateDisplay = DateTimeFormat.forPattern("dd/MM/YY");
@@ -163,8 +161,6 @@ public class CommandFactory {
 		case CLEAR:
 			break;
 		case DONEALL:
-			break;
-		case ARCHIVEALL:
 			break;
 		case DELETE:
 			doDelete(command);
@@ -333,6 +329,8 @@ public class CommandFactory {
 			result = Criteria.getAllUndeletedDeadlineTasks(tasks);
 		} else if(command.rawText.equalsIgnoreCase("timed")) {
 			result = Criteria.getAllUndeletedTimedTasks(tasks);
+		} else if(command.rawText.startsWith("#")) {
+			result = Criteria.getAllUndeletedTasksWithHashTag(tasks, command.rawText);
 		} else {
 			// assume it as a timestamp
 			result = Criteria.getAllUndeletedTasks(tasks);
@@ -364,7 +362,7 @@ public class CommandFactory {
 		}
 	}
 	
-	//cater for single undo edit
+	/* cater for single undo edit */
 	private void doUndoEdit(int taskid, Command command) {
 		System.out.println("undo edit:"+taskid);
 		System.out.println(command.rawText);
@@ -559,7 +557,6 @@ public class CommandFactory {
 		this.redoStack.push(new SimpleEntry<Integer, Command>(taskid,convertDoneTaskToCommand(displayID)));
 		syncTasks();
 	}
-	
 
 	private Command convertDoneTaskToCommand(int displayID) {
 		StringBuilder sb = new StringBuilder();
@@ -698,10 +695,6 @@ public class CommandFactory {
 	private void showToUser(String outputString) {
 		System.out.println(outputString);
 	}
-
-	
-
-	
 
 	private Integer getFakeIDbyRealId(int realid) {
 		Integer removalKey = null;

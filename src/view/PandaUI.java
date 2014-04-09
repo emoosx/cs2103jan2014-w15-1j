@@ -128,6 +128,7 @@ public class PandaUI extends Application {
 		String[] parts = newValue.toLowerCase().split(" ");
 		
 		
+		
 		// create a temporary subentries matching list and replace it
 		ObservableList<Task> subentries = FXCollections.observableArrayList();
 		for(Task task: list.getItems()) {
