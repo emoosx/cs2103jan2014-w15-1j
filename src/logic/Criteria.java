@@ -136,4 +136,14 @@ public class Criteria {
 		}
 		return result;
 	}
+	
+	public static ArrayList<Integer> getAllUndeletedTasksWithHashTag(List<Task> tasks, String rawText) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		for(Task t: tasks) {
+			if(t.getTaskTags().contains(rawText)) {
+				result.add(tasks.indexOf(t));
+			}
+		}
+		return result;
+	}
 }

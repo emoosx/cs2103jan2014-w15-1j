@@ -14,13 +14,12 @@ public class Command {
 		EDIT ("edit"), 
 		UNDO ("undo"), 
 		REDO ("redo"),
-		ARCHIVE ("archive"), 
 		CLEAR ("clear"), 
 		DONE ("done"),
 		DONEALL ("doneall"), 
-		ARCHIVEALL ("archiveall"), 
 		DELETE ("delete"), 
 		HELP ("help"), 
+		SEARCH ("search"),
 		INVALID ("invalid");
 		
 		
@@ -89,14 +88,10 @@ public class Command {
 			return COMMAND_TYPE.REDO;
 		} else if (command.equalsIgnoreCase(COMMAND_TYPE.DONE.getCommandName())) {
 			return COMMAND_TYPE.DONE;
-		} else if (command.equalsIgnoreCase(COMMAND_TYPE.ARCHIVE.getCommandName())) {
-			return COMMAND_TYPE.ARCHIVE;
 		} else if (command.equalsIgnoreCase(COMMAND_TYPE.CLEAR.getCommandName())) {
 			return COMMAND_TYPE.CLEAR;
 		} else if (command.equalsIgnoreCase(COMMAND_TYPE.DONEALL.getCommandName())) {
 			return COMMAND_TYPE.DONEALL;
-		} else if (command.equalsIgnoreCase(COMMAND_TYPE.ARCHIVEALL.getCommandName())) {
-			return COMMAND_TYPE.ARCHIVEALL;
 		} else if (command.equalsIgnoreCase(COMMAND_TYPE.DELETE.getCommandName())) {
 			return COMMAND_TYPE.DELETE;
 		}

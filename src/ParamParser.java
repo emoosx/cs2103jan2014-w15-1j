@@ -5,7 +5,7 @@
 
 import java.util.ArrayList;
 
-import com.beust.jcommander.*;
+import org.junit.runners.Parameterized.Parameter;
 
 public class ParamParser {
 
