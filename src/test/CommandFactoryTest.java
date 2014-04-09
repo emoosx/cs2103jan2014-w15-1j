@@ -18,8 +18,11 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
-/* Running commandFactoryTest will clear redostack due to unavoidable conflict during testing */
+import org.junit.FixMethodOrder;
+
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class CommandFactoryTest {
 
 	private CommandFactory cf = CommandFactory.INSTANCE;
@@ -73,7 +76,8 @@ public class CommandFactoryTest {
 	}
 
 	@Test
-	public void testAdd() {
+	//add
+	public void test1() {
 		Command testCommand = new Command(
 				"add testing task on 14/06/14 from 2pm to 3pm");
 		cf.testAdd(testCommand);
@@ -87,14 +91,14 @@ public class CommandFactoryTest {
 	}
 
 	@Test
-	public void testEdit() {
+	//edit
+	public void test2() {
 		int lastIndex = cf.getLastIndex();
 		int displayID = cf.testGetDisplayId(lastIndex);
 		String edit = ("edit " + displayID + " edited task on 12/06/14 from 1pm to 5pm");
 		Command testEditCommand = new Command(edit);
 		cf.testEdit(testEditCommand);
 		List<Task> testList = cf.getTasks();
-		System.out.println("edited.size:" + testList.toString());
 		assertEquals("edited task", testList.get(testList.size() - 1)
 				.getTaskDescription());
 		assertEquals("12/06/14 13:00", dateTimeDisplay.print(testList.get(
@@ -113,7 +117,6 @@ public class CommandFactoryTest {
 		// Testing redo edit
 		cf.testRedo();
 		List<Task> redoList = cf.getTasks();
-		System.out.println("edited.size:" + redoList.toString());
 		assertEquals("edited task", testList.get(redoList.size() - 1)
 				.getTaskDescription());
 		assertEquals("12/06/14 13:00", dateTimeDisplay.print(redoList.get(
@@ -123,10 +126,33 @@ public class CommandFactoryTest {
 
 	}
 	
-	
+	@Test
+	//done
+	public void test3() {
+	int lastIndex = cf.getLastIndex();
+	System.out.println("done test last index:" + lastIndex);
+	int displayID = cf.testGetDisplayId(lastIndex);
+    String done = ("done " + displayID);
+	Command testDoneCommand = new Command(done);
+	cf.testDone(testDoneCommand);
+	List<Task> testList = cf.getTasks();
+	assertEquals(true, testList.get(lastIndex).getTaskDone());
+	// Testing of undo done
+	cf.testUndo();
+	List<Task> undoList = cf.getTasks();
+	assertEquals(false, undoList.get(lastIndex).getTaskDone());
+	// Test redo done
+	cf.testRedo();
+	List<Task> redoList = cf.getTasks();
+	assertEquals(true, redoList.get(lastIndex).getTaskDone());
+	cf.testUndo();
+	undoList = cf.getTasks();
+	assertEquals(false, undoList.get(lastIndex).getTaskDone());
+	}
 
 	@Test
-	public void testDelete() {
+	//delete
+	public void test4() {
 		int lastIndex = cf.getLastIndex();
 		int displayID = cf.testGetDisplayId(lastIndex);
 	    String delete = ("delete " + displayID);
@@ -140,10 +166,11 @@ public class CommandFactoryTest {
 		assertEquals(false, undoList.get(lastIndex).getMarkAsDelete());
 		// Test redo
 		cf.testRedo();
-		List<Task> redoList = cf.getTasks();
+	    List<Task> redoList = cf.getTasks();
 		assertEquals(true, redoList.get(lastIndex).getMarkAsDelete());
 		cf.clearUndoRedoAfterTesting();	
 	}
+
 	
 	
 
