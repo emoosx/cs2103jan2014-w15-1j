@@ -8,7 +8,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -49,6 +48,8 @@ public class PandaUI extends Application {
 	ObservableList<Task> tasks = commandFactory.getDisplayTasks();
 	ListView<Task> list = new ListView<Task>();
 	TextField inputField;
+	
+	//SpellChecker.registerDictionaries( new URL("file", null, ""), "en,de", "de" );
 	
 	public static void main(String[] args) {
 		launch(args);

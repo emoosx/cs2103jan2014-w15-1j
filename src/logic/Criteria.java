@@ -150,12 +150,12 @@ public class Criteria {
 	public static ArrayList<Integer> getAllUndeletedTasksWithTimestamp(List<Task> tasks, DateTime inputDate) {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		for(Task t: tasks) {
-			if(t.getTaskStartTime() == null && t.getTaskEndTime() != null) {
+			if(t.getTaskStartTime() == null && t.getTaskEndTime() != null && t.getMarkAsDelete() == false) {
 				if(t.getTaskEndTime().withTimeAtStartOfDay().isEqual(inputDate.withTimeAtStartOfDay())) {
 					result.add(tasks.indexOf(t));
 				}
 
-			} else if(t.getTaskStartTime() != null && t.getTaskEndTime() != null) {
+			} else if(t.getTaskStartTime() != null && t.getTaskEndTime() != null && t.getMarkAsDelete() == false) {
                 Interval interval = new Interval(t.getTaskStartTime(), t.getTaskEndTime());
                 if(interval.contains(inputDate)) {
                 	result.add(tasks.indexOf(t));
