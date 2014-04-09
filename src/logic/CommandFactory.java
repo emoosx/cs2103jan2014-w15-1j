@@ -2,7 +2,7 @@ package logic;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
-import java.util.EmptyStackException;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,16 +10,22 @@ import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.logging.Logger;
 
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import logic.Command.COMMAND_TYPE;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import storage.RedoStorage;
 import storage.StorageHelper;
 import storage.UndoStorage;
+
+import com.joestelmach.natty.DateGroup;
+import com.joestelmach.natty.Parser;
 import common.PandaLogger;
+
 import core.Task;
 
 public class CommandFactory {
@@ -33,6 +39,8 @@ public class CommandFactory {
 	private static Integer NUMBER_TASK_INDEX = 0;
 	private static Integer EDIT_OFFSET = 1;
 	private static Integer OFFSET = 1;
+	
+	private static final int LIST_PARSE_TIMESTAMP = 0; 
 
 	String userInputDesc;
 	String commandType;
@@ -315,8 +323,7 @@ public class CommandFactory {
 		// some hard-coded cases for (tmw|today|this week|floating|timed|deadline)
 		if(command.rawText == null || command.rawText.equals("")) {
 			result = Criteria.getAllUndeletedTasks(tasks);
-		}
-		else if(command.rawText.equalsIgnoreCase("tmw") || command.rawText.equalsIgnoreCase("tomorrow")) {
+		} else if(command.rawText.equalsIgnoreCase("tmw") || command.rawText.equalsIgnoreCase("tomorrow")) {
 			result = Criteria.getAllTasksforTomorrow(tasks);
 		} else if(command.rawText.equalsIgnoreCase("today")) {
 			logger.info(tasks.toString());
@@ -333,7 +340,17 @@ public class CommandFactory {
 			result = Criteria.getAllUndeletedTasksWithHashTag(tasks, command.rawText);
 		} else {
 			// assume it as a timestamp
-			result = Criteria.getAllUndeletedTasks(tasks);
+			
+			Parser parser = new Parser();
+			List<DateGroup> groups = parser.parse(RegExp.changeDateFormat(command.rawText));
+			if(groups.size() >= 1) {
+				List<Date> dates = groups.get(LIST_PARSE_TIMESTAMP).getDates();
+				DateTime inputDate = new DateTime(dates.get(LIST_PARSE_TIMESTAMP));
+				result = Criteria.getAllUndeletedTasksWithTimestamp(tasks, inputDate);
+
+			} else {
+				result = Criteria.getAllUndeletedTasks(tasks);
+			}
 		}
 
 		this.tasksMap.clear();
