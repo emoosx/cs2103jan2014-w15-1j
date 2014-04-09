@@ -59,8 +59,8 @@ public class RegExpTest {
 		assertEquals("14-2-14", RegExp.parseDate("add haha on 14-2-14").get(0));
 		assertEquals("14-2-2014", RegExp.parseDate("add haha on 14-2-2014").get(0));
 		
-		assertEquals("14/2/14", RegExp.parseDate("add haha on 14/2/14").get(0));
-		assertEquals("14/2/2014", RegExp.parseDate("add haha on 14/2/2014").get(0));
+		assertEquals("14/11/14", RegExp.parseDate("add haha on 14/11/14").get(0));
+		assertEquals("14/11/2014", RegExp.parseDate("add haha on 14/11/2014").get(0));
 		
 		// Partitioned format: by DD-/MM-/YYYY
 		assertEquals("14-2-14", RegExp.parseDate("add haha by 14-2-14").get(0));

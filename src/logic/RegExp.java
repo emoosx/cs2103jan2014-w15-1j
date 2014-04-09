@@ -79,11 +79,11 @@ public class RegExp {
      */
     public static String[] regexDateInputArray = {
     	// Case 1: DD-MM-YY(YY) or DD/MM/YY(YY) 
-    	"\\b(?i)(on\\s((0?[1-9]|[12]\\d|3[01])[-/](0?[13578]|1[02])[-/](\\d{4}|\\d{2})|(0?[1-9]|[12]\\d|30)[-/](0?[1-9]|1[02])[-/](\\d{4}|\\d{2})))\\b",
+    	"\\b(?i)(on\\s((0?[1-9]|[12]\\d|3[01])[-/]((0?[13578])|1[02])[-/](\\d{4}|\\d{2})|(0?[1-9]|[12]\\d|30)[-/]((0?[1-9])|1[012])[-/](\\d{4}|\\d{2})))\\b",
     	// Case 2: partial text based dates (e.g. 15 march 2014, 2 feb)
     	"\\b(?i)(on\\s)(((0?[1-9]|[12]\\d|3[01])\\s(jan(uary)?|mar(ch)?|may|jul(y)?|aug(ust)?|oct(ober)?|dec(ember)?)(\\s\\d{4})?|(0?[1-9]|[12]\\d|30)\\s(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(tember)?|oct(ober)?|nov(ember)?|dec(ember)?)(\\s\\d{4})?))\\b",
     	// Case 3: pure text based relative dates (e.g. next Monday)
-    	"\\b(?i)((((on|by)\\s)?((next|this)\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))|((on the day after )?tomorrow))\\b"
+    	"\\b(?i)((((on|by)\\s)?((next|this)\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))|((on|by)\\s(the day after )?tomorrow))\\b"
     	};
     
     /*
@@ -122,7 +122,7 @@ public class RegExp {
      */
     private static String[] regexDateArray = {
     	// Case 1: DD/MM/YY(YY) or DD-MM-YY(YY) or  
-        "((0?[1-9]|[12]\\d|3[01])[-/](0?[13578]|1[02])[-/](\\d{4}|\\d{2})|(0?[1-9]|[12]\\d|30)[-/](0?[1-9]|1[02])[-/](\\d{4}|\\d{2}))",
+        "((0?[1-9]|[12]\\d|3[01])[-/](0?[13578]|1[02])[-/](\\d{4}|\\d{2})|(0?[1-9]|[12]\\d|30)[-/](0?[1-9]|1[012])[-/](\\d{4}|\\d{2}))",
         // Case 2: Partial text based dates (e.g. 15 march 2014, 2 feb)
         "\\b(?i)(((0?[1-9]|[12]\\\\d|3[01])\\s(jan|january|mar|march|may|jul|july|aug|august|oct|october|dec|december)(\\s\\d{4})?|(0?[1-9]|[12]\\d|30)\\s(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)(\\s\\d{4})?))\\b",
         // Case 3: pure text based relative dates (e.g. next Monday)
@@ -162,7 +162,7 @@ public class RegExp {
      * 
      */
     // Case 1: (by/on/from/to/at) <date> <time>
-    public static String REGEX_HYBRID_PATTERN_1 = "\\b(by |on |from |to |at )(((0?[1-9]|[12]\\d|3[01])[-/](0?[13578]|1[02])[-/](\\d{4}|\\d{2})|(0?[1-9]|[12]\\d|30)[-/](0?[1-9]|1[02])[-/](\\d{4}|\\d{2}))|(((0?[1-9]|[12]\\d|3[01])\\s(jan(uary)?|mar(ch)?|may|jul(y)?|aug(ust)?|oct(ober)?|dec(ember)?)(\\s\\d{4})?|(0?[1-9]|[12]\\d|30)\\s(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(tember)?|oct(ober)?|nov(ember)?|dec(ember)?)(\\s\\d{4})?)))(\\s(([1-9]|1[0-2])(:[0-5][0-9])?[AaPp][Mm]|([0-1][0-9]|2[0-3]):?[0-5][0-9]))?\\b";
+    public static String REGEX_HYBRID_PATTERN_1 = "\\b(by |on |from |to |at )(((0?[1-9]|[12]\\d|3[01])[-/](0?[13578]|1[02])[-/](\\d{4}|\\d{2})|(0?[1-9]|[12]\\d|30)[-/](0?[1-9]|1[012])[-/](\\d{4}|\\d{2}))|(((0?[1-9]|[12]\\d|3[01])\\s(jan(uary)?|mar(ch)?|may|jul(y)?|aug(ust)?|oct(ober)?|dec(ember)?)(\\s\\d{4})?|(0?[1-9]|[12]\\d|30)\\s(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(tember)?|oct(ober)?|nov(ember)?|dec(ember)?)(\\s\\d{4})?)))(\\s(([1-9]|1[0-2])(:[0-5][0-9])?[AaPp][Mm]|([0-1][0-9]|2[0-3]):?[0-5][0-9]))?\\b";
     // Case 2: (by/on/from/to/at) <relative date> <time>
     public static String REGEX_HYBRID_PATTERN_2 = "\\b(?i)(by |on |from |to |at )(((next|this)?\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?))|(the day after )?tomorrow)(\\s(([1-9]|1[0-2])(:[0-5][0-9])?[AaPp][Mm]|([0-1][0-9]|2[0-3]):?[0-5][0-9]))?\\b";
     
@@ -344,15 +344,15 @@ public class RegExp {
 		taskDescription = taskDescription.replaceAll(REGEX_HYBRID_PATTERN_1, "");
 		taskDescription = taskDescription.replaceAll(REGEX_HYBRID_PATTERN_2, "");
 		
-		// Replacing all matched time regex with ""
+		// Replacing all matched supported time regex patterns with ""
 		for(int i=0; i<regexTimeInputArray.length; i++) {
 			taskDescription = taskDescription.replaceAll(regexTimeInputArray[i], "");
 		}
-    	// Replacing all matched date regex with ""
+    	// Replacing all matched supported date regex patterns with ""
 		for(int i=0; i<regexDateInputArray.length; i++) {
 			taskDescription = taskDescription.replaceAll(regexDateInputArray[i], "");
     	}
-		// Replacing hashtags with ""
+		// Replacing hashtags regex patterns with ""
 		taskDescription = taskDescription.replaceAll(REGEX_HASHTAG, "");
 		
 		PandaLogger.getLogger().info("Task Description obtained: " + taskDescription);
