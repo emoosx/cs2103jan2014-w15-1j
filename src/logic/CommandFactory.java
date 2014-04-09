@@ -700,7 +700,7 @@ public class CommandFactory {
 	}
 
 	
-
+    
 	
 
 	private Integer getFakeIDbyRealId(int realid) {
@@ -733,5 +733,38 @@ public class CommandFactory {
 		this.tasksMap.clear();
 		this.tasksMap.putAll(temp);
 		System.out.println("after undo: + tasksMap");
+	}
+	
+	public int testGetDisplayId(int realId){
+	  return getDisplayId(realId);	
+	}
+	
+	public void clearUndoRedoAfterTesting(){
+		for(int i=0;i<3;i++){
+			this.undoStack.pop();
+		}
+		this.syncTasks();
+	}
+	
+	public int getLastIndex(){
+		return (tasks.size()-1);
+	}
+	public void testAdd(Command command){
+		this.executeCommand(command);
+	}
+	public void testEdit(Command command){
+		this.executeCommand(command);
+	}
+	public void testUndo(){
+		doUndo();
+	}
+	public void testRedo(){
+		doRedo();
+	}
+	public void testDelete(Command command){
+		this.executeCommand(command);
+	}
+	public void testDone(Command command){
+		this.executeCommand(command);
 	}
 }
