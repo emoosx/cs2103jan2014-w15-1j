@@ -28,9 +28,14 @@ public class RegExp {
 	private static final int INDEX_FIRST_CASE = 0;
 	private static final int INDEX_SECOND_CASE = 1;
 	private static final int INDEX_THIRD_CASE = 2;
+	private static final int INDEX_FOURTH_CASE = 3;
 
 	private static final int NUM_HOUR_INDEX = 0;
 	private static final int NUM_MIN_INDEX = 1;
+	private static final int NUM_DAY_INDEX = 0;
+	private static final int NUM_MONTH_INDEX = 1;
+	private static final int NUM_YEAR_INDEX = 2;
+	
 	private static final int NUM_START_TIME_GROUP = 1;
 	private static final int NUM_END_TIME_GROUP = 4;
 	
@@ -83,7 +88,7 @@ public class RegExp {
     	// Case 2: partial text based dates (e.g. 15 march 2014, 2 feb)
     	"\\b(?i)(on\\s)(((0?[1-9]|[12]\\d|3[01])\\s(jan(uary)?|mar(ch)?|may|jul(y)?|aug(ust)?|oct(ober)?|dec(ember)?)(\\s\\d{4})?|(0?[1-9]|[12]\\d|30)\\s(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(tember)?|oct(ober)?|nov(ember)?|dec(ember)?)(\\s\\d{4})?))\\b",
     	// Case 3: pure text based relative dates (e.g. next Monday)
-    	"\\b(?i)((((on|by)\\s)?((next|this)\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))|((on|by)\\s(the day after )?tomorrow))\\b"
+    	"\\b(?i)((((on|by)\\s)((next|this)\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))|((on|at|by)\\s(the day after )?tomorrow))\\b"
     	};
     
     /*
@@ -103,19 +108,6 @@ public class RegExp {
     	};
     
     /*
-     * Date Format Patterns 
-     * These formats are used mainly in the dateFromDateString method that convert date parameters into an int[] which contains 3 elements: year, month and day 
-     */
-    /*
-    // Case 1: DD/MM/YY(YY) or DD-MM-YY(YY) or  
-    public static String REGEX_DATESTRING_PATTERN_1 = "((0?[1-9]|[12]\\d|3[01])[-/](0?[13578]|1[02])[-/](\\d{4}|\\d{2})|(0?[1-9]|[12]\\d|30)[-/](0?[1-9]|1[02])[-/](\\d{4}|\\d{2}))";
-    // Case 2: Partial text based dates (e.g. 15 march 2014, 2 feb)
-    public static String REGEX_DATESTRING_PATTERN_2 = "\\b(?i)(((0?[1-9]|[12]\\\\d|3[01])\\s(jan|january|mar|march|may|jul|july|aug|august|oct|october|dec|december)(\\s(\\d{4}|\\d{2}))?|(0?[1-9]|[12]\\d|30)\\s(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)(\\s(\\d{4}|\\d{2}))?))\\b";
-    // Case 3: pure text based relative dates (e.g. next Monday)
-    public static String REGEX_DATESTRING_PATTERN_3 = "\\b(?i)(((on\\s)?(next\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))|((on the day after )?tomorrow))\\b";
-    */
-    
-    /*
      *  Date Expressions
      *  These patterns contains purely date formats, without any keywords such as "from", "by", etc.
      *  These patterns are used to identify and parse date formats into an integer array of 3 elements: year, month and day
@@ -126,47 +118,21 @@ public class RegExp {
         // Case 2: Partial text based dates (e.g. 15 march 2014, 2 feb)
         "\\b(?i)(((0?[1-9]|[12]\\\\d|3[01])\\s(jan|january|mar|march|may|jul|july|aug|august|oct|october|dec|december)(\\s\\d{4})?|(0?[1-9]|[12]\\d|30)\\s(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december)(\\s\\d{4})?))\\b",
         // Case 3: pure text based relative dates (e.g. next Monday)
-        "\\b(?i)((((on|by)\\s)?((next|this)\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))|((on the day after )?tomorrow))\\b"
+        "\\b(?i)((((on|by)\\s)((next|this)\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))|((on the day after )?tomorrow))\\b"
     };
-    
-    /*
-     *  Time Expressions
-     *  These patterns contains purely time formats, without any keywords such as "from", "by", etc.
-     *  These patterns are used to identify and parse time formats into an integer array of 2 elements: hour and minute
-     */
-    /*
-    private static String[] regexTimeArray = {
-    	// Case 1: HH:MM (am/pm)
-    	"([1-9]|1[0-2]):[0-5][0-9][AaPp][Mm]",
-    	// Case 2: HH (am/pm)
-    	"([1-9]|1[0-2])[AaPp][Mm]",
-    	// Case 3: HH:MM
-    	"([0-1][0-9]|2[0-3]):[0-5][0-9]",
-    	// Case 4: HHMM
-    	"([0-1][0-9]|2[0-3])[0-5][0-9]"
-    };
-    */
-    /*
-    // Case 1: HH:MM (am/pm)
-    public static String REGEX_TIMESTRING_PATTERN_1 = "([1-9]|1[0-2]):[0-5][0-9][AaPp][Mm]";
-    // Case 2: HH (am/pm)
-    public static String REGEX_TIMESTRING_PATTERN_2 = "([1-9]|1[0-2])[AaPp][Mm]"; 
-    // Case 3: HH:MM
-    public static String REGEX_TIMESTRING_PATTERN_3 = "([0-1][0-9]|2[0-3]):[0-5][0-9]";
-    // Case 4: HHMM
-    public static String REGEX_TIMESTRING_PATTERN_4 = "([0-1][0-9]|2[0-3])[0-5][0-9]"; 
-    */
     
     /* 
-     * Hybrid patterns that captures timed date and time
-     * 
+     * Hybrid patterns that captures date and time under one keyword such as "from, by, to", etc.
+     * These patterns are used twice, once by parseTime and once by parseDate  
      */
     // Case 1: (by/on/from/to/at) <date> <time>
     public static String REGEX_HYBRID_PATTERN_1 = "\\b(by |on |from |to |at )(((0?[1-9]|[12]\\d|3[01])[-/](0?[13578]|1[02])[-/](\\d{4}|\\d{2})|(0?[1-9]|[12]\\d|30)[-/](0?[1-9]|1[012])[-/](\\d{4}|\\d{2}))|(((0?[1-9]|[12]\\d|3[01])\\s(jan(uary)?|mar(ch)?|may|jul(y)?|aug(ust)?|oct(ober)?|dec(ember)?)(\\s\\d{4})?|(0?[1-9]|[12]\\d|30)\\s(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(tember)?|oct(ober)?|nov(ember)?|dec(ember)?)(\\s\\d{4})?)))(\\s(([1-9]|1[0-2])(:[0-5][0-9])?[AaPp][Mm]|([0-1][0-9]|2[0-3]):?[0-5][0-9]))?\\b";
     // Case 2: (by/on/from/to/at) <relative date> <time>
     public static String REGEX_HYBRID_PATTERN_2 = "\\b(?i)(by |on |from |to |at )(((next|this)?\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?))|(the day after )?tomorrow)(\\s(([1-9]|1[0-2])(:[0-5][0-9])?[AaPp][Mm]|([0-1][0-9]|2[0-3]):?[0-5][0-9]))?\\b";
     
-    // Hash Tag Regular Expressions
+    /*
+     *  Hash Tag Regular Expressions
+     */
     public static String REGEX_HASHTAG = "(?<=^|(?<=[^a-zA-Z0-9-\\.]))#([A-Za-z]+[A-Za-z0-9]+)";
     
     /*
@@ -177,7 +143,7 @@ public class RegExp {
     public static int[] dateFromDateString(String dateString) {
     	int[] date = new int[TOTAL_DATE_FIELDS];
     	
-    	// Overcoming NattyTime limitation (parses as MM/DD/YYYY) 
+    	// Overcoming NattyTime limitation (Natty parses dates as MM/DD/YYYY) 
 		dateString = changeDateFormat(dateString);
 		
 		// Calling NattyTime parser
@@ -186,9 +152,9 @@ public class RegExp {
 		for(DateGroup group: groups) {
 			List<Date> dates = group.getDates();
 			MutableDateTime tempDate = new MutableDateTime(dates.get(0));
-			date[0] = tempDate.getDayOfMonth();
-			date[1] = tempDate.getMonthOfYear();
-			date[2] = tempDate.getYear();
+			date[NUM_DAY_INDEX] = tempDate.getDayOfMonth();
+			date[NUM_MONTH_INDEX] = tempDate.getMonthOfYear();
+			date[NUM_YEAR_INDEX] = tempDate.getYear();
 		}
 		return date;
     }
@@ -206,8 +172,8 @@ public class RegExp {
 		for(DateGroup group: groups) {
 			List<Date> dates = group.getDates();
 			MutableDateTime tempTime = new MutableDateTime(dates.get(0));
-			time[0] = tempTime.getHourOfDay();
-			time[1] = tempTime.getMinuteOfHour();
+			time[NUM_HOUR_INDEX] = tempTime.getHourOfDay();
+			time[NUM_MIN_INDEX] = tempTime.getMinuteOfHour();
 		}
 		return time;
     }
@@ -220,8 +186,6 @@ public class RegExp {
     public static ArrayList<String> parseDate(String userInput) {
     	ArrayList<String> dateArray = new ArrayList<String>();
 
-    	
-    	
     	// Case 1: "on DD-MM-YY(YY) or DD/MM/YY(YY)"
     	Pattern pattern = Pattern.compile(regexDateInputArray[INDEX_FIRST_CASE]);
     	Matcher matcher = pattern.matcher(userInput);
@@ -266,7 +230,7 @@ public class RegExp {
     	pattern = Pattern.compile(regexDateInputArray[INDEX_THIRD_CASE]);
     	matcher = pattern.matcher(userInput);
     	if(matcher.find()) {
-    		dateArray.add(matcher.group(1));
+    		dateArray.add(matcher.group(2));
     		return dateArray;
     	}
 

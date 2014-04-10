@@ -16,6 +16,7 @@ import org.junit.Test;
 import common.PandaLogger;
 import core.Task;
 
+//@author A0101810A
 /*
  * This class does an integration test on several different classes. 
  * They are namely: Task.java, TaskParser.java and RegExp.java
