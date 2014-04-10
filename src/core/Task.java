@@ -13,6 +13,9 @@ import org.joda.time.DateTime;
 
 public class Task {
 
+	private static int START_INDEX = 0;
+	private static String COMMA = ", ";
+	
 	private int taskID;
 	private String rawText;
 	private String taskDescription;
@@ -21,7 +24,6 @@ public class Task {
 	private DateTime endDateTime;
 	private boolean taskDone;
 	private DateTime taskCreatedTimestamp; 
-	//private boolean hasAlias;
 	private boolean markAsDelete;
 
 	public Task(String rawText) {
@@ -32,10 +34,11 @@ public class Task {
 		this.taskCreatedTimestamp = new DateTime();
 		this.taskDone = false;
 		this.markAsDelete = false;
+		this.taskTags = new ArrayList<String>();
 		this.parse(this.rawText);
 	}
 	
-	// This method will update the necessary attributes of the task
+	/* Update the necessary attributes of the task */
 	private void parse(String rawText) {
 		assert(!rawText.equals(null));
 		TaskParser parser = new TaskParser(rawText);
@@ -108,6 +111,21 @@ public class Task {
 	
 	public ArrayList<String> getTaskTags() {
 		return taskTags;
+	}
+	
+	public String getTags() {
+		StringBuilder sb = new StringBuilder();
+		if(taskTags.isEmpty()) {
+			return sb.toString();
+		} else {
+			for(String tag: taskTags) {
+				sb.append(tag);
+				sb.append(COMMA);
+			}
+			String result = sb.toString();
+			return result.substring(START_INDEX, result.length() - COMMA.length());
+		}
+
 	}
 	
 	public String getLabel() {
