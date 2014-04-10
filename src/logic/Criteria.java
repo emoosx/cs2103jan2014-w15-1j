@@ -35,6 +35,26 @@ public class Criteria {
 		}
 		return result;
 	}
+	
+	public static ArrayList<Integer> getAllOverdueTaskIDs(List<Task> tasks) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		for(Task t: tasks) {
+			if(t.getMarkAsDelete() == false && t.getTaskDone() == false && t.getTaskEndTime() != null && 
+			   t.getTaskEndTime().isBeforeNow())
+				result.add(tasks.indexOf(t));
+		}
+		return result;
+	}
+	
+	public static ArrayList<Integer> getAllDoneTasks(List<Task> tasks) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		for(Task t: tasks) {
+			if(t.getMarkAsDelete() == false && t.getTaskDone() == true) {
+				result.add(tasks.indexOf(t));
+			}
+		}
+		return result;
+	}
 	/* default criteria */
 	public static ArrayList<Integer> getAllUndeletedTasks(List<Task> tasks) {
 		ArrayList<Integer> result = new ArrayList<Integer>();

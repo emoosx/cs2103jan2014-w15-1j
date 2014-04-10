@@ -303,6 +303,10 @@ public class CommandFactory {
 		} else if (command.rawText.equalsIgnoreCase("today")) {
 			logger.info(tasks.toString());
 			result = Criteria.getAllTasksforToday(tasks);
+		} else if (command.rawText.equalsIgnoreCase("overdue")) {
+			result = Criteria.getAllOverdueTaskIDs(tasks);
+		} else if (command.rawText.equalsIgnoreCase("done")) {
+			result = Criteria.getAllDoneTasks(tasks);
 		} else if (command.rawText.equalsIgnoreCase("this week")) {
 			result = Criteria.getAllTasksforThisWeek(tasks);
 		} else if (command.rawText.equalsIgnoreCase("floating")) {

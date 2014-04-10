@@ -182,6 +182,10 @@ public class RegExpTest {
 		// Partitioned test cases: floating tasks
 		assertEquals("meeting", RegExp.parseDescription("meeting"));
 		assertEquals("wash car", RegExp.parseDescription("wash car"));
+		// Edge test cases:
+		assertEquals("meeting 14/2/2014", RegExp.parseDescription("meeting 14/2/2014"));
+		assertEquals("meeting 14-2-2014", RegExp.parseDescription("meeting 14-2-2014"));
+		assertEquals("meeting 14 jan", RegExp.parseDescription("meeting 14 jan"));
 		
 		// Partitioned test cases: deadline tasks
 		assertEquals("add meeting", RegExp.parseDescription("add meeting by 10pm"));

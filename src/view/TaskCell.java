@@ -49,7 +49,6 @@ public class TaskCell extends ListCell<Task> {
 	
 	public TaskCell() {
 		configureGrid();
-//		configureHBox();
 		configureIcon();
 		configureID();
 		configureDesc();
@@ -62,8 +61,6 @@ public class TaskCell extends ListCell<Task> {
 	}
 	
 	private void configureGrid() {
-//		grid.setHgap(GRID_HGAP);
-//		grid.setVgap(GRID_VGAP);
 		grid.setId(GRID_ID); 
 	}
 	
@@ -103,7 +100,6 @@ public class TaskCell extends ListCell<Task> {
 	}
 	
 	private void addControlsToHBox() {
-//		hbox.getChildren().addAll(icon, id, desc, timestamp, hashtag);
 		hbox.getChildren().addAll(grid, hashtag);
 		HBox.setHgrow(grid, Priority.ALWAYS);
 	}
@@ -164,9 +160,9 @@ public class TaskCell extends ListCell<Task> {
 			icon.setId(ICON_FLOATING_ID);
 		}
 		icon.setText(label);
-//		icon.setText(" ");
 		desc.setText(task.getTaskDescription());
-		hashtag.setText(task.getTaskTags().toString());
+		desc.setMaxWidth(400);
+		hashtag.setText(task.getTags());
 		
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM d, yy HH:mm");
 		DateTime start = task.getTaskStartTime();
