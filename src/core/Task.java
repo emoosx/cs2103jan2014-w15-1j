@@ -1,13 +1,14 @@
 package core;
 
 import java.util.ArrayList;
-
 import logic.TaskParser;
-
 import org.joda.time.DateTime;
 
+//@author A0101810A
 /*
- * Task class that will be used for creation of task objects.
+ * Task class stores all required attributes of a task specified by the user input
+ * Given a user input, Task class calls the TaskParser class which will parse the input
+ * This class will then obtain all necessary fields from TaskParser
  * Task objects will be converted into GSON objects which will be handled by storage
  */
 
@@ -26,20 +27,19 @@ public class Task {
 
 	public Task(String rawText) {
 		this.rawText = rawText;
-		this.taskDescription = null;
-		this.startDateTime = null;
-		this.endDateTime = null;
-		this.taskCreatedTimestamp = new DateTime();
-		this.taskDone = false;
-		this.markAsDelete = false;
-		this.parse(this.rawText);
+		setTaskDescription(null);
+		setTaskStartTime(null);
+		setTaskEndTime(null);
+		setTaskCreatedTimestamp(new DateTime());
+		setTaskUndone();
+		setMarkAsUndelete();
+		parse(rawText);
 	}
 	
-	// This method will update the necessary attributes of the task
 	private void parse(String rawText) {
 		assert(!rawText.equals(null));
-		TaskParser parser = new TaskParser(rawText);
-		parser.parseTask();
+		TaskParser parser = new TaskParser();
+		parser.parseTask(rawText);
 		taskDescription = parser.getTaskDescription();
 		startDateTime = parser.getStartDateTime();
 		endDateTime = parser.getEndDateTime();
@@ -49,7 +49,10 @@ public class Task {
 	public void setID(int id) {
 		this.taskID = id;
 	}
-
+	public int getID() {
+		return taskID;
+	}
+	
 	public void setTaskDescription(String tDesc){
 		this.taskDescription = tDesc;
 	}
@@ -119,10 +122,12 @@ public class Task {
 			return "T";
 		}
 	}
-	
-	// Override method for toString
-	@Override
-	public String toString() {
-		return this.taskDescription + " " + String.valueOf(this.endDateTime);
+
+	public DateTime getTaskCreatedTimestamp() {
+		return taskCreatedTimestamp;
+	}
+
+	public void setTaskCreatedTimestamp(DateTime taskCreatedTimestamp) {
+		this.taskCreatedTimestamp = taskCreatedTimestamp;
 	}
 }
