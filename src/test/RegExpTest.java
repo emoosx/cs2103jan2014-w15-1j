@@ -6,6 +6,9 @@ import java.util.ArrayList;
 
 import logic.RegExp;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.LocalDate;
 import org.junit.Test;
 
 public class RegExpTest {
@@ -134,6 +137,13 @@ public class RegExpTest {
 		assertEquals(2,date[1]);
 		assertEquals(2014,date[2]);
 		
+		DateTime dtOrg = new DateTime();
+		DateTime dtPlusOne = dtOrg.plusDays(1);
+		date = RegExp.dateFromDateString("by tomorrow 5pm");
+		assertEquals(dtPlusOne.getDayOfMonth(),date[0]);
+		assertEquals(dtPlusOne.getMonthOfYear(),date[1]);
+		assertEquals(dtPlusOne.getYear(),date[2]);
+		
 		/*
 		date = RegExp.dateFromDateString("on next monday");
 		assertEquals(7,date[0]);
@@ -164,15 +174,6 @@ public class RegExpTest {
 		
 		time = RegExp.timeFromTimeString("1pm");
 		assertEquals(13,time[0]);
-		
-//		time = RegExp.timeFromTimeString("haha");
-//		assertEquals(null, time);
-		
-//		time = RegExp.timeFromTimeString("45:45pm");
-//		assertEquals(null, time);
-//
-//		time = RegExp.timeFromTimeString("06:99am");
-//		assertEquals(null, time);
 	}
 	
 	@Test
@@ -203,7 +204,6 @@ public class RegExpTest {
 		assertEquals(hashtags, RegExp.parseHashtag("add ##### on 2/2/2014 from 2pm to 3pm"));
 	}
 	
-	/*
 	@Test
 	public void testChangeDateFormat() {
 		assertEquals("2/22/2014", RegExp.changeDateFormat("22/2/2014"));
@@ -213,7 +213,6 @@ public class RegExpTest {
 		assertEquals("from 1/11/2014 to 1/12/2014", RegExp.changeDateFormat("from 11/1/2014 to 12/1/2014"));
 		assertEquals("3/2/2014", RegExp.changeDateFormat("2/3/2014"));
 	}
-	*/
 	
 	@Test
 	public void testMonthIndex() {

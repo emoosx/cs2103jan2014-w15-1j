@@ -14,16 +14,16 @@ import com.joestelmach.natty.Parser;
 
 import common.PandaLogger;
 
+//@author A0101810A
 /*
  * TaskParser class will aid the adding of tasks through parsing of user's raw data
- * It is called by any task object to correctly parse user's raw data input
- * It will take in a raw user input and create 2 DateTime objects and 1 task description string using RegExp class
- * The task object can then get these data through getter methods available. 
+ * It will take in a raw user input given by Task.java 
+ * and create 2 DateTime objects and 1 task description string using RegExp class
+ * The task object then get these data through getter methods available. 
  */
 
 public class TaskParser {
 
-	private static final String MESSAGE_INVALID_TIME_DATE = "Invalid date and time format";
 	private static final int NUM_HOUR_INDEX = 0;
 	private static final int NUM_MIN_INDEX = 1;
 	private static final int NUM_YEAR_INDEX = 2;
@@ -56,8 +56,7 @@ public class TaskParser {
 	private Integer endDay;
 
 	// Constructor method for TaskParser
-	public TaskParser(String userInput) {
-		taskDescription = userInput;
+	public TaskParser() {
 		hashtags = new ArrayList<String>();
 		startHour = null;
 		startMin = null;
@@ -75,117 +74,57 @@ public class TaskParser {
 		mutableEndDateTime = null;
 	}
 
-	// Method will call RegExp class to get all date and time of user's input
-	// Method will then call other methods to initialize all date and time
-	// variables
-	public void parseTask() {
-		PandaLogger.getLogger().info("TaskParser.parseTask1");
-		PandaLogger.getLogger().info("taskDescription:" + taskDescription);
+	/*
+	 * Method calls on static class RegExp.java to obtain date and time strings from user inputs
+	 * It will then attempt to create DateTime JODA objects
+	 */
+	public void parseTask(String userInput) {
+		PandaLogger.getLogger().info("Parsing of user input in TaskParser: " + userInput);
+		taskDescription = userInput;
+		
 		ArrayList<String> timeArray = RegExp.parseTime(taskDescription);
 		ArrayList<String> dateArray = RegExp.parseDate(taskDescription);
 		hashtags = RegExp.parseHashtag(taskDescription);
 		taskDescription = RegExp.parseDescription(taskDescription);
+		
+		PandaLogger.getLogger().info("TaskParser - Task Description: " + taskDescription);
+		PandaLogger.getLogger().info("TaskParser - Time Strings: " + timeArray);
+		PandaLogger.getLogger().info("TaskParser - Date Strings: " + dateArray);
+		PandaLogger.getLogger().info("TaskParser - Hashtags: " + hashtags);
+		
+		initializeDateTimeObjects(timeArray, dateArray);
+	}
+	
+	/* 
+	 * Method creates 2 DateTime objects given a list of time strings and date strings
+	 * Method will first call two methods to initialize primitive date and time variables
+	 * It will then finalize the DateTime objects by initializing the DateTime variables
+	 */
+	private void initializeDateTimeObjects(ArrayList<String> timeArray, ArrayList<String> dateArray) {
 		try {
-			initializeDateTimeObjects(timeArray, dateArray);
+			initializeTime(timeArray);
+			initializeDate(dateArray);
+			finalizeDateTime();
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 		}
 	}
-/*
-	// Method combines the use of third party library (natty) to parse date, and regular expressions to parse time
-	public void parseTask2() {
-		PandaLogger.getLogger().info("TaskParser.parseTask2");
-		PandaLogger.getLogger().info("taskDescription:" + taskDescription);
-		Parser parser = new Parser();
-		ArrayList<String> timeArray = RegExp.parseTime(taskDescription);
-		List<DateGroup> groups = parser.parse(taskDescription);
-		List<Date> dates = new ArrayList<Date>();
-		String matchingValue = null;
-
-		for (DateGroup group : groups) {
-			dates = group.getDates();
-			matchingValue = group.getText();
-			System.out.print("Matching Value::\t" + matchingValue+ ". ");
-			for(Date date : dates) {
-				System.out.println(date);
-			}
-		}
-//		taskDescription = RegExp.parseDescription(taskDescription);
-		System.out.println(taskDescription);
-		initStartAndEndDateTime(timeArray, dates);
-		prepareDescription(taskDescription, matchingValue);
-
-	}
-	
-	private String prepareDescription(String original, String matchingValue) {
-		String result = "";
-
-		PandaLogger.getLogger().info("original desc:" + original);
-		PandaLogger.getLogger().info("match:" + matchingValue);
-		result = RegExp.parseDescription(original);
-		PandaLogger.getLogger().info("after clement: " + result);
-		result = result.replaceFirst("the " + matchingValue,  "");
-		result = result.replaceAll("  ", " ");
-		PandaLogger.getLogger().info("after substraction: " + result);
-		return result;
-	}
-	
-	private void initStartAndEndDateTime(ArrayList<String> timeArray, List<Date> dates) {
-		PandaLogger.getLogger().info("timeArray: " + timeArray);
-		PandaLogger.getLogger().info("dates: " + dates);
-		if(dates.size() == 1) {
-            PandaLogger.getLogger().info("Dates.size() = 1");
-			mutableEndDateTime = new MutableDateTime(dates.get(0));
-			if(timeArray.size() == 1) {
-				PandaLogger.getLogger().info("timeArray.size() = 1");
-                int[] time = RegExp.timeFromTimeString(timeArray.get(0));
-                mutableEndDateTime.setTime(time[0], time[1], 0, 0);
-                PandaLogger.getLogger().info("MutableEndDateTime:" + mutableEndDateTime);
-			}
-			else if(timeArray.size() == 2) {
-				mutableStartDateTime = new MutableDateTime(dates.get(1));
-			}
-		} else if(dates.size() == 2) {
-			//PandaLogger.getLogger().info("Date.size() = 2");
-			Collections.sort(dates);
-			mutableStartDateTime = new MutableDateTime(dates.get(0));
-			mutableEndDateTime = new MutableDateTime(dates.get(1));
-		}
-	}
-	
-	public MutableDateTime getMutableStartDateTime() {
-		return mutableStartDateTime;
-	}
-	
-	public MutableDateTime getMutableEndDateTime() {
-		return mutableEndDateTime;
-	}
-*/
-	
-	private void initializeDateTimeObjects(ArrayList<String> timeArray, ArrayList<String> dateArray) {
-		PandaLogger.getLogger().info("Initializing time and date variables...");
-		initializeTime(timeArray);
-		initializeDate(dateArray);
-		finalizeDateTime();
-	}
 	
 	/*
-	 * Given an array of user time inputs, method will parse and initialize 
-	 * the primitive time variables. 
+	 * Given a string array of time input, method will parse and initialize the primitive time variables. 
 	 */
 	private void initializeTime(ArrayList<String> timeArray) {
-		// Case 0: user inputs a floating task
-		if (timeArray.isEmpty()) {
-			return;
-		// Case 1: Timed task, initialize start and end time primitive variables
-		} else if(timeArray.size() == 2) {
+		PandaLogger.getLogger().info("TaskParser - Initializing time variables")
+		// Case 1: One time string
+		if(timeArray.size() == 1) {
+			int[] endTimeArray = RegExp.timeFromTimeString(timeArray.get(0));
+			initializeEndTime(endTimeArray);
+		}
+		// Case 2: Two time strings
+		else if(timeArray.size() == 2) {
 			int[] startTimeArray = RegExp.timeFromTimeString(timeArray.get(0));
 			initializeStartTime(startTimeArray);
 			int[] endTimeArray = RegExp.timeFromTimeString(timeArray.get(1));
-			initializeEndTime(endTimeArray);
-		// Case 2: Deadline task, initialize end time primitive variables
-		} else {
-			int[] endTimeArray = RegExp.timeFromTimeString(timeArray.get(0));
 			initializeEndTime(endTimeArray);
 		}
 	}
@@ -231,18 +170,6 @@ public class TaskParser {
 		endYear = endDateArray[NUM_YEAR_INDEX];
 		endMonth = endDateArray[NUM_MONTH_INDEX];
 		endDay = endDateArray[NUM_DAY_INDEX];
-	}
-
-	public String getTaskDescription() {
-		return taskDescription.trim();
-	}
-
-	public DateTime getStartDateTime() {
-		return startDateTime;
-	}
-
-	public DateTime getEndDateTime() {
-		return endDateTime;
 	}
 
 	/* 
@@ -337,11 +264,6 @@ public class TaskParser {
 		endMin = 0; 
 	}
 	
-
-	public ArrayList<String> getHashTag() {
-		return hashtags;
-	}
-	
 	/*
 	 *  Checks if user input matches that of a floating task
 	 *  @returns true if all date and time variables are null
@@ -388,5 +310,21 @@ public class TaskParser {
 		}
 		return false;
 		*/
+	}
+
+	public ArrayList<String> getHashTag() {
+		return hashtags;
+	}
+	
+	public String getTaskDescription() {
+		return taskDescription;
+	}
+
+	public DateTime getStartDateTime() {
+		return startDateTime;
+	}
+
+	public DateTime getEndDateTime() {
+		return endDateTime;
 	}
 }
