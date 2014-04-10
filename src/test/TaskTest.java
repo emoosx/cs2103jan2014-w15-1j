@@ -33,7 +33,11 @@ public class TaskTest {
 		"climb mount everest",
 		"ride an elephant and dinosaur",
 		"watch 2pm concert",
-		"go to garden by the bay"
+		"go to garden by the bay",
+		"watch the day after tomorrow",
+		"buy present for april and may",
+		"go to 2pm concert", 
+		"renew phone number to 96692359"
 	};
 	
 	
@@ -42,21 +46,24 @@ public class TaskTest {
 		"reflection deadline on 14/2/2014 at 2359",
 		"reflection deadline on 14/2/2014 at 11:59pm",
 		"renew passport by 30/5/2014 3pm",
-		"meeting on 8 march at 11am"
+		"meeting on 8 march at 11am",
+		"submit homework by 11/4/2014"
 	};
 	
 	DateTime[] expectedDeadlineDateTime = {
 		new DateTime(2014, 2, 14, 23, 59),
 		new DateTime(2014, 2, 14, 23, 59),
 		new DateTime(2014, 5, 30, 15, 0),
-		new DateTime(2014, 3, 8, 11, 0)
+		new DateTime(2014, 3, 8, 11, 0),
+		new DateTime(2014, 4, 11, 0, 0)		
 	};
 	
 	String[] expectedDeadlineDescription = {
 		"reflection deadline",
 		"reflection deadline",
 		"renew passport",
-		"meeting"
+		"meeting",
+		"submit homework"
 	};
 	
 		
@@ -64,25 +71,29 @@ public class TaskTest {
 	String[] timedTasks = {
 		"valentines date on 14/2/2014 from 5pm to 7pm",
 		"meeting on 15 march 2014 from 1000 to 1200",
-		"camp from 15 march 2014 12pm to 17 march 2014 7pm"
+		"camp from 15 march 2014 12pm to 17 march 2014 7pm",
+		"camp from 11/12/2014 1am to 30/12/2014 3pm"
 	};
 	
 	String[] expectedTimedDescription = {
 		"valentines date",
 		"meeting",
+		"camp",
 		"camp"
 	};
 	
 	DateTime[] expectedStartDateTime = {
 		new DateTime(2014, 2, 14, 17, 0),
 		new DateTime(2014, 3, 15, 10, 0),
-		new DateTime(2014, 3, 15, 12, 0)
+		new DateTime(2014, 3, 15, 12, 0),
+		new DateTime(2014,12, 11, 1, 0)
 	};
 	
 	DateTime[] expectedEndDateTime = {
 		new DateTime(2014, 2, 14, 19, 0),
 		new DateTime(2014, 3, 15, 12, 0),
-		new DateTime(2014, 3, 17, 19, 0)
+		new DateTime(2014, 3, 17, 19, 0),
+		new DateTime(2014,12, 30, 15, 0)
 	};
 	
 	@Test
