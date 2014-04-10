@@ -31,10 +31,15 @@ import core.Task;
 
 public class PandaUI extends Application {
 
+	// app
+	private static final int APP_WIDTH = 800;
+	private static final int APP_HEIGHT = 500;
+	private static final String CSS_PATH = "resources/css/style.css";
+
 	// input field
 	private static final String IF_PLACEHOLDER = "Get Busy!";
 	private static final int IF_HEIGHT = 70;
-	private static final int IF_WIDTH = 800;
+	private static final int IF_WIDTH = APP_WIDTH;
 	private static final String IF_ID = "inputField";
 	private static final int PADDING = 10;
 
@@ -46,14 +51,7 @@ public class PandaUI extends Application {
 	// listview
 	private static final String LIST_ID = "tasklist";
 
-	// app
-	private static final int APP_WIDTH = IF_WIDTH;
-	private static final int APP_HEIGHT = 800;
-	private static final String CSS_PATH = "resources/css/style.css";
-
-	private static final String NO_OVERDUE = "Congrats! No overdue task";
-	private static final String ONE_OVERDUE = "You have %d overdue task.";
-	private static final String MULTI_OVERDUE = "You have %d overdue tasks.";
+	private static final String OVERDUE_TXT = "You have %d overdue task(s).";
 	private static final String OVERDUE_ID = "overdue";
 	private static final String OVERDUE_VBOX_ID = "overdue-vbox";
 
@@ -75,7 +73,7 @@ public class PandaUI extends Application {
 	public void start(Stage primaryStage) {
 		BorderPane border = new BorderPane();
 		border.setTop(addInputField());
-		border.setCenter(addLists());
+		border.setCenter(addBottomComponents());
 
 		Scene scene = new Scene(border, APP_WIDTH, APP_HEIGHT);
 		File file = new File(CSS_PATH);
@@ -124,30 +122,19 @@ public class PandaUI extends Application {
 		return hbox;
 	}
 
-	private VBox addLists() {
+	private VBox addBottomComponents() {
 		VBox bottomBox = new VBox();
-
 		bottomBox.getChildren().addAll(addOverStatus(), addTaskList());
 		return bottomBox;
-
 	}
 
 	private VBox addOverStatus() {
 		VBox vbox = new VBox();
 		vbox.setPadding(new Insets(5, 0, 5, APP_WIDTH / 2.75));
 		vbox.setId(OVERDUE_VBOX_ID);
-		int overdueTasks = overduetasks.size();
-		if (overdueTasks == 0) {
-			overdueLabel.setText(String.format(NO_OVERDUE, overdueTasks));
-		} else if (overdueTasks == 1) {
-			overdueLabel.setText(String.format(ONE_OVERDUE, overdueTasks));
-		} else {
-			overdueLabel.setText(String.format(MULTI_OVERDUE, overdueTasks));
-		}
 		overdueLabel.setId(OVERDUE_ID);
 		overdueLabel.setAlignment(Pos.CENTER);
-		overdueLabel.textProperty().bind(
-				Bindings.format("%d", Bindings.size(overduetasks)));
+		overdueLabel.textProperty().bind(Bindings.format(OVERDUE_TXT, Bindings.size(overduetasks)));
 		vbox.getChildren().addAll(overdueLabel);
 		return vbox;
 	}
@@ -156,7 +143,6 @@ public class PandaUI extends Application {
 		VBox vbox = new VBox();
 		list.setItems(tasks);
 		list.setId(LIST_ID);
-		list.prefHeight(APP_HEIGHT);
 		list.setCellFactory(new Callback<ListView<Task>, ListCell<Task>>() {
 			@Override
 			public ListCell<Task> call(ListView<Task> param) {
@@ -180,12 +166,9 @@ public class PandaUI extends Application {
 			updateTasksList();
 		} else {
 			newValue = pieces[1];
-
 			String[] parts = newValue.toLowerCase().split(" ");
-
 			// create a temporary subentries matching list and replace it
-			ObservableList<Task> subentries = FXCollections
-					.observableArrayList();
+			ObservableList<Task> subentries = FXCollections.observableArrayList();
 			for (Task task : list.getItems()) {
 				boolean match = true;
 				for (String part : parts) {
