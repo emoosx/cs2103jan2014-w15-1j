@@ -2,12 +2,8 @@ package logic;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 
 import org.joda.time.DateTime;
-import org.joda.time.MutableDateTime;
 
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
@@ -36,10 +32,6 @@ public class TaskParser {
 	private DateTime endDateTime;
 	private String taskDescription;
 	private ArrayList<String> hashtags;
-	
-	// mutable
-	private MutableDateTime mutableStartDateTime;
-	private MutableDateTime mutableEndDateTime;
 
 	// Primitive time variables
 	private Integer startHour;
@@ -55,7 +47,9 @@ public class TaskParser {
 	private Integer endMonth;
 	private Integer endDay;
 
-	// Constructor method for TaskParser
+	/*
+	 *  Constructor method for TaskParser
+	 */
 	public TaskParser() {
 		hashtags = new ArrayList<String>();
 		startHour = null;
@@ -68,10 +62,6 @@ public class TaskParser {
 		endYear = null;
 		endMonth = null;
 		endDay = null;
-		
-		// mutable date time
-		mutableStartDateTime = null;
-		mutableEndDateTime = null;
 	}
 
 	/*
@@ -115,12 +105,12 @@ public class TaskParser {
 	 */
 	private void initializeTime(ArrayList<String> timeArray) {
 		PandaLogger.getLogger().info("TaskParser - Initializing time variables");
-		// Case 1: One time string
+		// Case 1: User input contains one time string
 		if(timeArray.size() == 1) {
 			int[] endTimeArray = RegExp.timeFromTimeString(timeArray.get(0));
 			initializeEndTime(endTimeArray);
 		}
-		// Case 2: Two time strings
+		// Case 2: User input contains two time strings
 		else if(timeArray.size() == 2) {
 			int[] startTimeArray = RegExp.timeFromTimeString(timeArray.get(0));
 			initializeStartTime(startTimeArray);
@@ -269,8 +259,10 @@ public class TaskParser {
 	 *  @returns true if all date and time variables are null
 	 */
 	private Boolean isFloatingTask() {
-		if(startHour == null && endHour == null
-				&& startYear == null && endYear == null) {
+		if(startHour == null && 
+			endHour == null && 
+			  startYear == null && 
+			    endYear == null) {
 			return true;
 		}
 		return false;
