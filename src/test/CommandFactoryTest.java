@@ -11,6 +11,7 @@ import logic.CommandFactory;
 import logic.Command;
 import core.Task;
 
+import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.After;
@@ -19,7 +20,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
 import org.junit.FixMethodOrder;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -76,7 +76,7 @@ public class CommandFactoryTest {
 	}
 
 	@Test
-	//add
+	/*Method to test the adding of tasks including undo/redo operation of add*/
 	public void test1() {
 		Command testCommand = new Command(
 				"add testing task on 14/06/14 from 2pm to 3pm");
@@ -91,7 +91,7 @@ public class CommandFactoryTest {
 	}
 
 	@Test
-	//edit
+	/*Method to test the editing of tasks including undo/redo operation of edit*/
 	public void test2() {
 		int lastIndex = cf.getLastIndex();
 		int displayID = cf.testGetDisplayId(lastIndex);
@@ -105,21 +105,54 @@ public class CommandFactoryTest {
 				testList.size() - 1).getTaskStartTime()));
 		assertEquals("12/06/14 17:00", dateTimeDisplay.print(testList.get(
 				testList.size() - 1).getTaskEndTime()));
+		//editing task from timed to deadline
+		String editTimeToDeadline = ("edit " + displayID + " deadline task on 12/06/14 by 9pm");
+		Command testEditTimedToDeadlineCommand = new Command(editTimeToDeadline);
+		cf.testEdit(testEditTimedToDeadlineCommand);
+		List<Task> testETD = cf.getTasks();
+		assertEquals("deadline task", testETD.get(testETD.size() - 1)
+				.getTaskDescription());
+		assertEquals(dateTimeDisplay.print(DateTime.now()), dateTimeDisplay.print(testETD.get(
+				testETD.size() - 1).getTaskStartTime()));
+		assertEquals("12/06/14 21:00", dateTimeDisplay.print(testETD.get(
+				testETD.size() - 1).getTaskEndTime()));
+		//editing task from deadline to floating
+		String editDeadlineToFloating = ("edit " + displayID + " Non-timed");
+		Command testDeadlineToFloatingCommand = new Command(editDeadlineToFloating);
+		cf.testEdit(testDeadlineToFloatingCommand);
+		List<Task> testDTF = cf.getTasks();
+		assertEquals("Non-timed", testDTF.get(testDTF.size() - 1)
+				.getTaskDescription());
+		assertEquals(dateTimeDisplay.print(DateTime.now()), dateTimeDisplay.print(testDTF.get(
+				testDTF.size() - 1).getTaskStartTime()));
+		assertEquals(dateTimeDisplay.print(DateTime.now()), dateTimeDisplay.print(testDTF.get(
+				testDTF.size() - 1).getTaskEndTime()));
+		//editing task from floating to timed
+		String editFloatingToTimed = ("edit " + displayID + " timed task on 12/06/14 from 2pm to 5pm");
+		Command testFloatingToTimedCommand = new Command(editFloatingToTimed);
+		cf.testEdit(testFloatingToTimedCommand);
+		List<Task> testFTT = cf.getTasks();
+		assertEquals("timed task", testDTF.get(testFTT.size() - 1)
+				.getTaskDescription());
+		assertEquals("12/06/14 14:00", dateTimeDisplay.print(testFTT.get(
+				testFTT.size() - 1).getTaskStartTime()));
+		assertEquals("12/06/14 17:00", dateTimeDisplay.print(testFTT.get(
+				testFTT.size() - 1).getTaskEndTime()));
 		// Testing undo edit
 		cf.testUndo();
 		List<Task> undoList = cf.getTasks();
-		assertEquals("testing task", undoList.get(undoList.size() - 1)
+		assertEquals("Non-timed", undoList.get(undoList.size() - 1)
 				.getTaskDescription());
-		assertEquals("14/06/14 14:00", dateTimeDisplay.print(undoList.get(
+		assertEquals(dateTimeDisplay.print(DateTime.now()), dateTimeDisplay.print(undoList.get(
 				undoList.size() - 1).getTaskStartTime()));
-		assertEquals("14/06/14 15:00", dateTimeDisplay.print(undoList.get(
+		assertEquals(dateTimeDisplay.print(DateTime.now()), dateTimeDisplay.print(undoList.get(
 				undoList.size() - 1).getTaskEndTime()));
 		// Testing redo edit
 		cf.testRedo();
 		List<Task> redoList = cf.getTasks();
-		assertEquals("edited task", testList.get(redoList.size() - 1)
+		assertEquals("timed task", testList.get(redoList.size() - 1)
 				.getTaskDescription());
-		assertEquals("12/06/14 13:00", dateTimeDisplay.print(redoList.get(
+		assertEquals("12/06/14 14:00", dateTimeDisplay.print(redoList.get(
 				redoList.size() - 1).getTaskStartTime()));
 		assertEquals("12/06/14 17:00", dateTimeDisplay.print(redoList.get(
 				redoList.size() - 1).getTaskEndTime()));
@@ -127,7 +160,7 @@ public class CommandFactoryTest {
 	}
 	
 	@Test
-	//done
+	/*Method to test the marking of task as done including undo/redo operation of done*/
 	public void test3() {
 	int lastIndex = cf.getLastIndex();
 	System.out.println("done test last index:" + lastIndex);
@@ -151,7 +184,7 @@ public class CommandFactoryTest {
 	}
 
 	@Test
-	//delete
+	/*Method to test the deletion of task including undo/redo operation of delete*/
 	public void test4() {
 		int lastIndex = cf.getLastIndex();
 		int displayID = cf.testGetDisplayId(lastIndex);
