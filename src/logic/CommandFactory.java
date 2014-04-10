@@ -81,13 +81,13 @@ public class CommandFactory {
 	private Logger logger = PandaLogger.getLogger();
 
 	private Stack<SimpleEntry<Integer, Command>> undoStack;
-	private Stack<SimpleEntry<Integer, Command>> redoStack;
+	private Stack<Command> redoStack;
 
 	private CommandFactory() {
 		this.tasks = new ArrayList<Task>();
 		this.display = FXCollections.observableArrayList();
 		this.undoStack = new Stack<SimpleEntry<Integer, Command>>();
-		this.redoStack = new Stack<SimpleEntry<Integer, Command>>();
+		this.redoStack = new Stack<Command>();
 		this.tasksMap = new LinkedHashMap<Integer, Integer>(); // <ID to display, real ID in tasks>
 		this.storage = StorageHelper.INSTANCE;
 		this.undoStorage = UndoStorage.INSTANCE;
@@ -217,79 +217,51 @@ public class CommandFactory {
 	private void doRedo() {
 		logger.info("doRedo");
 		if(!redoStack.isEmpty()){
-		SimpleEntry<Integer, Command> lastEntry = this.redoStack.pop();
-		int taskid = lastEntry.getKey();
-		Command lastCommand = lastEntry.getValue();
+		Command lastCommand = this.redoStack.pop();
 		logger.info("Last Command:" + lastCommand.toString());
-		executeRedo(taskid, lastCommand);
+		executeRedo(lastCommand);
 		syncTasks();
 		}else{
 			  showToUser(MESSAGE_REDO_FAIL);
 		}
 	}
 	
-	private void executeRedo(int taskid, Command command) {
+	private void executeRedo(Command command) {
 		assert (command.rawText == null);
 		switch (command.command) {
 		case ADD:
-			doRedoAdd(taskid, command);
+			doRedoAdd(command);
 			break;
 		case EDIT:
-			doRedoEdit(taskid, command);
+			doRedoEdit(command);
 			break;
 		case DELETE:
-			doRedoDelete(taskid, command);
+			doRedoDelete(command);
 			break;
 		case DONE:
-			doRedoDone(taskid, command);
+			doRedoDone(command);
 		default:
 			return;
 		}
 	}
 	
 
-	private void doRedoDone(int taskid, Command command) {
+	private void doRedoDone(Command command) {
 		doDone(command);	
 	}
 
-	private void doRedoDelete(int taskid, Command command) {
+	private void doRedoDelete(Command command) {
 	doDelete(command);
 	}
 
-	private void doRedoEdit(int taskid, Command command) {
+	private void doRedoEdit(Command command) {
 	doEdit(command);
 	}
 
-	private void doRedoAdd(int taskid, Command command) {
+	private void doRedoAdd(Command command) {
 	doAdd(command);
 	}
 	
-	private Command convertAddTaskToCommand(int taskid){
-		Task taskToAdd = tasks.get(taskid);
-		ArrayList<String> tags = taskToAdd.getTaskTags();
-	    //desc time date 
-		StringBuilder sb = new StringBuilder();
-
-		sb.append(COMMAND_TYPE.ADD.name().toLowerCase() + " " + taskToAdd.getTaskDescription());
-		//deadline
-	    if(taskToAdd.getTaskStartTime() == null && taskToAdd.getTaskEndTime() != null){
-	    	sb.append(" on " + dateDisplay.print(taskToAdd.getTaskEndTime()) + " by "+
-					timeDisplay.print(taskToAdd.getTaskEndTime()));
-		//timed
-		}else if(taskToAdd.getTaskStartTime() != null && taskToAdd.getTaskEndTime() != null){
-			sb.append(" from " +dateTimeDisplay.print(taskToAdd.getTaskStartTime()));
-			sb.append(" to " +dateTimeDisplay.print(taskToAdd.getTaskEndTime()));
-		}
-	    if(tags.size() != 0){
-	    	for(int i =0; i<tags.size(); i++){
-	    	sb.append(" " + tags.get(i));
-	    	}
-	    }
-	    String rawText = sb.toString();
-		this.logger.info("string is :" + rawText);
-	    Command oldCommand = new Command(rawText);
-	    return oldCommand;
-	}
 
 	private void doAdd(Command command) {
 		assert (command.rawText!=null);
@@ -304,7 +276,7 @@ public class CommandFactory {
 		/* remove it from the buffer
 		 * remove the entry from the map
          */
-		this.redoStack.push(new SimpleEntry<Integer, Command>(taskid,convertAddTaskToCommand(taskid)));
+		this.redoStack.push(convertModifiedTaskToCommand(command.command, taskid));
 		this.tasks.remove(taskid);
 		Integer fakeID = getFakeIDbyRealId(taskid);
 		assert(fakeID != null);
@@ -357,7 +329,6 @@ public class CommandFactory {
 	
 	
 
-	/* remove the original task from tasksMap and replace it with new task */
 	private void doEdit(Command command) {
 		String userInput = command.rawText;
 		assert (userInput != null);
@@ -367,7 +338,7 @@ public class CommandFactory {
 			Task editTask = new Task(obtainUserEditInput(userInput));
 			this.undoStack
 					.push(new SimpleEntry<Integer, Command>(tasksMap
-							.get(taskInt), convertTaskToCommand(tasksMap
+							.get(taskInt), convertModifiedTaskToCommand(command.command, tasksMap
 							.get(taskInt))));
 			this.tasks.set(tasksMap.get(taskInt), editTask);
 	
@@ -375,15 +346,16 @@ public class CommandFactory {
 		}
 	}
 	
-	/* cater for single undo edit */
+	
 	private void doUndoEdit(int taskid, Command command) {
 		Task oldTask = new Task(command.rawText);
 		int displayID = this.getDisplayId(taskid);
-		this.redoStack.push(new SimpleEntry<Integer, Command>(taskid,convertEditedTaskToCommand(displayID)));
+		this.redoStack.push(convertEditedTaskToCommand(displayID));
 		this.tasks.set(taskid, oldTask);
 		syncTasks();
 	}
 	
+	/*Method to convert tasks that are edited into command for redo edit operation */
 	private Command convertEditedTaskToCommand(int taskid){
 		Task editedTask = tasks.get(tasksMap.get(taskid-OFFSET));
 		ArrayList<String> tags = editedTask.getTaskTags();
@@ -406,11 +378,16 @@ public class CommandFactory {
 	    return oldCommand;	
 	}
 	
-	private Command convertTaskToCommand(int taskid){
+	/*Method to convert tasks that are added or edited previously into command for undo operation */
+	private Command convertModifiedTaskToCommand(Command.COMMAND_TYPE Command, int taskid){
 		Task oldTask = tasks.get(taskid);
 		ArrayList<String> tags = oldTask.getTaskTags();
 		StringBuilder sb = new StringBuilder();
+		if(Command == COMMAND_TYPE.ADD){
+		sb.append(COMMAND_TYPE.ADD.name().toLowerCase() + " " + oldTask.getTaskDescription());
+		}else{
 		sb.append(COMMAND_TYPE.EDIT.name().toLowerCase() + " " + oldTask.getTaskDescription());
+		}
 	    if(oldTask.getTaskStartTime() == null && oldTask.getTaskEndTime() != null){
 			sb.append(" on " + dateDisplay.print(oldTask.getTaskEndTime()) + " by "+
 					timeDisplay.print(oldTask.getTaskEndTime()));
@@ -430,8 +407,7 @@ public class CommandFactory {
 	
 	
 	private void doDelete(Command command) {
-		String rawText = command.rawText;
-		
+		String rawText = command.rawText;		
 		assert(rawText != null);
 		if(checkDeleteInput(rawText)) {
 			int displayId = Integer.parseInt(rawText) - OFFSET;
@@ -493,7 +469,7 @@ public class CommandFactory {
 		int prevID = Integer.parseInt(command.rawText);
 		updateHashMapAfterUndoDelete(taskid, prevID);
 		int displayID = this.getDisplayId(taskid);
-		this.redoStack.push(new SimpleEntry<Integer, Command>(taskid,convertDeletedTaskToCommand(displayID)));
+		this.redoStack.push(convertTaskToCommand(command.command,displayID));
 		syncTasks();
 	}
 	
@@ -508,6 +484,7 @@ public class CommandFactory {
 		 return displayID;
 		}
 
+     /* Method to get command for Undo Done/Delete operations */
 	private Command commandWithPreviousIndex(Command.COMMAND_TYPE Command, int displayId){
 		StringBuilder sb = new StringBuilder();
 		int prevIndex;
@@ -525,13 +502,18 @@ public class CommandFactory {
 		return newCommand;
 	}
 	
-	private Command convertDeletedTaskToCommand(int taskid){
+	  /* Method to get command for Redo Delete/Done operations */
+	private Command convertTaskToCommand(Command.COMMAND_TYPE Command, int taskid){
 		StringBuilder sb = new StringBuilder();
+		if(Command == COMMAND_TYPE.DONE){
+			sb.append(COMMAND_TYPE.DONE.name().toLowerCase() + " " + taskid);	
+		}else{
 		sb.append(COMMAND_TYPE.DELETE.name().toLowerCase() + " " + taskid);
+		}
 	    String rawText = sb.toString();
 		this.logger.info("string is :" + rawText);
-	    Command deletedCommand = new Command(rawText);
-	    return deletedCommand;
+	    Command redoCommand = new Command(rawText);
+	    return redoCommand;
 	}
 	
 	
@@ -558,17 +540,8 @@ public class CommandFactory {
 		int prevID = Integer.parseInt(command.rawText);
 		updateHashMapAfterUndoDelete(taskid, prevID);
 		int displayID = this.getDisplayId(taskid);
-		this.redoStack.push(new SimpleEntry<Integer, Command>(taskid,convertDoneTaskToCommand(displayID)));
+		this.redoStack.push(convertTaskToCommand(command.command, displayID));
 		syncTasks();
-	}
-
-	private Command convertDoneTaskToCommand(int displayID) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(COMMAND_TYPE.DONE.name().toLowerCase() + " " + displayID);
-	    String rawText = sb.toString();
-		this.logger.info("string is :" + rawText);
-	    Command doneCommand = new Command(rawText);
-	    return doneCommand;
 	}
 
 	// Method to check delete parameter
@@ -662,7 +635,7 @@ public class CommandFactory {
 
 	
 	
-	// remove task index from usercommand and return edit input
+	/* Method to remove task index from user command and return edit input */
 	private String obtainUserEditInput(String userCommand) {
 		StringBuilder sb = new StringBuilder();
 		String[] stringArray = userCommand.split(" ");
@@ -680,7 +653,7 @@ public class CommandFactory {
 		return commandTypeString;
 	}
 
-	// Method checks if inputString is a valid String
+	/* Method checks if inputString is a valid String */
 	private boolean isValidString(String inputString) {
 		if (inputString.trim().length() == 0) {
 			return false;
@@ -688,7 +661,7 @@ public class CommandFactory {
 		return true;
 	}
 
-	// Method checks if data list is empty
+	/* Method checks if data list is empty */
 	private boolean checkIfFileIsEmpty() {
 		if (tasks.isEmpty()) {
 			return true;
@@ -735,7 +708,7 @@ public class CommandFactory {
 	}
 	
 	public void clearUndoRedoAfterTesting(){
-		for(int i=0;i<4;i++){
+		for(int i=0;i<6;i++){
 			this.undoStack.pop();
 		}
 		this.syncTasks();
