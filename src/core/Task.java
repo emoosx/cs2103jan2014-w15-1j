@@ -123,6 +123,6 @@ public class Task {
 	// Override method for toString
 	@Override
 	public String toString() {
-		return this.taskDescription + " " + String.valueOf(this.endDateTime);
+		return this.taskDescription + " " + String.valueOf(this.taskDone);
 	}
 }

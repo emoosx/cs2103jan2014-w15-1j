@@ -42,17 +42,20 @@
 
 #floating {
 	-fx-background-color: #9A3D3B;
-	/* -fx-text-fill: #FFFFFF; */
+  -fx-text-fill: #FFFFFF;
+  -fx-font-weight: bold;
 }
 
 #deadline {
 	-fx-background-color: #EA9359;
-	/* -fx-text-fill: #FFFFFF; */
+  -fx-text-fill: #FFFFFF;
+  -fx-font-weight: bold;
 }
 
 #timed {
-	-fx-background-color: #A9A9A9;
-	/* -fx-text-fill: #FFFFFF; */
+  -fx-background-color: #A9A9A9;
+  -fx-text-fill: #FFFFFF;
+  -fx-font-weight: bold;
 }
 
 #taskDescription {
