@@ -33,23 +33,28 @@ public class PandaUI extends Application {
 	private static final String IF_ID = "inputField";
 	private static final int PADDING = 10;
 	
+	private static final int SPACING = 8;
+	
 	private static final int OFFSET = 1;
 	private static final int COMMAND_INDEX = 0;
 	
 	// listview
 	private static final String LIST_ID = "tasklist";
+	private static final String OVERDUE_LIST_ID = "overduelist";
+
 	// app
 	private static final int APP_WIDTH = 500;
 	private static final int APP_HEIGHT = 450;
 	private static final String CSS_PATH = "resources/css/style.css";
 	
 	CommandFactory commandFactory = CommandFactory.INSTANCE;
-//	ObservableList<Task> tasks = FXCollections.observableArrayList(commandFactory.getTasks());
 	ObservableList<Task> tasks = commandFactory.getDisplayTasks();
+	ObservableList<Task> overduetasks = commandFactory.getOverdueTasks();
 	ListView<Task> list = new ListView<Task>();
+	ListView<Task> overduelist = new ListView<Task>();
+
 	TextField inputField;
 	
-	//SpellChecker.registerDictionaries( new URL("file", null, ""), "en,de", "de" );
 	
 	public static void main(String[] args) {
 		launch(args);
@@ -59,7 +64,7 @@ public class PandaUI extends Application {
 	public void start(Stage primaryStage) {
         BorderPane border = new BorderPane();
         border.setTop(addInputField());
-        border.setCenter(addList());
+        border.setCenter(addLists());
         
         Scene scene = new Scene(border, APP_WIDTH, APP_HEIGHT);
         File file = new File(CSS_PATH);
@@ -105,10 +110,32 @@ public class PandaUI extends Application {
 		return hbox;
 	}
 	
-	private VBox addList() {
+	private VBox addLists() {
+		VBox bottomBox = new VBox();
+		bottomBox.setSpacing(8);
+		
+		bottomBox.getChildren().addAll(addOverdueList(), addTaskList());
+		return bottomBox;
+		
+	}
+	private VBox addOverdueList() {
+		VBox vbox = new VBox();
+		overduelist.setItems(overduetasks);
+		overduelist.setId(OVERDUE_LIST_ID);
+		overduelist.setCellFactory(new Callback<ListView<Task>, ListCell<Task>>() {
+			@Override
+			public ListCell<Task> call(ListView<Task> param) {
+				return new TaskCell();
+			}
+		});
+		vbox.getChildren().addAll(overduelist);
+		return vbox;
+	}
+	
+	private VBox addTaskList() {
 
 		VBox vbox = new VBox();
-		vbox.setSpacing(8);
+//		vbox.setSpacing(8);
 		
         list.setItems(tasks);
         list.setId(LIST_ID);

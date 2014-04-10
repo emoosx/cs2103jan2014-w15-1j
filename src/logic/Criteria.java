@@ -26,11 +26,20 @@ public class Criteria {
 //		return result;
 //	}
 	
+	public static ArrayList<Task> getAllOverdueTasks(List<Task> tasks) {
+		ArrayList<Task> result = new ArrayList<Task>();
+		for(Task t: tasks) {
+			if(t.getMarkAsDelete() == false && t.getTaskDone() == false && t.getTaskEndTime() != null && 
+			   t.getTaskEndTime().isBeforeNow())
+				result.add(t);
+		}
+		return result;
+	}
 	/* default criteria */
 	public static ArrayList<Integer> getAllUndeletedTasks(List<Task> tasks) {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		for(Task t: tasks) {
-			if(t.getMarkAsDelete() == false && !t.getTaskDone()) {
+			if(t.getMarkAsDelete() == false && t.getTaskDone() == false) {
 				result.add(tasks.indexOf(t));
 			}
 		}
@@ -41,7 +50,7 @@ public class Criteria {
 	public static ArrayList<Integer> getAllUndeletedFloatingTasks(List <Task> tasks) {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		for(Task t: tasks){
-			if(t.getMarkAsDelete() == false) {
+			if(t.getMarkAsDelete() == false && t.getTaskDone() == false) {
 				if(t.getTaskStartTime() == null && t.getTaskEndTime()== null)
 				result.add(tasks.indexOf(t));
 			}
@@ -61,7 +70,7 @@ public class Criteria {
 	public static ArrayList<Integer> getAllUndeletedTimedTasks(List <Task> tasks) {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		for(Task t: tasks){
-			if(t.getMarkAsDelete() == false) {
+			if(t.getMarkAsDelete() == false && t.getTaskDone() == false) {
 				if(t.getTaskStartTime() != null && t.getTaskEndTime() != null)
 				result.add(tasks.indexOf(t));
 			}
@@ -81,7 +90,7 @@ public class Criteria {
 	public static ArrayList<Integer> getAllUndeletedDeadlineTasks(List <Task> tasks) {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		for(Task t: tasks){
-			if(t.getMarkAsDelete() == false) {
+			if(t.getMarkAsDelete() == false && t.getTaskDone() == false) {
 				if(t.getTaskStartTime() == null && t.getTaskEndTime() != null)
 				result.add(tasks.indexOf(t));
 			}
@@ -102,7 +111,7 @@ public class Criteria {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		DateTime today = new DateTime();
 		for(Task t: tasks) {
-			if(t.getMarkAsDelete()==false && t.getTaskEndTime() != null && 
+			if(t.getMarkAsDelete()==false && t.getTaskEndTime() != null && !t.getTaskDone() &&
 			   t.getTaskEndTime().withTimeAtStartOfDay().isEqual(today.withTimeAtStartOfDay())) {
 				result.add(tasks.indexOf(t));
 			}
@@ -116,7 +125,7 @@ public class Criteria {
 		DateTime today = new DateTime();
 		DateTime tomorrow = today.plusDays(1);
 		for(Task t: tasks) {
-			if(t.getMarkAsDelete() == false && t.getTaskEndTime() != null &&
+			if(t.getMarkAsDelete() == false && t.getTaskEndTime() != null && !t.getTaskDone() && 
                t.getTaskEndTime().withTimeAtStartOfDay().isEqual(tomorrow.withTimeAtStartOfDay())) {
 				result.add(tasks.indexOf(t));
 			}
@@ -129,7 +138,7 @@ public class Criteria {
 		DateTime today = new DateTime();
 		DateTime nextWeek = today.plusDays(1);
 		for(Task t: tasks) {
-			if(t.getMarkAsDelete() == false && t.getTaskEndTime() != null &&
+			if(t.getMarkAsDelete() == false && t.getTaskEndTime() != null && t.getTaskDone() == false &&
 			   t.getTaskEndTime().withTimeAtStartOfDay().isEqual(nextWeek.withTimeAtStartOfDay())) {
 				result.add(tasks.indexOf(t));
 			}
@@ -140,7 +149,7 @@ public class Criteria {
 	public static ArrayList<Integer> getAllUndeletedTasksWithHashTag(List<Task> tasks, String rawText) {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		for(Task t: tasks) {
-			if(t.getTaskTags().contains(rawText)) {
+			if(t.getTaskTags().contains(rawText) && !t.getTaskDone()) {
 				result.add(tasks.indexOf(t));
 			}
 		}
