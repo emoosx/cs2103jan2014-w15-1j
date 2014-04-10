@@ -166,6 +166,7 @@ public class TaskCell extends ListCell<Task> {
 		icon.setText(label);
 //		icon.setText(" ");
 		desc.setText(task.getTaskDescription());
+		desc.setMaxWidth(650);
 		hashtag.setText(task.getTaskTags().toString());
 		
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM d, yy HH:mm");

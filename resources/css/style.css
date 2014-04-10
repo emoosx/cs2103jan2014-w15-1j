@@ -8,6 +8,15 @@
 	-fx-prompt-text-fill: #DADADA;
 }
 
+/* overdue label */
+#overdue-vbox {
+  -fx-background-color: #EB604F;
+}
+#overdue {
+  -fx-font-size: 17px;
+  -fx-text-fill: #FFFEFF;
+}
+
 .icon {
 }
 
