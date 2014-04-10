@@ -114,7 +114,7 @@ public class TaskParser {
 	 * Given a string array of time input, method will parse and initialize the primitive time variables. 
 	 */
 	private void initializeTime(ArrayList<String> timeArray) {
-		PandaLogger.getLogger().info("TaskParser - Initializing time variables")
+		PandaLogger.getLogger().info("TaskParser - Initializing time variables");
 		// Case 1: One time string
 		if(timeArray.size() == 1) {
 			int[] endTimeArray = RegExp.timeFromTimeString(timeArray.get(0));
