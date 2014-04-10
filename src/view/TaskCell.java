@@ -1,5 +1,6 @@
 package view;
 
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.GridPane;
@@ -27,7 +28,7 @@ public class TaskCell extends ListCell<Task> {
 	private static final String ICON_DEADLINE_ID = "deadline";
 	private static final String ICON_FLOATING_ID = "floating";
 	private static final int ICON_HEIGHT = 35;
-	private static final int ICON_WIDTH = 10;
+	private static final int ICON_WIDTH = ICON_HEIGHT;
 	
 	private static final String DESC_ID = "taskDescription";
 	private static final String HASHTAG_ID = "hashtag";
@@ -63,8 +64,7 @@ public class TaskCell extends ListCell<Task> {
 	private void configureGrid() {
 //		grid.setHgap(GRID_HGAP);
 //		grid.setVgap(GRID_VGAP);
-		grid.setId(GRID_ID);
-	
+		grid.setId(GRID_ID); 
 	}
 	
 	private void configureHBox() {
@@ -85,6 +85,8 @@ public class TaskCell extends ListCell<Task> {
 	}
 	
 	private void configureIcon() {
+		icon.setPrefSize(ICON_WIDTH, ICON_HEIGHT);
+		icon.setAlignment(Pos.CENTER);
 		icon.getStyleClass().add(ICON_CLASS);
 	}
 	
@@ -161,8 +163,8 @@ public class TaskCell extends ListCell<Task> {
 		} else {
 			icon.setId(ICON_FLOATING_ID);
 		}
-//		icon.setText(label);
-		icon.setText(" ");
+		icon.setText(label);
+//		icon.setText(" ");
 		desc.setText(task.getTaskDescription());
 		hashtag.setText(task.getTaskTags().toString());
 		
