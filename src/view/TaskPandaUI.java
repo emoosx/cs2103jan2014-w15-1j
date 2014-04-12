@@ -24,8 +24,6 @@ import logic.Command;
 import logic.Command.COMMAND_TYPE;
 import logic.CommandFactory;
 
-import com.alee.laf.WebLookAndFeel;
-
 public class TaskPandaUI extends JFrame {
 
 	protected PlaceholderTextField inputField;
@@ -42,11 +40,6 @@ public class TaskPandaUI extends JFrame {
 
 	public TaskPandaUI() {
 		this.commandFactory = CommandFactory.INSTANCE;
-		try {
-            UIManager.setLookAndFeel(WebLookAndFeel.class.getCanonicalName());
-		} catch(Exception e) {
-			throw new Error("Failed setting look and feel");
-		}
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {

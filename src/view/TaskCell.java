@@ -1,11 +1,16 @@
 package view;
 
+import javafx.collections.ObservableList;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.Separator;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import logic.CommandFactory;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -15,176 +20,157 @@ import core.Task;
 
 public class TaskCell extends ListCell<Task> {
 
-	private static final String FONT_ROBOTO = "Roboto";
-	
-	private static final int GRID_HGAP = 7;
-	private static final int GRID_VGAP = 4;
-	private static final String GRID_ID = "grid";
-	
+	private static final int OFFSET = 1;
+
+	// grid
+	private static final int VGAP = 5;
+	private static final int INDEX_WIDTH = 40;
+	private static final int INDEX_HEIGHT = 60;
+
+	// css id for UI elements
 	private static final String HBOX_ID = "hbox";
-	
-	private static final String ICON_CLASS = "icon";
-	private static final String ICON_TIMED_ID = "timed";
-	private static final String ICON_DEADLINE_ID = "deadline";
-	private static final String ICON_FLOATING_ID = "floating";
-	private static final int ICON_HEIGHT = 35;
-	private static final int ICON_WIDTH = ICON_HEIGHT;
-	
-	private static final String DESC_ID = "taskDescription";
+	private static final String GRID_ID = "grid";
+	private static final String DESC_ID = "description";
 	private static final String HASHTAG_ID = "hashtag";
-	
+	private static final String INDEX_ID = "index";
 	private static final String START_ID = "start";
 	private static final String END_ID = "end";
-	
+	private static final String TIME_CLASS = "timestamp";
+	private static final String OVERDUE_ID = "overdue-task";
+	private static final String FLOATING_ID = "floating";
+	private static final String DEADLINE_ID = "deadline";
+	private static final String TIMED_ID = "timed";
+	private static final String DONE_ID = "done";
+	private static final String SEPARATOR_ID = "separator";
+
 	private GridPane grid = new GridPane();
-	private Label icon = new Label();
-	private Label desc = new Label();
-	private Label id = new Label();
-	private Label startTimestamp = new Label();
-	private Label endTimestamp = new Label();
-	private Label timestamp = new Label();
-	private Label hashtag = new Label();
-	
 	private HBox hbox = new HBox();
-	
+	private Label index = new Label();
+	private Label desc = new Label();
+	private Label start = new Label();
+	private Label end = new Label();
+	private Label hashtag = new Label();
+	private Separator separator = new Separator(Orientation.VERTICAL);
+	private ObservableList<Task> tasks = CommandFactory.INSTANCE.getDisplayTasks();
+
 	public TaskCell() {
 		configureGrid();
-		configureIcon();
-		configureID();
-		configureDesc();
+		configureHBox();
+		configureIndex(); // id label
+		configureDesc(); // description label
 		configureTimestamp();
-		configureStartTimestamp();
-		configureEndTimestamp();
-		configureHashTag();
-		addControlsToGrid();
-		addControlsToHBox();
+		configureSeparator();
+		configureHashtag();
+		addControls();
 	}
 	
+
 	private void configureGrid() {
-		grid.setId(GRID_ID); 
+		grid.setHgap(VGAP);
+		grid.setVgap(VGAP);
+		grid.setId(GRID_ID);
+		grid.getColumnConstraints().addAll(new ColumnConstraints(),
+				new ColumnConstraints(120));
 	}
-	
+
 	private void configureHBox() {
 		hbox.setId(HBOX_ID);
 	}
-	
-	private void configureID() {
-		icon.setMaxHeight(Double.MAX_VALUE);
-//		icon.setPrefSize(ICON_WIDTH, ICON_HEIGHT);
+
+	private void configureIndex() {
+		index.setPrefSize(INDEX_WIDTH, INDEX_HEIGHT);
+		index.setId(INDEX_ID);
+		index.setAlignment(Pos.CENTER);
 	}
-	
-	private void configureTimestamp() {
-		
-	}
-	
-	private void configureHashTag() {
-		hashtag.setId(HASHTAG_ID);
-	}
-	
-	private void configureIcon() {
-		icon.setPrefSize(ICON_WIDTH, ICON_HEIGHT);
-		icon.setAlignment(Pos.CENTER);
-		icon.getStyleClass().add(ICON_CLASS);
-	}
-	
+
 	private void configureDesc() {
 		desc.setId(DESC_ID);
 	}
-	
-	private void configureStartTimestamp() {
-		startTimestamp.setId(START_ID);
+
+	private void configureTimestamp() {
+		start.getStyleClass().add(TIME_CLASS);
+		start.setId(START_ID);
+		end.setId(END_ID);
+		end.getStyleClass().add(TIME_CLASS);
+	}
+
+	private void configureHashtag() {
+		hashtag.setId(HASHTAG_ID);
 	}
 	
-	private void configureEndTimestamp() {
-		endTimestamp.setId(END_ID);
+	private void configureSeparator() {
+		separator.setId(SEPARATOR_ID);
 	}
-	
-	private void addControlsToHBox() {
-		hbox.getChildren().addAll(grid, hashtag);
+
+	private void addControls() {
+		grid.add(index, 0, 0, 1, 3);
+		grid.add(desc, 1, 0, 3, 1);
+		grid.add(start, 1, 1, 1, 1);
+		grid.add(end, 3, 1, 1, 1);
+//		grid.gridLinesVisibleProperty().set(true);
+		hbox.getChildren().addAll(grid, separator, hashtag);
 		HBox.setHgrow(grid, Priority.ALWAYS);
 	}
-	
-	private void addControlsToGrid() {
-		grid.add(icon, 0, 0, 1, 3);
-		grid.add(desc, 1, 0, 2, 1);
-		grid.add(startTimestamp, 1, 1);
-		grid.add(endTimestamp, 2, 1);
-//		grid.gridLinesVisibleProperty().set(true);		// debugging purpose
+
+	private void addContent(Task task) {
+		setText(null);
+  
+		index.setText(String.valueOf(super.indexProperty().get() + OFFSET));
+		desc.setText(task.getTaskDescription());
+		desc.setMaxWidth(PandaUI.APP_WIDTH - 100);
+		if(task.getTaskTags().isEmpty()) {
+			separator.setVisible(false);
+		}
+		hashtag.setText(task.getTags());
+
+		if (task.getTaskDone() == false) {
+			if (task.getLabel().equals("D")) {
+				hbox.setId(DEADLINE_ID);
+			} else if (task.getLabel().equals("T")) {
+				hbox.setId(TIMED_ID);
+			} else {
+				hbox.setId(FLOATING_ID);
+			}
+		} else {
+			hbox.setId(DONE_ID);
+		}
+
+		// overdue status
+		if (task.isOverdue()) {
+			// hbox.getStyleClass().add(OVERDUE_CLASS);
+			hbox.setId(OVERDUE_ID);
+		}
+
+		DateTimeFormatter fmt = DateTimeFormat.forPattern("d MMM yy  hh:mm a");
+		DateTime startTimestamp = task.getTaskStartTime();
+		if(startTimestamp == null) {
+			start.setText("");
+		} else {
+			start.setText(fmt.print(startTimestamp));
+		}
+
+		DateTime endTimestamp = task.getTaskEndTime();
+		if (endTimestamp == null) {
+			end.setText("");
+		} else {
+			end.setText(fmt.print(endTimestamp));
+		}
+
+		setGraphic(hbox);
+	}
+
+	private void clearContent() {
+		setText(null);
+		setGraphic(null);
 	}
 
 	@Override
 	public void updateItem(Task task, boolean empty) {
 		super.updateItem(task, empty);
-		if(empty) {
+		if (empty) {
 			clearContent();
 		} else {
 			addContent(task);
 		}
 	}
-	
-	private void clearContent() {
-		setText(null);
-		setGraphic(null);
-	}
-	
-//	private void addContent(Task task) {
-//		setText(null);
-//		
-//		String label = task.getLabel();
-//		if(label.equals("T")) {
-//			icon.setId(ICON_TIMED_ID);
-//		} else if (label.equals("D")) {
-//			icon.setId(ICON_DEADLINE_ID);
-//		} else {
-//			icon.setId(ICON_FLOATING_ID);
-//		}
-//		
-//		icon.setText(label);
-//		desc.setText(task.getTaskDescription());
-//		
-//		DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM d, yy HH:mm");
-//		
-//		setGraphic(hbox);
-//		
-//	}
-	
-	private void addContent(Task task) {
-		setText(null);
-
-		String label = task.getLabel();
-		if(label.equals("T")) {
-			icon.setId(ICON_TIMED_ID);
-		}else if(label.equals("D")) {
-			icon.setId(ICON_DEADLINE_ID);
-		} else {
-			icon.setId(ICON_FLOATING_ID);
-		}
-		icon.setText(label);
-		desc.setText(task.getTaskDescription());
-		desc.setMaxWidth(400);
-		hashtag.setText(task.getTags());
-		
-		DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM d, yy HH:mm");
-		DateTime start = task.getTaskStartTime();
-		if(start == null) {
-			startTimestamp.setText("");
-		} else {
-			startTimestamp.setText(fmt.print(start));
-		}
-		
-		DateTime end = task.getTaskEndTime();
-		if(end == null) {
-			endTimestamp.setText("");
-		} else {
-			// TODO: rewrite it property with paddings
-			if(start != null) {
-				endTimestamp.setText("        " + fmt.print(end));
-			} else {
-                endTimestamp.setText(fmt.print(end));
-			}
-		}
-
-		setGraphic(hbox);
-	}
-	
 }

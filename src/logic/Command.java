@@ -16,6 +16,7 @@ public class Command {
 		REDO ("redo"),
 		CLEAR ("clear"), 
 		DONE ("done"),
+		UNDONE ("undone"),
 		DONEALL ("doneall"), 
 		DELETE ("delete"), 
 		HELP ("help"), 
@@ -88,12 +89,16 @@ public class Command {
 			return COMMAND_TYPE.REDO;
 		} else if (command.equalsIgnoreCase(COMMAND_TYPE.DONE.getCommandName())) {
 			return COMMAND_TYPE.DONE;
-		} else if (command.equalsIgnoreCase(COMMAND_TYPE.CLEAR.getCommandName())) {
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.UNDONE.getCommandName())) {
+			return COMMAND_TYPE.UNDONE;
+		}else if (command.equalsIgnoreCase(COMMAND_TYPE.CLEAR.getCommandName())) {
 			return COMMAND_TYPE.CLEAR;
 		} else if (command.equalsIgnoreCase(COMMAND_TYPE.DONEALL.getCommandName())) {
 			return COMMAND_TYPE.DONEALL;
 		} else if (command.equalsIgnoreCase(COMMAND_TYPE.DELETE.getCommandName())) {
 			return COMMAND_TYPE.DELETE;
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.HELP.getCommandName())) {
+			return COMMAND_TYPE.HELP;
 		}
 		return COMMAND_TYPE.INVALID; 
 	}
