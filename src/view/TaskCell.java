@@ -141,7 +141,7 @@ public class TaskCell extends ListCell<Task> {
 			hbox.setId(OVERDUE_ID);
 		}
 
-		DateTimeFormatter fmt = DateTimeFormat.forPattern("d MMM yy  HH:mm a");
+		DateTimeFormatter fmt = DateTimeFormat.forPattern("d MMM yy  hh:mm a");
 		DateTime startTimestamp = task.getTaskStartTime();
 		if(startTimestamp == null) {
 			start.setText("");

@@ -18,6 +18,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -34,7 +36,7 @@ public class PandaUI extends Application {
 
 	// app
 	public static final int APP_WIDTH = 450;
-	public static final int APP_HEIGHT = 600;
+	public static final int APP_HEIGHT = 800;
 	private static final String CSS_PATH = "resources/css/style.css";
 
 	// input field
@@ -47,6 +49,7 @@ public class PandaUI extends Application {
 
 	private static final int OFFSET = 1;
 	private static final int COMMAND_INDEX = 0;
+	private static final int SCROLL = 7;
 
 	// listview
 	private static final String LIST_ID = "tasklist";
@@ -55,7 +58,7 @@ public class PandaUI extends Application {
 	private static final String OVERDUE_ID = "overdue-label";
 	private static final String OVERDUE_VBOX_ID = "overdue-vbox";
 	private static final int OVERDUE_HEIGHT = 40;
-	
+
 	private static final String INVALID_COMMAND = "Invalid Command! Type \"Help\" for Manual";
 
 	CommandFactory commandFactory = CommandFactory.INSTANCE;
@@ -64,12 +67,12 @@ public class PandaUI extends Application {
 
 	ListView<Task> list = new ListView<Task>();
 	Label overdueLabel = new Label();
-//	Label errorLabel = new Label(INVALID_COMMAND);
+	// Label errorLabel = new Label(INVALID_COMMAND);
 	Text overdueText = new Text();
 	Tooltip tooltip = new Tooltip(INVALID_COMMAND);
 
 	TextField inputField;
-	
+
 	VBox bottomBox;
 	VBox overBox = addOverStatus();
 	VBox taskBox = addTaskList();
@@ -94,7 +97,7 @@ public class PandaUI extends Application {
 
 	private HBox addInputField(final Stage stage) {
 		HBox hbox = new HBox();
-		
+
 		inputField = new TextField();
 		inputField.setPromptText(IF_PLACEHOLDER);
 		inputField.setPrefColumnCount(50);
@@ -120,12 +123,14 @@ public class PandaUI extends Application {
 							overdueLabel.textProperty().unbind();
 							overdueLabel.setText(INVALID_COMMAND);
 						} else {
-                            inputField.setTooltip(null);
+							inputField.setTooltip(null);
 							commandFactory.process(command);
 							updateTasksList();
-                            overdueLabel.textProperty().bind(Bindings.format(OVERDUE_TXT, Bindings.size(overduetasks)));
+							overdueLabel.textProperty().bind(
+									Bindings.format(OVERDUE_TXT,
+											Bindings.size(overduetasks)));
 							inputField.clear();
-							if(command.command == COMMAND_TYPE.HELP) {
+							if (command.command == COMMAND_TYPE.HELP) {
 								// show help text
 								bottomBox.getChildren().remove(taskBox);
 								bottomBox.getChildren().add(helpBox);
@@ -133,14 +138,15 @@ public class PandaUI extends Application {
 								// remove help text
 								bottomBox.getChildren().remove(helpBox);
 								bottomBox.getChildren().add(taskBox);
-							    if (command.command == COMMAND_TYPE.ADD) {
-								    list.scrollTo(tasks.size() - OFFSET);
-							    }
-								
+								if (command.command == COMMAND_TYPE.ADD) {
+									System.out.println("Add command");
+									list.scrollTo(tasks.size() - OFFSET);
+								}
+
 							}
 						}
 					}
-				} else if(e.getCode() == KeyCode.DOWN) {
+				} else if (e.getCode() == KeyCode.DOWN) {
 					list.requestFocus();
 				}
 			}
@@ -155,41 +161,31 @@ public class PandaUI extends Application {
 		bottomBox.getChildren().addAll(overBox, taskBox);
 		return bottomBox;
 	}
-	
+
 	private VBox addHelpText() {
 		helpBox = new VBox();
-		Label title = new Label("TaskPanda Help Manual");
+		Label title = new Label("\nTaskPanda Help Manual");
 		Label helpText = new Label(
-				
-			"Type \"Tab\" and \"Shift+Tab\" to quickly focus between input field and list. \n\n" + 
 
-			"add <description> \n" + 
-		    "add <description> <timestamp> \n" +
-		    "add <description> from <timestamp> to <timestamp> \n\n" +
-		    
-		    "list \n" +
-		    "list floating \n" +
-		    "list timed \n" +
-		    "list deadline \n\n" +
+		"add <description> \n" + "add <description> <timestamp> \n"
+				+ "add <description> from <timestamp> to <timestamp> \n\n" +
 
-		    "list today \n" +
-		    "list tomorrow \n" +
-		    "list this week \n" +
-		    "list <date> \n\n" +
-		    
-		    "edit <id> <description> <timestamp> \n\n" +
-		    
-		    "done <id> \n" +
-		    "undone <id> \n\n" +
-		    
-		    "undo \n\n" + 
-		    "redo \n\n" + 
+				"list \n" + "list floating \n" + "list timed \n"
+				+ "list deadline \n\n" +
 
-		    "clear \n\n" + 
-		    
-		    "search <keyword> \n"
-		);
-		title.setPadding(new Insets(PADDING, 0, 0, PADDING));
+				"list today \n" + "list tomorrow \n" + "list this week \n"
+				+ "list <date> \n\n" +
+
+				"edit <id> <description> <timestamp> \n\n" +
+
+				"done <id> \n" + "undone <id> \n\n" +
+
+				"undo \n\n" + "redo \n\n" +
+
+				"clear \n\n" +
+
+				"search <keyword> \n");
+		title.setPadding(new Insets(0, 0, 0, PADDING));
 		helpText.setPadding(new Insets(PADDING));
 		helpBox.getChildren().addAll(title, helpText);
 		return helpBox;
@@ -202,7 +198,8 @@ public class PandaUI extends Application {
 		overdueLabel.setAlignment(Pos.CENTER);
 		overdueLabel.setPrefWidth(APP_WIDTH);
 		overdueLabel.setPrefHeight(OVERDUE_HEIGHT);
-		overdueLabel.textProperty().bind(Bindings.format(OVERDUE_TXT, Bindings.size(overduetasks)));
+		overdueLabel.textProperty().bind(
+				Bindings.format(OVERDUE_TXT, Bindings.size(overduetasks)));
 		overBox.getChildren().addAll(overdueLabel);
 		return overBox;
 	}
@@ -211,7 +208,7 @@ public class PandaUI extends Application {
 		VBox taskBox = new VBox();
 		list.setItems(tasks);
 		list.setId(LIST_ID);
-		list.setPrefHeight(APP_HEIGHT-(IF_HEIGHT + OVERDUE_HEIGHT));
+		list.setPrefHeight(APP_HEIGHT - (IF_HEIGHT + OVERDUE_HEIGHT));
 		list.setCellFactory(new Callback<ListView<Task>, ListCell<Task>>() {
 			@Override
 			public ListCell<Task> call(ListView<Task> param) {
@@ -219,19 +216,32 @@ public class PandaUI extends Application {
 				return taskcell;
 			}
 		});
-				list.setOnKeyPressed(new EventHandler<KeyEvent>() {
-					@Override
-					public void handle(KeyEvent e) {
-						if(e.getCode() == KeyCode.ENTER) {
-							int index = list.getSelectionModel().getSelectedIndex() + OFFSET;
-							Task t = list.getSelectionModel().getSelectedItem();
-							inputField.setText("edit " + index + " " + t.getRoughTranslation());
-							inputField.requestFocus();
-					    } else if(e.getCode() == KeyCode.ESCAPE) {
-					    	inputField.requestFocus();
-					    }
-					} 
-				});
+
+		// for bigger scrolling across page
+		final KeyCombination pageUp = new KeyCodeCombination(KeyCode.UP, KeyCombination.SHIFT_DOWN);
+		final KeyCombination pageDown = new KeyCodeCombination(KeyCode.DOWN, KeyCombination.SHIFT_DOWN);
+		list.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent e) {
+				if (e.getCode() == KeyCode.ENTER) {
+					int index = list.getSelectionModel().getSelectedIndex() + OFFSET;
+					Task t = list.getSelectionModel().getSelectedItem();
+					inputField.setText("edit " + index + " "
+							+ t.getRoughTranslation());
+					inputField.requestFocus();
+				} else if (e.getCode() == KeyCode.ESCAPE) {
+					inputField.requestFocus();
+				} else if (pageUp.match(e)) {
+					int index = list.getSelectionModel().getSelectedIndex() + OFFSET;
+					list.getFocusModel().focus(index - SCROLL);
+					list.scrollTo(index - SCROLL);
+				} else if (pageDown.match(e)) {
+					int index = list.getSelectionModel().getSelectedIndex();
+					list.getFocusModel().focus(index + SCROLL);
+					list.scrollTo(index + SCROLL);
+				}
+			}
+		});
 		taskBox.getChildren().addAll(list);
 		return taskBox;
 	}
@@ -251,7 +261,8 @@ public class PandaUI extends Application {
 			newValue = pieces[1];
 			String[] parts = newValue.toLowerCase().split(" ");
 			// create a temporary subentries list matching list and replace it
-			ObservableList<Task> subentries = FXCollections.observableArrayList();
+			ObservableList<Task> subentries = FXCollections
+					.observableArrayList();
 			for (Task task : list.getItems()) {
 				boolean match = true;
 				for (String part : parts) {
