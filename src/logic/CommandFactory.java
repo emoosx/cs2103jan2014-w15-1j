@@ -335,6 +335,7 @@ public class CommandFactory {
 			result = Criteria.getAllUndeletedTasksWithHashTag(tasks,
 					command.rawText);
 		} else {
+			System.out.println("list timestamp");
 			// assume it as a timestamp
 			System.out.println(RegExp.parseDate(command.rawText));
 			System.out.println(RegExp.parseTime(command.rawText));
