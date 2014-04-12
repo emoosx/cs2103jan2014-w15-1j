@@ -121,8 +121,9 @@ public class PandaUI extends Application {
 							overdueLabel.setText(INVALID_COMMAND);
 						} else {
                             inputField.setTooltip(null);
-                            overdueLabel.textProperty().bind(Bindings.format(OVERDUE_TXT, Bindings.size(overduetasks)));
 							commandFactory.process(command);
+							updateTasksList();
+                            overdueLabel.textProperty().bind(Bindings.format(OVERDUE_TXT, Bindings.size(overduetasks)));
 							inputField.clear();
 							if(command.command == COMMAND_TYPE.HELP) {
 								// show help text
@@ -139,6 +140,8 @@ public class PandaUI extends Application {
 							}
 						}
 					}
+				} else if(e.getCode() == KeyCode.DOWN) {
+					// select the first cell in the task list
 				}
 			}
 		});
