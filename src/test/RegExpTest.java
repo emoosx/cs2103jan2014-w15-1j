@@ -11,14 +11,35 @@ import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 
+//@author A0101810A
+/*
+ * This class does unit testing on the various methods in static class RegExp.java
+ * It mainly tests whether the regular expression patterns are matched and extracted out correctly 
+ * Function coverage - 100% 
+ * Written by A0101810A - Tan Zheng Jie (Matthew)
+ */
+
 public class RegExpTest {
 	
 	@Test
-	public void testTimeRegexDeadline() {
-		assertEquals("2:15pm", RegExp.parseTime("add haha by 2:15pm").get(0));
-		assertEquals("5:15pm", RegExp.parseTime("add haha by 5:15pm").get(0));
-		assertEquals("5pm", RegExp.parseTime("add haha by 5pm").get(0));
-		assertEquals("12am", RegExp.parseTime("add haha by 12am").get(0));
+	public void testParseTimeFloating() {
+		// Partition: inputs with no matched time input
+		ArrayList<String> list = new ArrayList<String>();
+		assertEquals(list, RegExp.parseTime("add haha by tomorrow"));
+		assertEquals(list, RegExp.parseTime("add meeting"));
+		assertEquals(list, RegExp.parseTime("add deadline by 5/4/2014"));
+		assertEquals(list, RegExp.parseTime("add deadline 5pm"));
+		assertEquals(list, RegExp.parseTime("add watch 2pm concert"));
+		assertEquals(list, RegExp.parseTime("add buy present for april and may"));
+	}
+	
+	@Test
+	public void testParseTimeDeadline() {
+		// Partition: cases which results in 1 matched time pattern
+		assertEquals("2:15pm", RegExp.parseTime("add haha on 30 november by 2:15pm").get(0));
+		assertEquals("5:15pm", RegExp.parseTime("add haha on 14/2/2014 by 5:15pm").get(0));
+		assertEquals("5pm", RegExp.parseTime("add haha by 14 mar 5pm").get(0));
+		assertEquals("12am", RegExp.parseTime("add haha on 30 may 12am").get(0));
 		assertEquals("23:59", RegExp.parseTime("add haha by 23:59").get(0));
 		assertEquals("01:59", RegExp.parseTime("add haha by 01:59").get(0));
 		assertEquals("2359", RegExp.parseTime("add haha by 2359").get(0));
@@ -29,31 +50,44 @@ public class RegExpTest {
 		assertEquals(list, RegExp.parseTime("add haha by 12:60pm"));
 		assertEquals(list, RegExp.parseTime("add haha by 11:60am"));
 		assertEquals(list, RegExp.parseTime("add haha at 13:00am"));
-		
-		// Partition: inputs with no time input
-		assertEquals(list, RegExp.parseTime("add haha by tomorrow"));
-		assertEquals(list, RegExp.parseTime("add meeting"));
-		assertEquals(list, RegExp.parseTime("add deadline by 5/4/2014"));
 	}
 	
 	@Test
-	public void testTimeRegexTimed() {
+	public void testParseTimeTimed() {
+		// Partition: cases which results in 2 matched time patterns
 		assertEquals("5pm", RegExp.parseTime("add haha on 14/2/2014 from 5pm to 6pm").get(0));
 		assertEquals("6pm", RegExp.parseTime("add haha on 14/2/2014 from 5pm to 6pm").get(1));
 		
 		assertEquals("5:15pm", RegExp.parseTime("add haha on 14/2/2014 from 5:15pm to 6:45pm").get(0));
 		assertEquals("6:45pm", RegExp.parseTime("add haha on 14/2/2014 from 5:15pm to 6:45pm").get(1));
 		
+		assertEquals("12:15pm", RegExp.parseTime("add haha on 14 feb from 12:15pm to 6:45pm").get(0));
+		assertEquals("6pm", RegExp.parseTime("add haha on 14 feb from 12:15pm to 6pm").get(1));
+		
 		assertEquals("15:15", RegExp.parseTime("add haha on 14/2/2014 from 15:15 to 16:45").get(0));
 		assertEquals("16:45", RegExp.parseTime("add haha on 14/2/2014 from 15:15 to 16:45").get(1));
 		
 		assertEquals("15:15", RegExp.parseTime("add haha from 1/2/2014 15:15 to 1/2/2014 16:45").get(0));
+		assertEquals("16:45", RegExp.parseTime("add haha from 1/2/2014 15:15 to 1/2/2014 16:45").get(1));
+		
+		assertEquals("15:15", RegExp.parseTime("add haha from 1 jan 15:15 to 3 jan 16:45").get(0));
 		assertEquals("16:45", RegExp.parseTime("add haha from 1 jan 15:15 to 3 jan 16:45").get(1));
 		
 		// Boundary case for invalid inputs
 		assertEquals(0, RegExp.parseTime("add haha from 11:60am to 12pm").size());
 		assertEquals(0, RegExp.parseTime("add haha from 23:59 to 24:00").size());
-		
+	}
+	
+	@Test
+	public void testParseDateFloating() {
+		// Partition: inputs with no matched date input
+		ArrayList<String> list = new ArrayList<String>();
+		assertEquals(list, RegExp.parseDate("add something at 5pm"));
+		assertEquals(list, RegExp.parseDate("add meeting"));
+		assertEquals(list, RegExp.parseDate("add deadline 11/2/2014 5pm"));
+		assertEquals(list, RegExp.parseDate("add renew phone number to 91122014"));
+		assertEquals(list, RegExp.parseDate("add buy present for april and may"));
+		assertEquals(list, RegExp.parseDate("add 11/1/2014"));
 	}
 	
 	@Test
@@ -105,7 +139,7 @@ public class RegExpTest {
 		assertEquals("14 mar", RegExp.parseDate("add camp from 14 mar to 16 mar").get(0));
 		assertEquals("16 mar", RegExp.parseDate("add camp from 14 mar to 16 mar").get(1));
 	}
-	
+	/*
 	@Test
 	public void testGetDateFromDateString() {
 		int[] date = new int[999];
@@ -144,7 +178,7 @@ public class RegExpTest {
 		assertEquals(dtPlusOne.getMonthOfYear(),date[1]);
 		assertEquals(dtPlusOne.getYear(),date[2]);
 		
-		/*
+		
 		date = RegExp.dateFromDateString("on next monday");
 		assertEquals(7,date[0]);
 		assertEquals(4,date[1]);
@@ -154,7 +188,7 @@ public class RegExpTest {
 		assertEquals(11,date[0]);
 		assertEquals(4,date[1]);
 		assertEquals(2014,date[2]);
-		*/
+		
 	}
 	
 	@Test
@@ -175,7 +209,7 @@ public class RegExpTest {
 		time = RegExp.timeFromTimeString("1pm");
 		assertEquals(13,time[0]);
 	}
-	
+	*/
 	@Test
 	public void testParseDescription() {
 		
