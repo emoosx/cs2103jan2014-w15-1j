@@ -59,6 +59,10 @@ public class PandaUI extends Application {
 	private static final String OVERDUE_ID = "overdue-label";
 	private static final String OVERDUE_VBOX_ID = "overdue-vbox";
 	private static final int OVERDUE_HEIGHT = 40;
+	
+	
+	private static final String HELP_TITLE_ID = "help-title";
+	private static final String HELP_TEXT_ID = "help-text";
 
 	private static final String INVALID_COMMAND = "Invalid Command! Type \"Help\" for Manual";
 
@@ -187,8 +191,8 @@ public class PandaUI extends Application {
 				"clear \n\n" +
 
 				"search <keyword> \n");
-		title.setPadding(new Insets(0, 0, 0, PADDING));
-		helpText.setPadding(new Insets(PADDING));
+		title.setId(HELP_TITLE_ID);
+		helpText.setId(HELP_TEXT_ID);
 		helpBox.getChildren().addAll(title, helpText);
 		return helpBox;
 	}
