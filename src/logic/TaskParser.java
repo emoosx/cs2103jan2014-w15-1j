@@ -2,8 +2,11 @@ package logic;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.MutableDateTime;
 
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
@@ -20,6 +23,9 @@ import common.PandaLogger;
 
 public class TaskParser {
 
+	private static final int TOTAL_DATE_FIELDS = 3;
+	private static final int TOTAL_TIME_FIELDS = 2;
+	
 	private static final int NUM_HOUR_INDEX = 0;
 	private static final int NUM_MIN_INDEX = 1;
 	private static final int NUM_YEAR_INDEX = 2;
@@ -107,14 +113,14 @@ public class TaskParser {
 		PandaLogger.getLogger().info("TaskParser - Initializing time variables");
 		// Case 1: User input contains one time string
 		if(timeArray.size() == 1) {
-			int[] endTimeArray = RegExp.timeFromTimeString(timeArray.get(0));
+			int[] endTimeArray = timeFromTimeString(timeArray.get(0));
 			initializeEndTime(endTimeArray);
 		}
 		// Case 2: User input contains two time strings
 		else if(timeArray.size() == 2) {
-			int[] startTimeArray = RegExp.timeFromTimeString(timeArray.get(0));
+			int[] startTimeArray = timeFromTimeString(timeArray.get(0));
 			initializeStartTime(startTimeArray);
-			int[] endTimeArray = RegExp.timeFromTimeString(timeArray.get(1));
+			int[] endTimeArray = timeFromTimeString(timeArray.get(1));
 			initializeEndTime(endTimeArray);
 		}
 	}
@@ -139,13 +145,13 @@ public class TaskParser {
 			return;
 		// Case 1: user input having start date and end date
 		} else if (dateArray.size() == 2) {
-			int[] startDateArray = RegExp.dateFromDateString(dateArray.get(0));
+			int[] startDateArray = dateFromDateString(dateArray.get(0));
 			initializeStartDate(startDateArray);
-			int[] endDateArray = RegExp.dateFromDateString(dateArray.get(1));
+			int[] endDateArray = dateFromDateString(dateArray.get(1));
 			initializeEndDate(endDateArray);
 		// Case 2: user input having only end deadline
 		} else {
-			int[] endDateArray = RegExp.dateFromDateString(dateArray.get(0));
+			int[] endDateArray = dateFromDateString(dateArray.get(0));
 			initializeEndDate(endDateArray);
 		}
 	}
@@ -303,6 +309,47 @@ public class TaskParser {
 		return false;
 		*/
 	}
+	
+	/*
+     *  Given a time string such as 5:15pm,
+     *  Method parses the string accordingly using NattyTime library 
+     *  @return integer array of 3 elements: year, month and day
+     */
+    public static int[] dateFromDateString(String dateString) {
+    	int[] date = new int[TOTAL_DATE_FIELDS];
+    	
+    	// Overcoming NattyTime limitation (Natty parses dates as MM/DD/YYYY) 
+		dateString = RegExp.changeDateFormat(dateString);
+		// Calling NattyTime parser
+		Parser parser = new Parser();
+		List<DateGroup> groups = parser.parse(dateString);
+		for(DateGroup group: groups) {
+			List<Date> dates = group.getDates();
+			MutableDateTime tempDate = new MutableDateTime(dates.get(0));
+			date[NUM_DAY_INDEX] = tempDate.getDayOfMonth();
+			date[NUM_MONTH_INDEX] = tempDate.getMonthOfYear();
+			date[NUM_YEAR_INDEX] = tempDate.getYear();
+		}
+		return date;
+    }
+    
+    /* Given a string of time format (eg. "5pm"),
+     * Method will parse the string accordingly using NattyTime
+     * @return integer array with 2 elements: hour and minute 
+     */
+    public static int[] timeFromTimeString(String timeString) {
+    	int[] time = new int[TOTAL_TIME_FIELDS];
+    	// Calling NattyTime parser
+		Parser parser = new Parser();
+		List<DateGroup> groups = parser.parse(timeString);
+		for(DateGroup group: groups) {
+			List<Date> dates = group.getDates();
+			MutableDateTime tempTime = new MutableDateTime(dates.get(0));
+			time[NUM_HOUR_INDEX] = tempTime.getHourOfDay();
+			time[NUM_MIN_INDEX] = tempTime.getMinuteOfHour();
+		}
+		return time;
+    }
 
 	public ArrayList<String> getHashTag() {
 		return hashtags;
