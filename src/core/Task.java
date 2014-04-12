@@ -144,6 +144,10 @@ public class Task {
 		}
 	}
 	
+	public String getRawText() {
+		return this.rawText;
+	}
+	
 	public String getRoughTranslation() {
 		DateTimeFormatter datefmt = DateTimeFormat.forPattern("dd/MM/yyyy hh:mma");
 		String result;
