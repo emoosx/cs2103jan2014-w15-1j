@@ -141,7 +141,7 @@ public class PandaUI extends Application {
 						}
 					}
 				} else if(e.getCode() == KeyCode.DOWN) {
-					// select the first cell in the task list
+					list.requestFocus();
 				}
 			}
 		});
@@ -227,9 +227,10 @@ public class PandaUI extends Application {
 							Task t = list.getSelectionModel().getSelectedItem();
 							inputField.setText("edit " + index + " " + t.getRoughTranslation());
 							inputField.requestFocus();
-//							System.out.println(list.getSelectionModel().getSelectedIndex());
+					    } else if(e.getCode() == KeyCode.ESCAPE) {
+					    	inputField.requestFocus();
 					    }
-					}
+					} 
 				});
 		taskBox.getChildren().addAll(list);
 		return taskBox;
