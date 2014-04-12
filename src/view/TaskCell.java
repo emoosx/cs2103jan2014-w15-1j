@@ -63,6 +63,7 @@ public class TaskCell extends ListCell<Task> {
 		configureHashtag();
 		addControls();
 	}
+	
 
 	private void configureGrid() {
 		grid.setHgap(VGAP);

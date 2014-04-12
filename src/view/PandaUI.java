@@ -160,6 +160,9 @@ public class PandaUI extends Application {
 		helpBox = new VBox();
 		Label title = new Label("TaskPanda Help Manual");
 		Label helpText = new Label(
+				
+			"Type \"Tab\" and \"Shift+Tab\" to quickly focus between input field and list. \n\n" + 
+
 			"add <description> \n" + 
 		    "add <description> <timestamp> \n" +
 		    "add <description> from <timestamp> to <timestamp> \n\n" +
@@ -216,6 +219,18 @@ public class PandaUI extends Application {
 				return taskcell;
 			}
 		});
+				list.setOnKeyPressed(new EventHandler<KeyEvent>() {
+					@Override
+					public void handle(KeyEvent e) {
+						if(e.getCode() == KeyCode.ENTER) {
+							int index = list.getSelectionModel().getSelectedIndex() + OFFSET;
+							Task t = list.getSelectionModel().getSelectedItem();
+							inputField.setText("edit " + index + " " + t.getRoughTranslation());
+							inputField.requestFocus();
+//							System.out.println(list.getSelectionModel().getSelectedIndex());
+					    }
+					}
+				});
 		taskBox.getChildren().addAll(list);
 		return taskBox;
 	}
