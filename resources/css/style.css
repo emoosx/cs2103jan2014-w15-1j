@@ -65,6 +65,15 @@
   -fx-label-padding: 5px 0px 5px 0px;
 }
 
+/* help text and help id */
+#help-title {
+  -fx-label-padding: 0px 0px 0px 20px;
+}
+
+#help-text {
+  -fx-label-padding: 20px;
+}
+
 /* .icon { */
 /* } */
 
