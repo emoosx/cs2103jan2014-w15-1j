@@ -140,6 +140,7 @@ public class RegExp {
      *  Method parses the string accordingly using NattyTime library 
      *  @return integer array of 3 elements: year, month and day
      */
+    /*
     public static int[] dateFromDateString(String dateString) {
     	int[] date = new int[TOTAL_DATE_FIELDS];
     	
@@ -158,11 +159,13 @@ public class RegExp {
 		}
 		return date;
     }
+    */
     
     /* Given a string of time format (eg. "5pm"),
      * Method will parse the string accordingly using NattyTime
      * @return integer array with 2 elements: hour and minute 
      */
+    /*
     public static int[] timeFromTimeString(String timeString) {
     	int[] time = new int[TOTAL_TIME_FIELDS];
 
@@ -177,6 +180,7 @@ public class RegExp {
 		}
 		return time;
     }
+    */
     
     /*
      *  Method parses raw input into an array list of date strings
@@ -307,12 +311,11 @@ public class RegExp {
 		// Replacing all hybrid date and time regex with ""
 		taskDescription = taskDescription.replaceAll(REGEX_HYBRID_PATTERN_1, "");
 		taskDescription = taskDescription.replaceAll(REGEX_HYBRID_PATTERN_2, "");
-		
-		// Replacing all matched supported time regex patterns with ""
+		// Replacing time regex patterns with ""
 		for(int i=0; i<regexTimeInputArray.length; i++) {
 			taskDescription = taskDescription.replaceAll(regexTimeInputArray[i], "");
 		}
-    	// Replacing all matched supported date regex patterns with ""
+    	// Replacing date regex patterns with ""
 		for(int i=0; i<regexDateInputArray.length; i++) {
 			taskDescription = taskDescription.replaceAll(regexDateInputArray[i], "");
     	}
@@ -324,8 +327,8 @@ public class RegExp {
 	}
 	
 	/*
-	 *  Method will attempt to parse a hashtag if possible and return the string
-	 *  @return a list of hashtags or null if hashtag does not exist/invalid
+	 *  Method will attempt to parse hashtags given user input
+	 *  @return a list of hashtags or empty list if no hashtag exists
 	 */
 	public static ArrayList<String> parseHashtag(String userInput) {
 		ArrayList<String> hashtag = new ArrayList<String>();
