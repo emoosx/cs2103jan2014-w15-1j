@@ -36,13 +36,14 @@ public class PandaUI extends Application {
 
 	// app
 	public static final int APP_WIDTH = 450;
-	public static final int APP_HEIGHT = 800;
+	public static final int APP_HEIGHT = 700;
 	private static final String CSS_PATH = "resources/css/style.css";
 
 	// input field
 	private static final String IF_PLACEHOLDER = "Get Busy!";
 	private static final int IF_HEIGHT = 70;
 	private static final int IF_WIDTH = APP_WIDTH;
+	private static final int IF_COLUMN_COUNT = 50;
 	private static final String IF_ID = "inputField";
 
 	private static final int PADDING = 20;
@@ -92,6 +93,7 @@ public class PandaUI extends Application {
 		File file = new File(CSS_PATH);
 		scene.getStylesheets().add("file:///" + file.getAbsolutePath());
 		primaryStage.setScene(scene);
+		primaryStage.setResizable(false);
 		primaryStage.show();
 	}
 
@@ -100,7 +102,7 @@ public class PandaUI extends Application {
 
 		inputField = new TextField();
 		inputField.setPromptText(IF_PLACEHOLDER);
-		inputField.setPrefColumnCount(50);
+		inputField.setPrefColumnCount(IF_COLUMN_COUNT);
 		inputField.setPrefSize(IF_WIDTH, IF_HEIGHT);
 		inputField.setId(IF_ID);
 		inputField.textProperty().addListener(new ChangeListener<String>() {
