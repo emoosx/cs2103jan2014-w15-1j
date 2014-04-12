@@ -172,6 +172,10 @@ public class CommandFactory {
 		case REDO:
 			doRedo();
 			break;
+		case UNDONE:
+			doUndone(command);
+			this.redoStack.clear();
+			break;
 		case CLEAR:
 			break;
 		case DONEALL:
@@ -215,6 +219,10 @@ public class CommandFactory {
 			break;
 		case DONE:
 			doUndoDone(taskid, command);
+			break;
+		case UNDONE:
+			doUndoUndone(taskid,command);
+			break;
 		default:
 			return;
 		}
@@ -246,6 +254,10 @@ public class CommandFactory {
 			break;
 		case DONE:
 			doRedoDone(command);
+			break;
+		case UNDONE:
+			doRedoUndone(command);
+			break;
 		default:
 			return;
 		}
@@ -253,6 +265,10 @@ public class CommandFactory {
 
 	private void doRedoDone(Command command) {
 		doDone(command);	
+	}
+	
+	private void doRedoUndone(Command command) {
+		doUndone(command);	
 	}
 
 	private void doRedoDelete(Command command) {
@@ -517,13 +533,15 @@ public class CommandFactory {
 		return newCommand;
 	}
 	
-	  /* Method to get command for Redo Delete/Done operations */
+	  /* Method to get command for Redo Delete/Done/Undone operations */
 	private Command convertTaskToCommand(Command.COMMAND_TYPE Command, int taskid){
 		StringBuilder sb = new StringBuilder();
 		if(Command == COMMAND_TYPE.DONE){
 			sb.append(COMMAND_TYPE.DONE.name().toLowerCase() + " " + taskid);	
+		}else if(Command == COMMAND_TYPE.UNDONE){
+			sb.append(COMMAND_TYPE.UNDONE.name().toLowerCase() + " " + taskid);	
 		}else{
-		sb.append(COMMAND_TYPE.DELETE.name().toLowerCase() + " " + taskid);
+		  sb.append(COMMAND_TYPE.DELETE.name().toLowerCase() + " " + taskid);
 		}
 	    String rawText = sb.toString();
 		this.logger.info("string is :" + rawText);
@@ -551,9 +569,34 @@ public class CommandFactory {
 	private void doUndoDone(int taskid, Command command) {
 		logger.info("doUndoDone");
 		Task t = tasks.get(taskid);
-		System.out.println("Before: " + t);
 		t.setTaskUndone();
-		System.out.println("After: " + t);
+		int prevID = Integer.parseInt(command.rawText);
+		updateHashMapAfterUndoDelete(taskid, prevID);
+		int displayID = this.getDisplayId(taskid);
+		this.redoStack.push(convertTaskToCommand(command.command, displayID));
+		syncTasks();
+	}
+	
+	private void doUndone(Command command) {
+		String rawText = command.rawText;
+		assert (rawText != null);
+		if (checkDeleteInput(rawText)) {
+			int displayId = Integer.parseInt(rawText) - OFFSET;
+			int realId = tasksMap.get(displayId);    
+			Task task = tasks.get(realId);
+			task.setTaskUndone();;
+			updateHashMapAfterDelete(displayId);
+			
+			Command undoneCommand = commandWithPreviousIndex(command.command,displayId);
+			this.undoStack.push(new SimpleEntry<Integer, Command>(realId, undoneCommand));
+			syncTasks();
+		}
+	}
+	
+	private void doUndoUndone(int taskid, Command command) {
+		logger.info("doUndoUndone");
+		Task t = tasks.get(taskid);
+		t.setTaskDone();
 		int prevID = Integer.parseInt(command.rawText);
 		updateHashMapAfterUndoDelete(taskid, prevID);
 		int displayID = this.getDisplayId(taskid);
@@ -725,7 +768,7 @@ public class CommandFactory {
 	}
 	
 	public void clearUndoRedoAfterTesting(){
-		for(int i=0;i<6;i++){
+		for(int i=0;i<8;i++){
 			this.undoStack.pop();
 		}
 		this.syncTasks();
@@ -752,10 +795,20 @@ public class CommandFactory {
 	}
 
 	public void testDelete(Command command) {
+		
 		this.executeCommand(command);
 	}
 
 	public void testDone(Command command) {
 		this.executeCommand(command);
+	}
+	
+	
+	public void testUndone(Command command) {
+		Command undone = new Command("list done");
+		doList(undone);
+		this.executeCommand(command);
+		Command listingDefault = new Command("list");
+		doList(listingDefault);
 	}
 }

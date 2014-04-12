@@ -178,9 +178,12 @@ public class CommandFactoryTest {
 	cf.testRedo();
 	List<Task> redoList = cf.getTasks();
 	assertEquals(true, redoList.get(lastIndex).getTaskDone());
-	cf.testUndo();
-	undoList = cf.getTasks();
-	assertEquals(false, undoList.get(lastIndex).getTaskDone());
+	// Test undone
+	String undone = ("undone " + 1);
+	Command testUndoneCommand = new Command(undone);
+	cf.testUndone(testUndoneCommand);
+	List<Task> undoneList = cf.getTasks();
+	assertEquals(false, undoneList.get(lastIndex).getTaskDone());
 	}
 
 	@Test
