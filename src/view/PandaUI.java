@@ -233,7 +233,7 @@ public class PandaUI extends Application {
 					int index = list.getSelectionModel().getSelectedIndex() + OFFSET;
 					Task t = list.getSelectionModel().getSelectedItem();
 					inputField.setText("edit " + index + " "
-							+ t.getRoughTranslation());
+							+ t.getRawText());
 					inputField.requestFocus();
 				} else if (e.getCode() == KeyCode.ESCAPE) {
 					inputField.requestFocus();
