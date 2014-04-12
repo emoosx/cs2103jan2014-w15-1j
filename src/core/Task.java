@@ -1,8 +1,12 @@
 package core;
 
 import java.util.ArrayList;
+
 import logic.TaskParser;
+
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 //@author A0101810A
 /*
@@ -138,6 +142,26 @@ public class Task {
 		} else {
 			return "T";
 		}
+	}
+	
+	public String getRoughTranslation() {
+		DateTimeFormatter datefmt = DateTimeFormat.forPattern("dd/MM/yyyy hh:mma");
+		String result;
+		if(this.startDateTime == null && this.endDateTime == null) {
+			result = this.taskDescription;
+		} else if(this.startDateTime == null) {
+			result = this.taskDescription + " by " + datefmt.print(this.endDateTime);
+		} else {
+			result =  this.taskDescription + " from " + datefmt.print(this.startDateTime) + " to " + datefmt.print(this.endDateTime); 
+		}
+		
+		if(!this.taskTags.isEmpty()) {
+			for(String tag: this.taskTags) {
+				result = result + " " + tag;
+			}
+		}
+		return result;
+		
 	}
 
 	public DateTime getTaskCreatedTimestamp() {
