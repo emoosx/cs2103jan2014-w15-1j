@@ -130,21 +130,6 @@ public class Task {
 
 	}
 	
-	public String getTags() {
-		StringBuilder sb = new StringBuilder();
-		if(taskTags.isEmpty()) {
-			return sb.toString();
-		} else {
-			for(String tag: taskTags) {
-				sb.append(tag);
-				sb.append(COMMA);
-			}
-			String result = sb.toString();
-			return result.substring(START_INDEX, result.length() - COMMA.length());
-		}
-
-	}
-	
 	public String getLabel() {
 		if(this.startDateTime == null && this.endDateTime == null) {
 			return "F";
@@ -161,5 +146,11 @@ public class Task {
 
 	public void setTaskCreatedTimestamp(DateTime taskCreatedTimestamp) {
 		this.taskCreatedTimestamp = taskCreatedTimestamp;
+	}
+	
+	public boolean isOverdue() {
+		if(taskDone == false && markAsDelete == false && endDateTime != null && endDateTime.isBeforeNow())
+			return true;
+		return false;
 	}
 }
