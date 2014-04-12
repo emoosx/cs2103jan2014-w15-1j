@@ -129,6 +129,7 @@ public class PandaUI extends Application {
 								bottomBox.getChildren().remove(taskBox);
 								bottomBox.getChildren().add(helpBox);
 							} else {
+								// remove help text
 								bottomBox.getChildren().remove(helpBox);
 								bottomBox.getChildren().add(taskBox);
 							    if (command.command == COMMAND_TYPE.ADD) {
@@ -208,7 +209,8 @@ public class PandaUI extends Application {
 		list.setCellFactory(new Callback<ListView<Task>, ListCell<Task>>() {
 			@Override
 			public ListCell<Task> call(ListView<Task> param) {
-				return new TaskCell();
+				TaskCell taskcell = new TaskCell();
+				return taskcell;
 			}
 		});
 		taskBox.getChildren().addAll(list);
@@ -229,7 +231,7 @@ public class PandaUI extends Application {
 		} else {
 			newValue = pieces[1];
 			String[] parts = newValue.toLowerCase().split(" ");
-			// create a temporary subentries matching list and replace it
+			// create a temporary subentries list matching list and replace it
 			ObservableList<Task> subentries = FXCollections.observableArrayList();
 			for (Task task : list.getItems()) {
 				boolean match = true;

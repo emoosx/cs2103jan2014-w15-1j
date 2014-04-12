@@ -1,5 +1,6 @@
 package view;
 
+import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -9,6 +10,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import logic.CommandFactory;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -17,6 +19,8 @@ import org.joda.time.format.DateTimeFormatter;
 import core.Task;
 
 public class TaskCell extends ListCell<Task> {
+
+	private static final int OFFSET = 1;
 
 	// grid
 	private static final int VGAP = 5;
@@ -47,6 +51,7 @@ public class TaskCell extends ListCell<Task> {
 	private Label end = new Label();
 	private Label hashtag = new Label();
 	private Separator separator = new Separator(Orientation.VERTICAL);
+	private ObservableList<Task> tasks = CommandFactory.INSTANCE.getDisplayTasks();
 
 	public TaskCell() {
 		configureGrid();
@@ -108,8 +113,8 @@ public class TaskCell extends ListCell<Task> {
 
 	private void addContent(Task task) {
 		setText(null);
-
-		index.setText("1");
+  
+		index.setText(String.valueOf(super.indexProperty().get() + OFFSET));
 		desc.setText(task.getTaskDescription());
 		desc.setMaxWidth(PandaUI.APP_WIDTH - 100);
 		if(task.getTaskTags().isEmpty()) {
