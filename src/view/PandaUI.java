@@ -52,7 +52,9 @@ public class PandaUI extends Application {
 
 	private static final int OFFSET = 1;
 	private static final int COMMAND_INDEX = 0;
-	private static final int SCROLL = 7;
+	private static final int THE_REST_INDEX = 1;
+	private static final int SCROLL = 6;
+	private static final int TOP = 1;
 
 	// listview
 	private static final String LIST_ID = "tasklist";
@@ -61,6 +63,9 @@ public class PandaUI extends Application {
 	private static final String OVERDUE_ID = "overdue-label";
 	private static final String OVERDUE_VBOX_ID = "overdue-vbox";
 	private static final int OVERDUE_HEIGHT = 40;
+	
+	private static final String EDIT_TXT = "edit %1d %2s";
+	private static final String DELETE_TXT = "delete %1d";
 	
 	
 	private static final String HELP_TITLE_ID = "help-title";
@@ -94,15 +99,18 @@ public class PandaUI extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		BorderPane border = new BorderPane();
-		border.setTop(addInputField(primaryStage));
+		border.setTop(addInputField());
 		border.setCenter(addBottomComponents());
 
+		primaryStage.setScene(setUpScene(border));
+		primaryStage.getIcons().add(new Image(APP_ICON));
+		primaryStage.setTitle(APP_TITLE);
+		primaryStage.show();
+	}
+	
+	private Scene setUpScene(BorderPane border) {
 		Scene scene = new Scene(border, APP_WIDTH, APP_HEIGHT);
-		File cssFile = new File(CSS_PATH);
 		scene.getStylesheets().add(CSS_PATH);
-		System.out.println(this.getClass().getResource("").getPath());
-//		scene.getStylesheets().add((this.getClass().getResource(CSS_PATH).toExternalForm()));
-//		scene.getStylesheets().add(this.getClass().getResource("");
 
 		// for resizing of app
 		scene.widthProperty().addListener(new ChangeListener() {
@@ -120,14 +128,10 @@ public class PandaUI extends Application {
 				list.setPrefHeight((height - (IF_HEIGHT + OVERDUE_HEIGHT)));
 			}
 		});
-
-		primaryStage.setScene(scene);
-		primaryStage.getIcons().add(new Image(APP_ICON));
-		primaryStage.setTitle(APP_TITLE);
-		primaryStage.show();
+		return scene;
 	}
 
-	private HBox addInputField(final Stage stage) {
+	private HBox addInputField() {
 		HBox hbox = new HBox();
 
 		inputField = new TextField();
@@ -142,7 +146,12 @@ public class PandaUI extends Application {
 				handleSearch(oldValue, newValue);
 			}
 		});
-
+		handleInputKeyListener();
+		hbox.getChildren().addAll(inputField);
+		return hbox;
+	}
+	
+	private void handleInputKeyListener() {
 		inputField.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent e) {
@@ -151,19 +160,18 @@ public class PandaUI extends Application {
 						Command command = new Command(inputField.getText());
 						if (command.command == COMMAND_TYPE.INVALID) {
 							// invalid command
-//							inputField.setTooltip(tooltip);
 							overdueLabel.textProperty().unbind();
 							overdueLabel.setText(INVALID_COMMAND);
 						} else {
-//							inputField.setTooltip(null);
 							commandFactory.process(command);
 							if(command.command != COMMAND_TYPE.SEARCH) {
 							    updateTasksList();
 							}
-							overdueLabel.textProperty().bind(
-									Bindings.format(OVERDUE_TXT,
-											Bindings.size(overduetasks)));
-							inputField.clear();
+                            if (command.command == COMMAND_TYPE.ADD) {
+                                list.scrollTo(tasks.size() - OFFSET);
+                                list.getSelectionModel().select(tasks.size() - OFFSET);
+                            }
+							overdueLabel.textProperty().bind(Bindings.format(OVERDUE_TXT, Bindings.size(overduetasks)));
 							if (command.command == COMMAND_TYPE.HELP) {
 								// show help text
 								bottomBox.getChildren().remove(taskBox);
@@ -176,11 +184,9 @@ public class PandaUI extends Application {
 								if(!bottomBox.getChildren().contains(taskBox)) {
 									bottomBox.getChildren().add(taskBox);
 								}
-								if (command.command == COMMAND_TYPE.ADD) {
-									list.scrollTo(tasks.size() - OFFSET);
-								}
 
 							}
+							inputField.clear();
 						}
 					}
 				} else if (e.getCode() == KeyCode.DOWN) {
@@ -188,9 +194,6 @@ public class PandaUI extends Application {
 				}
 			}
 		});
-
-		hbox.getChildren().addAll(inputField);
-		return hbox;
 	}
 
 	private VBox addBottomComponents() {
@@ -212,7 +215,7 @@ public class PandaUI extends Application {
 		"add <description> from <timestamp> to <timestamp> \n\n" +
 
 		"list \n" + 
-		"list floating \n" + 
+		"list misc \n" + 
 		"list timed \n" + 
 		"list deadline \n\n" +
 		"list today \n" + 
@@ -258,33 +261,43 @@ public class PandaUI extends Application {
 				return taskcell;
 			}
 		});
+		handleListKeyListener();
+		taskBox.getChildren().addAll(list);
+		return taskBox;
+	}
+	
+	private void handleListKeyListener() {
 
 		// for bigger scrolling across page
-		final KeyCombination pageUp = new KeyCodeCombination(KeyCode.UP, KeyCombination.SHIFT_DOWN);
-		final KeyCombination pageDown = new KeyCodeCombination(KeyCode.DOWN, KeyCombination.SHIFT_DOWN);
 		list.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent e) {
 				if (e.getCode() == KeyCode.ENTER) {
-					int index = list.getSelectionModel().getSelectedIndex() + OFFSET;
-					Task t = list.getSelectionModel().getSelectedItem();
-					inputField.setText("edit " + index + " " + t.getRawText());
-					inputField.requestFocus();
+					handleEnterKey();
 				} else if (e.getCode() == KeyCode.ESCAPE) {
-					inputField.requestFocus();
-				} else if (pageUp.match(e)) {
-					int index = list.getSelectionModel().getSelectedIndex() + OFFSET;
-					list.getFocusModel().focus(index - SCROLL);
-					list.scrollTo(index - SCROLL);
-				} else if (pageDown.match(e)) {
-					int index = list.getSelectionModel().getSelectedIndex();
-					list.getFocusModel().focus(index + SCROLL);
-					list.scrollTo(index + SCROLL);
+					handleEscKey();
+				} else if (e.getCode() == KeyCode.DELETE) {
+					handleDeleteKey();
 				}
 			}
 		});
-		taskBox.getChildren().addAll(list);
-		return taskBox;
+	}
+	
+	private void handleEnterKey() {
+        int index = list.getSelectionModel().getSelectedIndex() + OFFSET;
+		Task t = list.getSelectionModel().getSelectedItem();
+		inputField.setText(String.format(EDIT_TXT, index, t.getRawText()));
+		inputField.requestFocus();
+	}
+	
+	private void handleEscKey() {
+		inputField.requestFocus();
+	}
+	
+	private void handleDeleteKey() {
+		int index = list.getSelectionModel().getSelectedIndex() + OFFSET;
+		inputField.setText(String.format(DELETE_TXT, index));
+		inputField.requestFocus();
 	}
 
 	private void handleSearch(String oldValue, String newValue) {
@@ -294,14 +307,13 @@ public class PandaUI extends Application {
 		}
 
 		String[] pieces = newValue.split(SPLIT);
-		if ((!pieces[COMMAND_INDEX].equalsIgnoreCase(COMMAND_TYPE.SEARCH.name())) || pieces.length <= 1) {
+		if ((!pieces[COMMAND_INDEX].equalsIgnoreCase(COMMAND_TYPE.SEARCH.name())) || pieces.length <= THE_REST_INDEX) {
 			updateTasksList();
 		} else {
-			newValue = pieces[1];
+			newValue = pieces[THE_REST_INDEX];
 			String[] parts = newValue.toLowerCase().split(SPACE);
 			// create a temporary subentries list matching list and replace it
-			ObservableList<Task> subentries = FXCollections
-					.observableArrayList();
+			ObservableList<Task> subentries = FXCollections.observableArrayList();
 			for (Task task : list.getItems()) {
 				boolean match = true;
 				for (String part : parts) {
