@@ -186,6 +186,8 @@ public class CommandFactory {
 			break;
 		case DONEALL:
 			break;
+		case SEARCH:
+			break;
 		case DELETE:
 			doDelete(command);
 			this.redoStack.clear();
@@ -329,38 +331,41 @@ public class CommandFactory {
 					.omitEmptyStrings();
 			Iterable<String> criteria = splitter.split(command.rawText);
 			logger.info("Found Criteria " + criteria);
-			Set<Integer> resultSet = new HashSet<Integer>();
+			Set<Integer> resultSet = new HashSet<Integer>(Criteria.getAllUndeletedTasks(tasks));
+			System.out.println("Before anything :" + resultSet);
 			for (String c : criteria) {
 				// some hardcoded scenarios for common keywords
-				if (c.equalsIgnoreCase("tmw") || c.equalsIgnoreCase("tomorrow")
-						|| c.equalsIgnoreCase("tmr")) {
-					resultSet.addAll(Criteria.getAllTasksforTomorrow(tasks));
+				if (c.equalsIgnoreCase("tmw") || c.equalsIgnoreCase("tomorrow") || c.equalsIgnoreCase("tmr")) {
+					resultSet.retainAll(Criteria.getAllTasksforTomorrow(tasks));
 				} else if (c.equalsIgnoreCase("today")) {
-					resultSet.addAll(Criteria.getAllTasksforToday(tasks));
+					resultSet.retainAll(Criteria.getAllTasksforToday(tasks));
 				} else if (c.equalsIgnoreCase("this week")) {
-					resultSet.addAll(Criteria.getAllTasksforThisWeek(tasks));
+					resultSet.retainAll(Criteria.getAllTasksforThisWeek(tasks));
+				} else if (c.equalsIgnoreCase("next week")) {
+					resultSet.retainAll(Criteria.getAllTasksforNextWeek(tasks));
 				} else if (c.equalsIgnoreCase("misc")) {
-					resultSet.addAll(Criteria.getAllFloatingTasks(tasks));
+					System.out.println("going in here second :" + Criteria.getAllFloatingTasks(tasks));
+					resultSet.retainAll(Criteria.getAllFloatingTasks(tasks));
 				} else if (c.equalsIgnoreCase("timed")) {
-					resultSet.addAll(Criteria.getAllTimedTasks(tasks));
+					resultSet.retainAll(Criteria.getAllTimedTasks(tasks));
 				} else if (c.equalsIgnoreCase("deadline")) {
-					resultSet.addAll(Criteria.getAllDeadlineTasks(tasks));
+					resultSet.retainAll(Criteria.getAllDeadlineTasks(tasks));
 				} else if (c.equalsIgnoreCase("overdue")) {
-					resultSet.addAll(Criteria.getAllOverdueTaskIDs(tasks));
+					resultSet.retainAll(Criteria.getAllOverdueTaskIDs(tasks));
 				} else if (c.equalsIgnoreCase("done")) {
+					resultSet.clear();
 					resultSet.addAll(Criteria.getAllDoneTasks(tasks));
 				} else if (c.startsWith("#")) {
-					resultSet.addAll(Criteria.getAllUndeletedTasksWithHashTag(
-							tasks, command.rawText));
+					resultSet.retainAll(Criteria.getAllUndeletedTasksWithHashTag(tasks, c));
 				} else {
 					TaskParser parser = new TaskParser();
 					parser.parseTask(FILLER + c);
 					DateTime timestamp = parser.getEndDateTime();
-					resultSet
-							.addAll(Criteria.getAllUndeletedTasksWithTimestamp(
-									tasks, timestamp));
+					resultSet.retainAll(Criteria.getAllUndeletedTasksWithTimestamp(tasks, timestamp));
 				}
+				System.out.println(resultSet);
 			}
+			System.out.println("Result :" + resultSet);
 			for (Integer i : resultSet) {
 				result.add(i);
 			}
@@ -368,10 +373,15 @@ public class CommandFactory {
 			result = Criteria.getAllUndeletedTasks(tasks);
 		}
 
+		System.out.println("Result add tawt mal :" + result);
 		this.tasksMap.clear();
 		for (int i = 0; i < result.size(); i++) {
 			this.tasksMap.put(i, result.get(i));
 		}
+	}
+	
+	private void doSearch(Command command) {
+		
 	}
 
 	private void doEdit(Command command) {

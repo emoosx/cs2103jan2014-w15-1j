@@ -97,6 +97,8 @@ public class Command {
 			return COMMAND_TYPE.DONEALL;
 		} else if (command.equalsIgnoreCase(COMMAND_TYPE.DELETE.getCommandName())) {
 			return COMMAND_TYPE.DELETE;
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.SEARCH.getCommandName())) {
+			return COMMAND_TYPE.SEARCH;
 		} else if (command.equalsIgnoreCase(COMMAND_TYPE.HELP.getCommandName())) {
 			return COMMAND_TYPE.HELP;
 		}

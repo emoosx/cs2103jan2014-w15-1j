@@ -156,11 +156,41 @@ public class Criteria {
 	public static ArrayList<Integer> getAllTasksforThisWeek(List <Task> tasks) {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		DateTime today = new DateTime();
-		DateTime nextWeek = today.plusDays(1);
+		DateTime nextWeek = today.plusWeeks(1);
+		Interval interval = new Interval(today, nextWeek);
 		for(Task t: tasks) {
-			if(t.getMarkAsDelete() == false && t.getTaskEndTime() != null && t.getTaskDone() == false &&
-			   t.getTaskEndTime().withTimeAtStartOfDay().isEqual(nextWeek.withTimeAtStartOfDay())) {
-				result.add(tasks.indexOf(t));
+			if(t.getMarkAsDelete() == false && t.getTaskDone() == false) {
+				// deadline tasks - check with end timestamp
+				if(t.getTaskStartTime() == null && t.getTaskEndTime() != null) {
+					if(interval.contains(t.getTaskEndTime())) {
+						result.add(tasks.indexOf(t));
+					}
+				// timed tasks - check with start timestamp
+				} else if(t.getTaskStartTime() != null && t.getTaskEndTime() != null) {
+					if(interval.contains(t.getTaskStartTime()))
+						result.add(tasks.indexOf(t));
+				}
+			}
+		}
+		return result;
+	}
+	
+	public static ArrayList<Integer> getAllTasksforNextWeek(List <Task> tasks) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		DateTime today = new DateTime();
+		Interval interval = new Interval(today.plusWeeks(1), today.plusWeeks(2));
+		for(Task t: tasks) {
+			if(t.getMarkAsDelete() == false && t.getTaskDone() == false) {
+				// deadline tasks - check with end timestamp
+				if(t.getTaskStartTime() == null && t.getTaskEndTime() != null) {
+					if(interval.contains(t.getTaskEndTime())) {
+						result.add(tasks.indexOf(t));
+					}
+				// timed tasks - check with start timestamp
+				} else if(t.getTaskStartTime() != null && t.getTaskEndTime() != null) {
+					if(interval.contains(t.getTaskStartTime()))
+						result.add(tasks.indexOf(t));
+				}
 			}
 		}
 		return result;
@@ -169,7 +199,7 @@ public class Criteria {
 	public static ArrayList<Integer> getAllUndeletedTasksWithHashTag(List<Task> tasks, String rawText) {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		for(Task t: tasks) {
-			if(t.getTaskTags().contains(rawText) && !t.getTaskDone()) {
+			if(t.getTaskTags().contains(rawText) && t.getTaskDone() == false && t.getMarkAsDelete() == false) {
 				result.add(tasks.indexOf(t));
 			}
 		}
@@ -179,14 +209,19 @@ public class Criteria {
 	public static ArrayList<Integer> getAllUndeletedTasksWithTimestamp(List<Task> tasks, DateTime inputDate) {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		for(Task t: tasks) {
-			if(t.getTaskStartTime() == null && t.getTaskEndTime() != null && t.getMarkAsDelete() == false) {
+			// deadline tasks
+			if(t.getTaskStartTime() == null && t.getTaskEndTime() != null && t.getMarkAsDelete() == false && t.getTaskDone() == false) {
 				if(t.getTaskEndTime().withTimeAtStartOfDay().isEqual(inputDate.withTimeAtStartOfDay())) {
 					result.add(tasks.indexOf(t));
 				}
 
-			} else if(t.getTaskStartTime() != null && t.getTaskEndTime() != null && t.getMarkAsDelete() == false) {
+			// timed tasks
+			} else if(t.getTaskStartTime() != null && t.getTaskEndTime() != null && t.getMarkAsDelete() == false && t.getTaskDone() == false) {
                 Interval interval = new Interval(t.getTaskStartTime(), t.getTaskEndTime());
-                if(interval.contains(inputDate)) {
+                if(t.getTaskStartTime().withTimeAtStartOfDay().isEqual(inputDate.withTimeAtStartOfDay()) ||
+                   t.getTaskEndTime().withTimeAtStartOfDay().isEqual(inputDate.withTimeAtStartOfDay()) ||
+                   interval.contains(inputDate)) 
+                {
                 	result.add(tasks.indexOf(t));
                 }
 			}

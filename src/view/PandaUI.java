@@ -131,7 +131,9 @@ public class PandaUI extends Application {
 						} else {
 							inputField.setTooltip(null);
 							commandFactory.process(command);
-							updateTasksList();
+							if(command.command != COMMAND_TYPE.SEARCH) {
+							    updateTasksList();
+							}
 							overdueLabel.textProperty().bind(
 									Bindings.format(OVERDUE_TXT,
 											Bindings.size(overduetasks)));
@@ -142,10 +144,13 @@ public class PandaUI extends Application {
 								bottomBox.getChildren().add(helpBox);
 							} else {
 								// remove help text
-								bottomBox.getChildren().remove(helpBox);
-								bottomBox.getChildren().add(taskBox);
+								if(bottomBox.getChildren().contains(helpBox)) {
+									bottomBox.getChildren().remove(helpBox);
+								}
+								if(!bottomBox.getChildren().contains(taskBox)) {
+									bottomBox.getChildren().add(taskBox);
+								}
 								if (command.command == COMMAND_TYPE.ADD) {
-									System.out.println("Add command");
 									list.scrollTo(tasks.size() - OFFSET);
 								}
 
@@ -232,8 +237,7 @@ public class PandaUI extends Application {
 				if (e.getCode() == KeyCode.ENTER) {
 					int index = list.getSelectionModel().getSelectedIndex() + OFFSET;
 					Task t = list.getSelectionModel().getSelectedItem();
-					inputField.setText("edit " + index + " "
-							+ t.getRawText());
+					inputField.setText("edit " + index + " " + t.getRawText());
 					inputField.requestFocus();
 				} else if (e.getCode() == KeyCode.ESCAPE) {
 					inputField.requestFocus();
