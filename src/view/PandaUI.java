@@ -1,5 +1,6 @@
 package view;
 
+
 import java.awt.AWTException;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -35,10 +36,16 @@ import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 
 import javax.imageio.ImageIO;
+import javax.swing.KeyStroke;
 
 import logic.Command;
 import logic.Command.COMMAND_TYPE;
 import logic.CommandFactory;
+
+import com.tulskiy.keymaster.common.HotKey;
+import com.tulskiy.keymaster.common.HotKeyListener;
+import com.tulskiy.keymaster.common.Provider;
+
 import core.Task;
 
 public class PandaUI extends Application {
@@ -48,6 +55,7 @@ public class PandaUI extends Application {
 	public static final String APP_ICON = "panda.png";
 	public static final int APP_WIDTH = 500;
 	public static final int APP_HEIGHT = 700;
+	public static final String APP_SHORTCUT = "ctrl SPACE";
 	private static final String CSS_PATH = "css/style.css";
 	
 	// system tray
@@ -119,11 +127,13 @@ public class PandaUI extends Application {
 		border.setCenter(addBottomComponents());
 
 		createTrayIcon(primaryStage);
+		setupGlobalHotKey(primaryStage);
 		Platform.setImplicitExit(false);
 		primaryStage.setScene(setUpScene(border));
 		primaryStage.getIcons().add(new Image(APP_ICON));
 		primaryStage.setTitle(APP_TITLE);
 		primaryStage.show();
+		primaryStage.toFront();
 	}
 	
 	private void createTrayIcon(final Stage stage) {
@@ -143,6 +153,7 @@ public class PandaUI extends Application {
 					    @Override
 					    public void run() {
 						    stage.show();
+						    stage.toFront();
 					    }
 				    });
 			    }
@@ -167,10 +178,12 @@ public class PandaUI extends Application {
 		
 		    java.awt.Image trayImage = null;
 		    try {
-		        trayImage = ImageIO.read(this.getClass().getResourceAsStream("../" + APP_ICON));
+		        trayImage = ImageIO.read(this.getClass().getClassLoader().getResourceAsStream(APP_ICON));
 		    } catch(IOException e) {
 		    	System.err.println(TRAY_ICON_ERROR);
 		    }
+		    
+		    // setup tray icon
 		    trayIcon = new TrayIcon(trayImage, APP_TITLE , menu);
 		    trayIcon.addActionListener(showListener);
 		    try {
@@ -179,6 +192,24 @@ public class PandaUI extends Application {
 		    	System.err.println(TRAY_ADD_ERROR);
 		    }
 		}
+	}
+	
+	private void setupGlobalHotKey(final Stage stage) {
+		HotKeyListener hotkeylistener = new HotKeyListener() {
+	    	@Override
+	    	public void onHotKey(HotKey hotkey) {
+	    		Platform.runLater(new Runnable() {
+	    			@Override
+	    			public void run() {
+	    				stage.show();
+	    				stage.toFront();
+	    			}
+	    		});
+	    	}
+	    };
+	    Provider provider = Provider.getCurrentProvider(true);
+	    provider.reset();
+	    provider.register(KeyStroke.getKeyStroke(APP_SHORTCUT), hotkeylistener);
 	}
 	
 	private void hide(final Stage stage) {
@@ -196,7 +227,7 @@ public class PandaUI extends Application {
 	
 	private Scene setUpScene(BorderPane border) {
 		Scene scene = new Scene(border, APP_WIDTH, APP_HEIGHT);
-		scene.getStylesheets().add(CSS_PATH);
+		scene.getStylesheets().add(this.getClass().getClassLoader().getResource(CSS_PATH).toExternalForm());
 
 		// for resizing of app
 		scene.widthProperty().addListener(new ChangeListener() {
