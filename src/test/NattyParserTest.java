@@ -8,7 +8,8 @@ import org.junit.Test;
 
 //@author A0101810A
 /*
- * NattyParserTest is a unit test to ensure that the strings extracted from RegExp.java are parsed correctly in NattyTime
+ * NattyParserTest is a unit test to ensure that the strings extracted from RegExp.java 
+ * are parsed correctly by NattyTime which is used in TaskParser.java
  * Written by A0101810A - Tan Zheng Jie (Matthew)
  */
 
@@ -18,17 +19,17 @@ public class NattyParserTest {
 	public void testDateFromDateString() {
 		int[] date = new int[3];
 		// Partitioned test cases: DD mmm format
-		date = TaskParser.dateFromDateString("on 12 march 2014");
+		date = TaskParser.dateFromDateString("12 march 2014");
 		assertEquals(12,date[0]);
 		assertEquals(3,date[1]);
 		assertEquals(2014,date[2]);
 		
-		date = TaskParser.dateFromDateString("on 12 MAR 2014");
+		date = TaskParser.dateFromDateString("12 MAR 2014");
 		assertEquals(12,date[0]);
 		assertEquals(3,date[1]);
 		assertEquals(2014,date[2]);
 		
-		date = TaskParser.dateFromDateString("on 31 JaN 2014");
+		date = TaskParser.dateFromDateString("31 JaN 2014");
 		assertEquals(31,date[0]);
 		assertEquals(1,date[1]);
 		assertEquals(2014,date[2]);
