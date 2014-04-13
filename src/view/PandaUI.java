@@ -1,7 +1,6 @@
 package view;
 
 import java.io.File;
-import java.io.IOException;
 
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
@@ -16,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -34,6 +34,8 @@ import core.Task;
 public class PandaUI extends Application {
 
 	// app
+	public static final String APP_TITLE = "TaskPanda";
+	public static final String APP_ICON = "panda.png";
 	public static final int APP_WIDTH = 500;
 	public static final int APP_HEIGHT = 700;
 	private static final String CSS_PATH = "css/style.css";
@@ -120,6 +122,8 @@ public class PandaUI extends Application {
 		});
 
 		primaryStage.setScene(scene);
+		primaryStage.getIcons().add(new Image(APP_ICON));
+		primaryStage.setTitle(APP_TITLE);
 		primaryStage.show();
 	}
 
