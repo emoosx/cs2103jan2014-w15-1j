@@ -9,7 +9,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -46,7 +45,8 @@ public class PandaUI extends Application {
 	private static final int IF_COLUMN_COUNT = 50;
 	private static final String IF_ID = "inputField";
 
-	private static final int PADDING = 20;
+	private static final String SPACE = " ";
+	private static final String SPLIT = "\\s+";
 
 	private static final int OFFSET = 1;
 	private static final int COMMAND_INDEX = 0;
@@ -65,6 +65,9 @@ public class PandaUI extends Application {
 	private static final String HELP_TEXT_ID = "help-text";
 
 	private static final String INVALID_COMMAND = "Invalid Command! Type \"Help\" for Manual";
+	
+	// help manual
+	private static final String HELP_TITLE = "\nTaskPanda Help Manual";
 
 	CommandFactory commandFactory = CommandFactory.INSTANCE;
 	ObservableList<Task> tasks = commandFactory.getDisplayTasks();
@@ -72,7 +75,6 @@ public class PandaUI extends Application {
 
 	ListView<Task> list = new ListView<Task>();
 	Label overdueLabel = new Label();
-	// Label errorLabel = new Label(INVALID_COMMAND);
 	Text overdueText = new Text();
 	Tooltip tooltip = new Tooltip(INVALID_COMMAND);
 
@@ -96,8 +98,24 @@ public class PandaUI extends Application {
 		Scene scene = new Scene(border, APP_WIDTH, APP_HEIGHT);
 		File file = new File(CSS_PATH);
 		scene.getStylesheets().add("file:///" + file.getAbsolutePath());
+
+		// for resizing of app
+		scene.widthProperty().addListener(new ChangeListener() {
+			public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+				Double width = (Double) newValue;
+				inputField.setPrefWidth(width);
+				overdueLabel.setPrefWidth(width);
+				list.setPrefWidth(width);
+			}
+		});
+		scene.heightProperty().addListener(new ChangeListener() {
+			public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+				Double height = (Double) newValue;
+				list.setPrefHeight((height - (IF_HEIGHT + OVERDUE_HEIGHT)));
+			}
+		});
+
 		primaryStage.setScene(scene);
-		primaryStage.setResizable(false);
 		primaryStage.show();
 	}
 
@@ -175,27 +193,30 @@ public class PandaUI extends Application {
 
 	private VBox addHelpText() {
 		helpBox = new VBox();
-		Label title = new Label("\nTaskPanda Help Manual");
+		Label title = new Label(HELP_TITLE);
 		Label helpText = new Label(
 
-		"add <description> \n" + "add <description> <timestamp> \n"
-				+ "add <description> from <timestamp> to <timestamp> \n\n" +
+		"add <description> \n" + 
+		"add <description> <timestamp> \n" + 
+		"add <description> from <timestamp> to <timestamp> \n\n" +
 
-				"list \n" + "list floating \n" + "list timed \n"
-				+ "list deadline \n\n" +
+		"list \n" + 
+		"list floating \n" + 
+		"list timed \n" + 
+		"list deadline \n\n" +
+		"list today \n" + 
+		"list tomorrow \n" + 
+		"list this week \n" + 
+		"list <date> \n\n" +
 
-				"list today \n" + "list tomorrow \n" + "list this week \n"
-				+ "list <date> \n\n" +
+		"edit <id> <description> <timestamp> \n\n" +
 
-				"edit <id> <description> <timestamp> \n\n" +
+		"done <id> \n" + "undone <id> \n\n" +
 
-				"done <id> \n" + "undone <id> \n\n" +
+		"undo \n\n" + "redo \n\n" +
 
-				"undo \n\n" + "redo \n\n" +
+		"search <keyword> \n");
 
-				"clear \n\n" +
-
-				"search <keyword> \n");
 		title.setId(HELP_TITLE_ID);
 		helpText.setId(HELP_TEXT_ID);
 		helpBox.getChildren().addAll(title, helpText);
@@ -209,8 +230,7 @@ public class PandaUI extends Application {
 		overdueLabel.setAlignment(Pos.CENTER);
 		overdueLabel.setPrefWidth(APP_WIDTH);
 		overdueLabel.setPrefHeight(OVERDUE_HEIGHT);
-		overdueLabel.textProperty().bind(
-				Bindings.format(OVERDUE_TXT, Bindings.size(overduetasks)));
+		overdueLabel.textProperty().bind(Bindings.format(OVERDUE_TXT, Bindings.size(overduetasks)));
 		overBox.getChildren().addAll(overdueLabel);
 		return overBox;
 	}
@@ -262,14 +282,12 @@ public class PandaUI extends Application {
 			updateTasksList();
 		}
 
-		String[] pieces = newValue.split("\\s+");
-		if ((!pieces[COMMAND_INDEX]
-				.equalsIgnoreCase(COMMAND_TYPE.SEARCH.name()))
-				|| pieces.length <= 1) {
+		String[] pieces = newValue.split(SPLIT);
+		if ((!pieces[COMMAND_INDEX].equalsIgnoreCase(COMMAND_TYPE.SEARCH.name())) || pieces.length <= 1) {
 			updateTasksList();
 		} else {
 			newValue = pieces[1];
-			String[] parts = newValue.toLowerCase().split(" ");
+			String[] parts = newValue.toLowerCase().split(SPACE);
 			// create a temporary subentries list matching list and replace it
 			ObservableList<Task> subentries = FXCollections
 					.observableArrayList();

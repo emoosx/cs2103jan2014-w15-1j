@@ -87,6 +87,7 @@ public class TaskCell extends ListCell<Task> {
 
 	private void configureHashtag() {
 		hashtag.setId(HASHTAG_ID);
+		hashtag.setPrefWidth(HASHTAG_WIDTH);
 		hashtag.setMaxWidth(HASHTAG_WIDTH);
 	}
 
