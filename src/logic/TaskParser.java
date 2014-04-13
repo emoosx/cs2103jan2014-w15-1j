@@ -32,6 +32,17 @@ public class TaskParser {
 	private static final int NUM_MONTH_INDEX = 1;
 	private static final int NUM_DAY_INDEX = 0;
 	private static final int NUM_CALENDAR_MONTH_OFFSET = 1;
+	private static final int NUM_TIME_MIDNIGHT = 0;
+	private static final int NUM_FLOATING_DATE_SIZE = 0;
+	private static final int NUM_FLOATING_TIME_SIZE = 0;
+	private static final int NUM_TIMED_DATE_SIZE = 2;
+	private static final int NUM_TIMED_TIME_SIZE = 2;
+	
+	private static final int ARRAY_FIRST_INDEX = 0;
+	private static final int ARRAY_SECOND_INDEX = 1;
+	private static final int ARRAY_SIZE_0 = 0;
+	private static final int ARRAY_SIZE_1 = 1;
+	private static final int ARRAY_SIZE_2 = 2;
 
 	// Task object variables
 	private DateTime startDateTime;
@@ -53,6 +64,11 @@ public class TaskParser {
 	private Integer endMonth;
 	private Integer endDay;
 
+	// Task booleans
+	private Boolean isFloatingTask;
+	private Boolean isDeadlineTask;
+	private Boolean isTimedTask;
+	
 	/*
 	 *  Constructor method for TaskParser
 	 */
@@ -68,6 +84,9 @@ public class TaskParser {
 		endYear = null;
 		endMonth = null;
 		endDay = null;
+		isFloatingTask = false;
+		isDeadlineTask = false;
+		isTimedTask = false;
 	}
 
 	/*
@@ -100,6 +119,7 @@ public class TaskParser {
 		try {
 			initializeTime(timeArray);
 			initializeDate(dateArray);
+			initializeTaskType(timeArray.size(), dateArray.size());
 			finalizeDateTime();
 		} catch (NullPointerException e) {
 			e.printStackTrace();
@@ -112,15 +132,15 @@ public class TaskParser {
 	private void initializeTime(ArrayList<String> timeArray) {
 		PandaLogger.getLogger().info("TaskParser - Initializing time variables");
 		// Case 1: User input contains one time string
-		if(timeArray.size() == 1) {
-			int[] endTimeArray = timeFromTimeString(timeArray.get(0));
+		if(timeArray.size() == ARRAY_SIZE_1) {
+			int[] endTimeArray = timeFromTimeString(timeArray.get(ARRAY_FIRST_INDEX));
 			initializeEndTime(endTimeArray);
 		}
 		// Case 2: User input contains two time strings
-		else if(timeArray.size() == 2) {
-			int[] startTimeArray = timeFromTimeString(timeArray.get(0));
+		else if(timeArray.size() == ARRAY_SIZE_2) {
+			int[] startTimeArray = timeFromTimeString(timeArray.get(ARRAY_FIRST_INDEX));
 			initializeStartTime(startTimeArray);
-			int[] endTimeArray = timeFromTimeString(timeArray.get(1));
+			int[] endTimeArray = timeFromTimeString(timeArray.get(ARRAY_SECOND_INDEX));
 			initializeEndTime(endTimeArray);
 		}
 	}
@@ -144,14 +164,14 @@ public class TaskParser {
 		if (dateArray.isEmpty()) {
 			return;
 		// Case 1: user input having start date and end date
-		} else if (dateArray.size() == 2) {
-			int[] startDateArray = dateFromDateString(dateArray.get(0));
+		} else if (dateArray.size() == ARRAY_SIZE_2) {
+			int[] startDateArray = dateFromDateString(dateArray.get(ARRAY_FIRST_INDEX));
 			initializeStartDate(startDateArray);
-			int[] endDateArray = dateFromDateString(dateArray.get(1));
+			int[] endDateArray = dateFromDateString(dateArray.get(ARRAY_SECOND_INDEX));
 			initializeEndDate(endDateArray);
 		// Case 2: user input having only end deadline
 		} else {
-			int[] endDateArray = dateFromDateString(dateArray.get(0));
+			int[] endDateArray = dateFromDateString(dateArray.get(ARRAY_FIRST_INDEX));
 			initializeEndDate(endDateArray);
 		}
 	}
@@ -168,6 +188,20 @@ public class TaskParser {
 		endDay = endDateArray[NUM_DAY_INDEX];
 	}
 
+	/*
+	 * Method will deduce what kind of task was specified by user
+	 * The boolean variables will be used to set default date/time settings later on
+	 */
+	private void initializeTaskType(int timeSize, int dateSize) {
+		if(timeSize == NUM_FLOATING_TIME_SIZE && dateSize == NUM_FLOATING_DATE_SIZE) {
+			isFloatingTask = true;
+		} else if(timeSize == NUM_TIMED_TIME_SIZE || dateSize == NUM_TIMED_DATE_SIZE) {
+			isTimedTask = true;
+		} else {
+			isDeadlineTask = true;
+		}
+	}
+	
 	/* 
 	 * Method will finalize all DateTime objects accordingly
 	 * Main function of this method is to set unspecified date or time to default settings
@@ -175,42 +209,40 @@ public class TaskParser {
 	 * Default time: 00:00, Default date: today
 	 */
 	private void finalizeDateTime() {
-		// Case 1: Finalized floating task
-		if(isFloatingTask()) {
-			System.out.println("FINALIZING FLOATING");
+		if(isFloatingTask) {
 			finalizeFloatingTask();
-		// Case 2: Finalized as deadline task as long as 1 date or 1 time input is specified
-		} else if(isDeadlineTask()) {
-			System.out.println("FINALIZING DEADLINE");
-			finalizeDeadlineTask();
-		// Case 3: Finalized timed task	
-		} else {
-			System.out.println("FINALIZING TIMED");
+		} else if(isTimedTask) {
 			finalizeTimedTask();
+		} else if(isDeadlineTask) {
+			finalizeDeadlineTask();
+		} else {
+			assert(false);
 		}
-		System.out.println("Start date: " + startHour + ":" + startMin + " " + startDay + "/" + startMonth + "/" + startYear);
-		System.out.println("End date: " + endHour + ":" + endMin + " " + endDay + "/" + endMonth + "/" + endYear);
 	}
 
-	// Method will finalize the 2 DateTime objects to null
+	/* 
+	 * Method creates 2 dateTime objects which are null based on logical interpretations earlier
+	 */
 	private void finalizeFloatingTask() {
 		startDateTime = null;
 		endDateTime = null;
 	}
 
-	// Method will finalize date and time if variables fits that of a timed task
+	/*
+	 *  Method will finalize date and time if variables fits that of a timed task
+	 */
 	private void finalizeTimedTask() {
-			// if one date is given, task will be assumed to start and end on
-			// the only date given
-			if (endYear != null && startYear == null) {
-				startYear = endYear;
-				startMonth = endMonth;
-				startDay = endDay;
-			}
-			// Initialize date to local date as two time inputs are read and no
-			// date inputs are read
-			if (endYear == null && startYear == null) {
-				initializeDateToToday();
+			if(startYear == null) {
+				// Initialize both dates to today if no dates are specified
+				if(endYear == null) {
+					initializeDateToToday();
+				}
+				// Initialize both dates to the same day if only 1 date is specified
+				else {
+					startYear = endYear;
+					startMonth = endMonth;
+					startDay = endDay;
+				}
 			}
 			if(startHour == null) {
 				initializeStartTimeToMidnight();
@@ -218,13 +250,13 @@ public class TaskParser {
 			if(endHour == null) {
 				initializeEndTimeToMidnight();
 			}
-			startDateTime = new DateTime(startYear, startMonth, startDay,
-					startHour, startMin);
-			endDateTime = new DateTime(endYear, endMonth, endDay, endHour,
-					endMin);
+			startDateTime = new DateTime(startYear, startMonth, startDay, startHour, startMin);
+			endDateTime = new DateTime(endYear, endMonth, endDay, endHour, endMin);
 	}
 
-	// Method will finalize date and time if variables fits that of a deadline task
+	/*
+	 *  Method will finalize date and time if variables fits that of a deadline task
+	 */
 	private void finalizeDeadlineTask() {
 		if (endYear == null) {
 			// Initialize date to local date if only time is stated by user
@@ -240,74 +272,23 @@ public class TaskParser {
 
 	private void initializeDateToToday() {
 		startYear = endYear = Calendar.getInstance().get(Calendar.YEAR);
-		startMonth = endMonth = Calendar.getInstance().get(Calendar.MONTH)
-				+ NUM_CALENDAR_MONTH_OFFSET;
+		startMonth = endMonth = Calendar.getInstance().get(Calendar.MONTH) + NUM_CALENDAR_MONTH_OFFSET;
 		startDay = endDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 	}
 	
 	private void initializeTimeToMidnight() {
-		startHour = endHour = 0;
-		startMin = endMin = 0; 
+		initializeStartTimeToMidnight();
+		initializeEndTimeToMidnight();
 	}
 	
 	private void initializeStartTimeToMidnight() {
-		startHour = 0;
-		startMin = 0; 
+		startHour = NUM_TIME_MIDNIGHT;
+		startMin = NUM_TIME_MIDNIGHT; 
 	}
 	
 	private void initializeEndTimeToMidnight() {
-		endHour = 0;
-		endMin = 0; 
-	}
-	
-	/*
-	 *  Checks if user input matches that of a floating task
-	 *  @returns true if all date and time variables are null
-	 */
-	private Boolean isFloatingTask() {
-		if(startHour == null && 
-			endHour == null && 
-			  startYear == null && 
-			    endYear == null) {
-			return true;
-		}
-		return false;
-	}
-	
-	/*
-	 * Checks if user input matches that of a deadline task
-	 * @returns true if only one time or date input is specified
-	 */
-	private Boolean isDeadlineTask() {
-		// Only one time input specified by user
-		if(startHour == null && endHour != null) {
-			// If there are 2 dates, return false as user indicated timed task
-			if(endYear!= null && startYear != null) {
-				return false;
-			}
-		}
-		// Only one date input specified by user
-		if(startYear == null && endYear != null) {
-			// If there are 2 times, return false as user indicated timed task
-			if(startHour!= null && endHour!=null) {
-				return false;
-			}
-		}
-		if(startYear != null && endYear != null) {
-			return false;
-		}
-		if(startHour != null && endHour != null) {
-			return false;
-		}
-		return true;
-		
-		/*
-		if((startHour == null && endHour != null)	// only one time input is specified
-				|| (startYear == null && endYear !=null && startHour == null)) { // only one date input is specified
-			return true;
-		}
-		return false;
-		*/
+		endHour = NUM_TIME_MIDNIGHT;
+		endMin = NUM_TIME_MIDNIGHT; 
 	}
 	
 	/*
@@ -320,6 +301,7 @@ public class TaskParser {
     	
     	// Overcoming NattyTime limitation (Natty parses dates as MM/DD/YYYY) 
 		dateString = RegExp.changeDateFormat(dateString);
+		
 		// Calling NattyTime parser
 		Parser parser = new Parser();
 		List<DateGroup> groups = parser.parse(dateString);
@@ -339,6 +321,7 @@ public class TaskParser {
      */
     public static int[] timeFromTimeString(String timeString) {
     	int[] time = new int[TOTAL_TIME_FIELDS];
+    	
     	// Calling NattyTime parser
 		Parser parser = new Parser();
 		List<DateGroup> groups = parser.parse(timeString);
