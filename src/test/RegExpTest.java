@@ -182,6 +182,7 @@ public class RegExpTest {
 		assertEquals("3/2/2014", RegExp.changeDateFormat("2/3/2014"));
 	}
 	
+	/*
 	@Test
 	public void testMonthIndex() {
 		assertEquals(1, RegExp.getMonthIndex("jan"));
@@ -190,4 +191,5 @@ public class RegExpTest {
 		assertEquals(1, RegExp.getMonthIndex("JANUARY"));
 		assertEquals(3, RegExp.getMonthIndex("march"));
 	}
+	*/
 }
