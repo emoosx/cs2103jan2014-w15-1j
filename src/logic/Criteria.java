@@ -13,19 +13,6 @@ import core.Task;
  */
 public class Criteria {
 	
-	/* get all tasks that are not marked as deleted */
-	
-//	public static ArrayList<Task> getAllUndeletedTasks(List<Task> tasks) {
-//		Predicate<Task> undeletedTaskPredicate = new Predicate<Task>() {
-//			public boolean apply(Task t) {
-//				return t.getMarkAsDelete() == false;
-//			}
-//		};
-//		Collection<Task> collection = Collections2.filter(tasks, undeletedTaskPredicate);
-//		ArrayList<Task> result = new ArrayList<Task>(collection);
-//		return result;
-//	}
-	
 	public static ArrayList<Task> getAllOverdueTasks(List<Task> tasks) {
 		ArrayList<Task> result = new ArrayList<Task>();
 		for(Task t: tasks) {

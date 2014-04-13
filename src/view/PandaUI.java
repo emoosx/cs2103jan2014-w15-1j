@@ -37,7 +37,7 @@ public class PandaUI extends Application {
 	// app
 	public static final int APP_WIDTH = 500;
 	public static final int APP_HEIGHT = 700;
-	private static final String CSS_PATH = "resources/css/style.css";
+	private static final String CSS_PATH = "css/style.css";
 
 	// input field
 	private static final String IF_PLACEHOLDER = "Get Busy!";
@@ -98,16 +98,10 @@ public class PandaUI extends Application {
 
 		Scene scene = new Scene(border, APP_WIDTH, APP_HEIGHT);
 		File cssFile = new File(CSS_PATH);
-		String path;
-		try {
-		path = cssFile.getCanonicalPath();
-		} catch(IOException e) {
-			path = cssFile.getAbsolutePath();
-		}
-		scene.getStylesheets().add("file:///" + path);
-
-//		System.out.println(this.getClass().getResource("/" + CSS_PATH).toExternalForm());
-//		scene.getStylesheets().add(CSS_PATH);
+		scene.getStylesheets().add(CSS_PATH);
+		System.out.println(this.getClass().getResource("").getPath());
+//		scene.getStylesheets().add((this.getClass().getResource(CSS_PATH).toExternalForm()));
+//		scene.getStylesheets().add(this.getClass().getResource("");
 
 		// for resizing of app
 		scene.widthProperty().addListener(new ChangeListener() {
@@ -197,7 +191,10 @@ public class PandaUI extends Application {
 
 	private VBox addBottomComponents() {
 		bottomBox = new VBox();
-		bottomBox.getChildren().addAll(overBox, taskBox);
+		bottomBox.getChildren().addAll(overBox);
+		if(list.getItems().size() > 0) {
+			bottomBox.getChildren().add(taskBox);
+		}
 		return bottomBox;
 	}
 
