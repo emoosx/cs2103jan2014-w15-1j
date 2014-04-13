@@ -1,8 +1,16 @@
 package view;
 
-import java.io.File;
+import java.awt.AWTException;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -17,15 +25,17 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
+
+import javax.imageio.ImageIO;
+
 import logic.Command;
 import logic.Command.COMMAND_TYPE;
 import logic.CommandFactory;
@@ -39,6 +49,12 @@ public class PandaUI extends Application {
 	public static final int APP_WIDTH = 500;
 	public static final int APP_HEIGHT = 700;
 	private static final String CSS_PATH = "css/style.css";
+	
+	// system tray
+	private static final String TRAY_SHOW = "Show";
+	private static final String TRAY_CLOSE =  "Close";
+	private static final String TRAY_ICON_ERROR =  "Error locating tray icon";
+	private static final String TRAY_ADD_ERROR =  "Error adding TaskPanda tray icon to System Icon Tray";
 
 	// input field
 	private static final String IF_PLACEHOLDER = "Get Busy!";
@@ -53,8 +69,6 @@ public class PandaUI extends Application {
 	private static final int OFFSET = 1;
 	private static final int COMMAND_INDEX = 0;
 	private static final int THE_REST_INDEX = 1;
-	private static final int SCROLL = 6;
-	private static final int TOP = 1;
 
 	// listview
 	private static final String LIST_ID = "tasklist";
@@ -91,6 +105,8 @@ public class PandaUI extends Application {
 	VBox overBox = addOverStatus();
 	VBox taskBox = addTaskList();
 	VBox helpBox = addHelpText();
+	
+	private TrayIcon trayIcon;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -102,10 +118,80 @@ public class PandaUI extends Application {
 		border.setTop(addInputField());
 		border.setCenter(addBottomComponents());
 
+		createTrayIcon(primaryStage);
+		Platform.setImplicitExit(false);
 		primaryStage.setScene(setUpScene(border));
 		primaryStage.getIcons().add(new Image(APP_ICON));
 		primaryStage.setTitle(APP_TITLE);
 		primaryStage.show();
+	}
+	
+	private void createTrayIcon(final Stage stage) {
+		if(SystemTray.isSupported()) {
+			SystemTray tray = SystemTray.getSystemTray();
+			stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+				@Override
+				public void handle(WindowEvent e) {
+					hide(stage);
+				}
+			});
+		
+            ActionListener showListener = new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+				    Platform.runLater(new Runnable() {
+					    @Override
+					    public void run() {
+						    stage.show();
+					    }
+				    });
+			    }
+		    };
+		    
+		    ActionListener exitListener = new ActionListener() {
+		    	@Override
+		    	public void actionPerformed(ActionEvent e) {
+		    		System.exit(0);
+		    	}
+		    };
+		
+		    // Popup menu
+		    PopupMenu menu = new PopupMenu();
+		    MenuItem showItem = new MenuItem(TRAY_SHOW);
+		    showItem.addActionListener(showListener);
+		    menu.add(showItem);
+		    
+		    MenuItem exitItem = new MenuItem(TRAY_CLOSE);
+		    exitItem.addActionListener(exitListener);
+		    menu.add(exitItem);
+		
+		    java.awt.Image trayImage = null;
+		    try {
+		        trayImage = ImageIO.read(this.getClass().getResourceAsStream("../" + APP_ICON));
+		    } catch(IOException e) {
+		    	System.err.println(TRAY_ICON_ERROR);
+		    }
+		    trayIcon = new TrayIcon(trayImage, APP_TITLE , menu);
+		    trayIcon.addActionListener(showListener);
+		    try {
+			    tray.add(trayIcon);
+		    } catch(AWTException e) {
+		    	System.err.println(TRAY_ADD_ERROR);
+		    }
+		}
+	}
+	
+	private void hide(final Stage stage) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				if(SystemTray.isSupported()) {
+					stage.hide();
+				} else {
+					System.exit(0);
+				}
+			}
+		});
 	}
 	
 	private Scene setUpScene(BorderPane border) {
