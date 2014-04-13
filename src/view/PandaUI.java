@@ -149,14 +149,8 @@ public class PandaUI extends Application {
             ActionListener showListener = new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-				    Platform.runLater(new Runnable() {
-					    @Override
-					    public void run() {
-						    stage.show();
-						    stage.toFront();
-					    }
-				    });
-			    }
+                	show(stage);
+                }
 		    };
 		    
 		    ActionListener exitListener = new ActionListener() {
@@ -198,13 +192,7 @@ public class PandaUI extends Application {
 		HotKeyListener hotkeylistener = new HotKeyListener() {
 	    	@Override
 	    	public void onHotKey(HotKey hotkey) {
-	    		Platform.runLater(new Runnable() {
-	    			@Override
-	    			public void run() {
-	    				stage.show();
-	    				stage.toFront();
-	    			}
-	    		});
+	    		show(stage);
 	    	}
 	    };
 	    Provider provider = Provider.getCurrentProvider(true);
@@ -221,6 +209,17 @@ public class PandaUI extends Application {
 				} else {
 					System.exit(0);
 				}
+			}
+		});
+	}
+	
+	private void show(final Stage stage) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				stage.show();
+				stage.toFront();
+				stage.requestFocus();
 			}
 		});
 	}
