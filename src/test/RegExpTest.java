@@ -6,9 +6,6 @@ import java.util.ArrayList;
 
 import logic.RegExp;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.LocalDate;
 import org.junit.Test;
 
 //@author A0101810A
@@ -43,6 +40,7 @@ public class RegExpTest {
 		assertEquals("23:59", RegExp.parseTime("add haha by 23:59").get(0));
 		assertEquals("01:59", RegExp.parseTime("add haha by 01:59").get(0));
 		assertEquals("2359", RegExp.parseTime("add haha by 2359").get(0));
+		assertEquals("5pm", RegExp.parseTime("add something by 5pm tomorrow").get(0));
 		
 		// Boundary case for invalid input
 		ArrayList<String> list = new ArrayList<String>();
@@ -128,7 +126,10 @@ public class RegExpTest {
 		assertEquals("14 march 2014", RegExp.parseDate("add haha on 14 march 2014").get(0));
 		assertEquals("14 mar 2014", RegExp.parseDate("add haha on 14 mar 2014").get(0));
 		assertEquals("14 march", RegExp.parseDate("add haha on 14 march").get(0));
-		
+	
+		// Partitioned format: relative dates
+		assertEquals(" tomorrow", RegExp.parseDate("add something by 5pm tomorrow").get(0));
+		assertEquals("the day after tomorrow", RegExp.parseDate("add something by 5pm on the day after tomorrow").get(0));
 	}
 	
 	@Test
@@ -136,8 +137,17 @@ public class RegExpTest {
 		assertEquals("14 mar", RegExp.parseDate("add camp from 14 mar 5pm to 16 mar 6pm").get(0));
 		assertEquals("16 mar", RegExp.parseDate("add camp from 14 mar 5pm to 16 mar 6pm").get(1));
 		
+		assertEquals("14 mar 2014", RegExp.parseDate("add camp from 14 mar 2014 5pm to 16 mar 2014 6pm").get(0));
+		assertEquals("16 mar 2014", RegExp.parseDate("add camp from 14 mar 2014 5pm to 16 mar 2014 6pm").get(1));
+		
 		assertEquals("14 mar", RegExp.parseDate("add camp from 14 mar to 16 mar").get(0));
 		assertEquals("16 mar", RegExp.parseDate("add camp from 14 mar to 16 mar").get(1));
+		
+		assertEquals("14/4/2014", RegExp.parseDate("add camp from 14/4/2014 to 16/4/2014").get(0));
+		assertEquals("16/4/2014", RegExp.parseDate("add camp from 14/4/2014 to 16/4/2014").get(1));
+		
+		assertEquals("14/4/14", RegExp.parseDate("add camp from 14/4/14 to 16/4/14").get(0));
+		assertEquals("16/4/14", RegExp.parseDate("add camp from 14/4/14 to 16/4/14").get(1));
 	}
 
 	@Test
@@ -181,15 +191,4 @@ public class RegExpTest {
 		assertEquals("from 1/11/2014 to 1/12/2014", RegExp.changeDateFormat("from 11/1/2014 to 12/1/2014"));
 		assertEquals("3/2/2014", RegExp.changeDateFormat("2/3/2014"));
 	}
-	
-	/*
-	@Test
-	public void testMonthIndex() {
-		assertEquals(1, RegExp.getMonthIndex("jan"));
-		assertEquals(1, RegExp.getMonthIndex("JAN"));
-		assertEquals(1, RegExp.getMonthIndex("january"));
-		assertEquals(1, RegExp.getMonthIndex("JANUARY"));
-		assertEquals(3, RegExp.getMonthIndex("march"));
-	}
-	*/
 }
