@@ -9,7 +9,17 @@ import common.PandaLogger;
 /*
  * RegExp class contains regular expression patterns of supported time and date formats
  * It is called by TaskParser.java to extract time and date values from input strings
- * RegExp will match and extract matched date and time patterns to return to TaskParser in string forms (e.g. "next Thursday")
+ * RegExp will match and extract matched date and time patterns to return to TaskParser in string forms
+ * 
+ * List of examples: 
+ * "next Thursday"
+ * "tomorrow"
+ * "5:15pm"
+ * "2359"
+ * "17:00"
+ * "mon"
+ * "1am"
+ * 
  * Written by A0101810A - Tan Zheng Jie (Matthew)
  */
 
@@ -26,24 +36,11 @@ public class RegExp {
 	private static final int NUM_MATCHER_GROUP_1 = 1;
 	private static final int NUM_MATCHER_GROUP_2 = 2;
 	private static final int NUM_MATCHER_GROUP_4 = 4;
+	private static final int NUM_MATCHER_GROUP_8 = 8;
 	private static final int NUM_MATCHER_GROUP_15 = 15;
 	private static final int NUM_MATCHER_GROUP_36 = 36;
 
-    /*
-     *  Date Input Expressions
-     *  These patterns contains keywords and date formats (on 12 mar 2014)
-     *  These patterns are used to compare with user's raw input to extract pure date formats (eg. 12 mar 2014)
-     */
-	/*
-    private static String[] regexDateInputArray = {
-    	// Case 1: DD-MM-YY(YY) or DD/MM/YY(YY) 
-    	"\\b(?i)(on\\s((0?[1-9]|[12]\\d|3[01])[-/]((0?[13578])|1[02])[-/](\\d{4}|\\d{2})|(0?[1-9]|[12]\\d|30)[-/]((0?[1-9])|1[012])[-/](\\d{4}|\\d{2})))\\b",
-    	// Case 2: partial text based dates (e.g. 15 march 2014, 2 feb)
-    	"\\b(?i)(on\\s)(((0?[1-9]|[12]\\d|3[01])\\s(jan(uary)?|mar(ch)?|may|jul(y)?|aug(ust)?|oct(ober)?|dec(ember)?)(\\s\\d{4})?|(0?[1-9]|[12]\\d|30)\\s(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(tember)?|oct(ober)?|nov(ember)?|dec(ember)?)(\\s\\d{4})?))\\b",
-    	// Case 3: pure text based relative dates (e.g. next Monday)
-    	"\\b(?i)((((on|by)\\s)((next|this)\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?)))|((on|at|by)\\s(the day after )?tomorrow))\\b"
-    	};
-    */
+
     /*
      *  Time Input Expressions
      *  These patterns contains keywords and time formats (eg. by 2:15pm)
@@ -59,8 +56,10 @@ public class RegExp {
     	};
     
     /* 
-     * Hybrid patterns that captures date and time under one keyword such as "from, by, to", etc.
-     * These patterns are used twice, once by parseTime and once by parseDate  
+     * Hybrid patterns that captures date and time under one keyword such as "from, by, to" (eg. by 16 mar 5pm)
+     * These patterns are used twice, once by parseTime and once by parseDate
+     * As of v0.5, regexDateInputArray is merged with this array due to overlap in patterns matched. 
+     * Hence, these patterns can be used to detect date patterns followed by an optional time pattern
      */ 
     private static String[] regexHybridInputArray = {
     	// Case 1: (by/on/from/to/at) <date> <time> or (by/on/from/to/at) <date>
@@ -82,6 +81,7 @@ public class RegExp {
      */
     private static String REGEX_DATE_EXCHANGE_PATTERN = "((0?[1-9]|[12]\\d|3[01])[-/](0?[13578]|1[02])[-/](\\d{4}|\\d{2})|(0?[1-9]|[12]\\d|30)[-/](0?[1-9]|1[012])[-/](\\d{4}|\\d{2}))";
     
+    
     /*
      *  Method parses raw input into an array list of date strings
      *  It will match user input with all supported date patterns 
@@ -90,69 +90,34 @@ public class RegExp {
     public static ArrayList<String> parseDate(String userInput) {
     	ArrayList<String> dateArray = new ArrayList<String>();
 
-    	// Case 1: Input matches hybrid pattern 1 (eg. by 14/2/2014 2pm) 
+    	// Case 1: in the form of proper date format followed by an optional time input (eg. by 14/2/2014 2pm whereby the time is optional) 
     	Pattern pattern = Pattern.compile(regexHybridInputArray[INDEX_FIRST_CASE]);
     	Matcher matcher = pattern.matcher(userInput);
     	while(matcher.find()) {
-    		// As pattern contains both time and date, this condition does not add date if time is specified but date is not
     		if(matcher.group(NUM_MATCHER_GROUP_2) != null) {
     			dateArray.add(matcher.group(NUM_MATCHER_GROUP_2));
     		}
     	}
-    	if(dateArray.size() > 0) {
-    		return dateArray;
-    	}
-    	
-    	// Case 2: Input matches hybrid pattern 2 (eg. by next wed 2pm) 
+
+    	// Case 2: in the form of hybrid input with relative date followed by an optional time input (eg. by next wed 2pm) 
     	pattern = Pattern.compile(regexHybridInputArray[INDEX_SECOND_CASE]);
     	matcher = pattern.matcher(userInput);   	
     	while(matcher.find()) {
-    		// As pattern contains both time and date, this condition does not add date if time is specified but date is not
     		if(matcher.group(NUM_MATCHER_GROUP_2) != null) {
     			dateArray.add(matcher.group(NUM_MATCHER_GROUP_2));
     		}
     	}
-    	if(dateArray.size() > 0) {
-    		return dateArray;
-    	}
-
-    	// Case 3: 
+    	
+    	// Case 3: in the form of hybrid input with time followed by an optional relative date (eg. by 5pm tomorrow, at 2359 next monday)
     	pattern = Pattern.compile(regexHybridInputArray[INDEX_THIRD_CASE]);
 		matcher = pattern.matcher(userInput);
 		while(matcher.find()) {
-			if(matcher.group(8) != null) {
-				dateArray.add(matcher.group(8));
+			if(matcher.group(NUM_MATCHER_GROUP_8) != null) {
+				dateArray.add(matcher.group(NUM_MATCHER_GROUP_8));
 			}
 		}
-    	if(dateArray.size() > 0) {
-    		return dateArray;
-    	}
-		/*
-    	// Case 3: "on DD-MM-YY(YY) or DD/MM/YY(YY)"
-    	pattern = Pattern.compile(regexDateInputArray[INDEX_FIRST_CASE]);
-    	matcher = pattern.matcher(userInput);
-    	if(matcher.find()) {
-    		dateArray.add(matcher.group(NUM_MATCHER_GROUP_2));
-    		return dateArray;
-    	}
 
-    	// Case 4: Partial text based date format (e.g. 12 march 14, 20 aug)
-    	pattern = Pattern.compile(regexDateInputArray[INDEX_SECOND_CASE]);
-    	matcher = pattern.matcher(userInput);
-    	if(matcher.find()) {
-    		dateArray.add(matcher.group(NUM_MATCHER_GROUP_2));
-    		return dateArray;
-    	}
-    	
-    	// Case 5: pure text based relative dates (e.g. next Monday)
-    	pattern = Pattern.compile(regexDateInputArray[INDEX_THIRD_CASE]);
-    	matcher = pattern.matcher(userInput);
-    	if(matcher.find()) {
-    		dateArray.add(matcher.group(NUM_MATCHER_GROUP_2));
-    		return dateArray;
-    	}
-		*/
-    	return dateArray;
+		return dateArray;
     }
     
     /*
@@ -180,16 +145,29 @@ public class RegExp {
 			timeArray.add(matcher.group(NUM_MATCHER_GROUP_4));
 			return timeArray;
 		}
-		/*
-		// Case 3: by/at "TIME", where TIME can be HH:MM(am/pm) or HH(am/pm) or HH:MM
-		pattern = Pattern.compile(regexTimeInputArray[INDEX_THIRD_CASE]);
+
+		
+		// Case 3: in the form of proper date format followed by an optional time input (eg. by 14/2/2014 2pm whereby the time is optional)
+		pattern = Pattern.compile(regexHybridInputArray[INDEX_FIRST_CASE]);
 		matcher = pattern.matcher(userInput);
-		if(matcher.find()) {
-			timeArray.add(matcher.group(NUM_MATCHER_GROUP_2));
-			return timeArray;
+		while(matcher.find()) {
+			// As pattern contains both time and date, this condition does not add time if date is specified but time is not
+			if(matcher.group(NUM_MATCHER_GROUP_36)!=null) {
+				timeArray.add(matcher.group(NUM_MATCHER_GROUP_36));
+			}
 		}
-		*/
-		// Case 4: in the form of hybrid input with time followed by relative date (eg. by 5pm tomorrow, at 2359 next monday)
+    	
+    	// Case 4: in the form of relative date hybrid input followed by optional time input (eg. by next wed 2pm)  
+    	pattern = Pattern.compile(regexHybridInputArray[INDEX_SECOND_CASE]);
+    	matcher = pattern.matcher(userInput);   	
+    	while(matcher.find()) {
+    		// As pattern contains both time and date, this condition does not add time if date is specified but time is not
+    		if(matcher.group(NUM_MATCHER_GROUP_15) != null) {
+    			timeArray.add(matcher.group(NUM_MATCHER_GROUP_15));
+    		}
+    	}
+    	
+		// Case 5: in the form of hybrid input with time followed by an optional relative date (eg. by 5pm tomorrow, at 2359 next monday)
 		pattern = Pattern.compile(regexHybridInputArray[INDEX_THIRD_CASE]);
 		matcher = pattern.matcher(userInput);
 		while(matcher.find()) {
@@ -199,29 +177,6 @@ public class RegExp {
 			}
 			return timeArray;
 		}
-		
-		// Case 5: in the form of hybrid input (eg. by 14/2/2014 2pm) 
-		pattern = Pattern.compile(regexHybridInputArray[INDEX_FIRST_CASE]);
-		matcher = pattern.matcher(userInput);
-		while(matcher.find()) {
-			// As pattern contains both time and date, this condition does not add time if date is specified but time is not
-			if(matcher.group(NUM_MATCHER_GROUP_36)!=null) {
-				timeArray.add(matcher.group(NUM_MATCHER_GROUP_36));
-			}
-		}
-    	if(timeArray.size() > 0) {
-    		return timeArray;
-    	}
-    	
-    	// Case 6: in the form of relative date hybrid input (eg. by next wed 2pm)  
-    	pattern = Pattern.compile(regexHybridInputArray[INDEX_SECOND_CASE]);
-    	matcher = pattern.matcher(userInput);   	
-    	while(matcher.find()) {
-    		// As pattern contains both time and date, this condition does not add time if date is specified but time is not
-    		if(matcher.group(NUM_MATCHER_GROUP_15) != null) {
-    			timeArray.add(matcher.group(NUM_MATCHER_GROUP_15));
-    		}
-    	}
     	
     	return timeArray; 
     }
@@ -286,8 +241,8 @@ public class RegExp {
 			String[] dateStringArray = tempDate.split("[-/]");
 			String newDate = dateStringArray[INDEX_MONTH] + "/" + dateStringArray[INDEX_DAY] + "/" + dateStringArray[INDEX_YEAR];
 			userInput = userInput.replace(tempDate, newDate);
+			PandaLogger.getLogger().info("REGEX - Dates switched: " + tempDate + " to " + newDate);
 		}
-		PandaLogger.getLogger().info("REGEX - Dates switched: " + tempDate + " to " + newDate);
 		return userInput;
 	}
 }
