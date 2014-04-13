@@ -4,11 +4,6 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.joda.time.MutableDateTime;
-
-import com.joestelmach.natty.DateGroup;
-import com.joestelmach.natty.Parser;
-
 import common.PandaLogger;
 
 /*
@@ -29,45 +24,7 @@ public class RegExp {
 	private static final int NUM_MATCHER_GROUP_4 = 4;
 	private static final int NUM_MATCHER_GROUP_15 = 15;
 	private static final int NUM_MATCHER_GROUP_36 = 36;
-	/*
-	private static final int NUM_MONTH_JANUARY = 1;
-	private static final int NUM_MONTH_FEBRUARY = 2;
-	private static final int NUM_MONTH_MARCH = 3;
-	private static final int NUM_MONTH_APRIL = 4;
-	private static final int NUM_MONTH_MAY = 5;
-	private static final int NUM_MONTH_JUNE = 6;
-	private static final int NUM_MONTH_JULY = 7;
-	private static final int NUM_MONTH_AUGUST = 8;
-	private static final int NUM_MONTH_SEPTEMBER = 9;
-	private static final int NUM_MONTH_OCTOBER = 10;
-	private static final int NUM_MONTH_NOVEMBER = 11;
-	private static final int NUM_MONTH_DECEMBER = 12;
-	private static final int NUM_MONTH_INVALID = -1;
-	
-	private static final String STRING_JAN = "jan";
-	private static final String STRING_JANUARY = "january";
-	private static final String STRING_FEB = "feb";
-	private static final String STRING_FEBRUARY = "february";
-	private static final String STRING_MAR = "mar";
-	private static final String STRING_MARCH = "march";
-	private static final String STRING_APR = "apr";
-	private static final String STRING_APRIL = "april";
-	private static final String STRING_MAY = "may";
-	private static final String STRING_JUN = "jun";
-	private static final String STRING_JUNE = "june";
-	private static final String STRING_JUL = "jul";
-	private static final String STRING_JULY = "july";
-	private static final String STRING_AUG = "aug";
-	private static final String STRING_AUGUST = "august";
-	private static final String STRING_SEP = "sep";
-	private static final String STRING_SEPTEMBER = "september";
-	private static final String STRING_OCT = "oct";
-	private static final String STRING_OCTOBER = "october";
-	private static final String STRING_NOV = "nov";
-	private static final String STRING_NOVEMBER = "november";
-	private static final String STRING_DEC = "dec";
-	private static final String STRING_DECEMBER = "december";
-	*/
+
     /*
      *  Date Input Expressions
      *  These patterns contains keywords and date formats (on 12 mar 2014)
@@ -107,7 +64,7 @@ public class RegExp {
         // Case 2: (by/on/from/to/at) <relative date> <time>
     	"\\b(?i)(by |on |from |to |at )(((next|this)?\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?))|(the day after )?tomorrow)(\\s(([1-9]|1[0-2])(:[0-5][0-9])?[AaPp][Mm]|([0-1][0-9]|2[0-3]):?[0-5][0-9]))?\\b",
     	// Case 3: (by/on/from/to/at) <time> <relative date>
-    	"\\b(?i)(by |on |at )(((([1-9]|1[0-2])(:[0-5][0-9])?[AaPp][Mm]|([0-1][0-9]|2[0-3]):?[0-5][0-9])))(((\\snext|this)?\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?))|(( on the day after)? tomorrow))?\\b"
+    	"\\b(?i)(by |on |at )(((([1-9]|1[0-2])(:[0-5][0-9])?[AaPp][Mm]|([0-1][0-9]|2[0-3]):?[0-5][0-9])))(((\\snext|this)?\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?))|( tomorrow))?\\b"
     };
     
     /*
@@ -233,8 +190,8 @@ public class RegExp {
 		matcher = pattern.matcher(userInput);
 		while(matcher.find()) {
 			// As pattern contains both time and date, this condition does not add time if date is specified but time is not
-			if(matcher.group(2) != null) {
-				timeArray.add(matcher.group(2));
+			if(matcher.group(NUM_MATCHER_GROUP_2) != null) {
+				timeArray.add(matcher.group(NUM_MATCHER_GROUP_2));
 			}
 			return timeArray;
 		}
@@ -340,43 +297,4 @@ public class RegExp {
 		}
 		return userInput;
 	}
-	
-	/*
-	 * Method will return index of month given string format
-	 * @return integer corresponding to month
-	 */
-	/*
-	public static int getMonthIndex(String month) {
-		month = month.toLowerCase();
-		if(month.equals(STRING_JAN) || month.equals(STRING_JANUARY)) {
-			return NUM_MONTH_JANUARY;
-		} else if(month.equals(STRING_FEB) || month.equals(STRING_FEBRUARY)) {
-			return NUM_MONTH_FEBRUARY;
-		} else if(month.equals(STRING_MAR) || month.equals(STRING_MARCH)) {
-			return NUM_MONTH_MARCH;
-		} else if(month.equals(STRING_APR) || month.equals(STRING_APRIL)) {
-			return NUM_MONTH_APRIL;
-		} else if(month.equals(STRING_MAY)) {
-			return NUM_MONTH_MAY;
-		} else if(month.equals(STRING_JUN) || month.equals(STRING_JUNE)) {
-			return NUM_MONTH_JUNE;
-		} else if(month.equals(STRING_JUL) || month.equals(STRING_JULY)) {
-			return NUM_MONTH_JULY;
-		} else if(month.equals(STRING_AUG) || month.equals(STRING_AUGUST)) {
-			return NUM_MONTH_AUGUST;
-		} else if(month.equals(STRING_SEP) || month.equals(STRING_SEPTEMBER)) {
-			return NUM_MONTH_SEPTEMBER;
-		} else if(month.equals(STRING_OCT) || month.equals(STRING_OCTOBER)) {
-			return NUM_MONTH_OCTOBER;
-		} else if(month.equals(STRING_NOV) || month.equals(STRING_NOVEMBER)) {
-			return NUM_MONTH_NOVEMBER;
-		} else if(month.equals(STRING_DEC) || month.equals(STRING_DECEMBER)) {
-			return NUM_MONTH_DECEMBER;
-		}
-		
-		// asserting false because parameter should be a valid date string
-		assert(false);
-		return NUM_MONTH_INVALID;
-	}
-	*/
 }
