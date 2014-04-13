@@ -1,3 +1,16 @@
+@font-face {
+  font-family: Roboto Condensed;
+  src: url('../fonts/RobotoCondensed-Regular.ttf');
+}
+@font-face {
+  font-family: Roboto;
+  src: url('../fonts/Roboto-Regular.ttf');
+}
+@font-face {
+  font-family: Oswald;
+  src: url('../fonts/Oswald-Regular.ttf');
+}
+
 #inputField {
   -fx-background-color: #DF5A5F;
   -fx-text-fill: #FDEFE8;
@@ -6,11 +19,13 @@
   -fx-font-weight: bold;
   -fx-background-radius: 0, 0, 0, 0;
   -fx-prompt-text-fill: #eee;
+  -fx-font-family: 'Oswald', 'Helvetica', Arial, sans-serif;
 }
 
 #task-cell {
   -fx-background-color: #2F2F2F;
   -fx-fill-height: true;
+  -fx-font-family: 'Roboto', 'Helvetica', arial, sans-serif;
 }
 
 #task-cell:even {
@@ -38,8 +53,8 @@
 #description {
   -fx-text-fill: #fff;
   -fx-label-padding: 10px 0px 0px 15px;
-  -fx-font-size: 14px;
-  -fx-font-weight: bold;
+  -fx-font-size: 15px;
+  /* -fx-font-weight: bold; */
 }
 .timestamp {
   -fx-font-size: 10px;
@@ -53,6 +68,7 @@
   -fx-alignment: center;
   -fx-text-alignment: center;
   -fx-content-display: center;
+  -fx-font-family: 'Roboto', 'Helvetica', arial, sans-serif;
 }
 #start {
   -fx-font-style: italic;
@@ -61,11 +77,15 @@
   -fx-font-style: italic;
 }
 /* overdue label */
+#hbox {
+  -fx-background-radius: 50px;
+}
 #overdue-label {
   -fx-font-size: 15px;
   -fx-text-fill: #F2F2F2;
   -fx-background-color: #414141;
   -fx-label-padding: 5px 0px 5px 0px;
+  -fx-font-family: 'Roboto Condensed', 'Helvetica', arial, sans-serif;
 }
 
 /* help text and help id */
