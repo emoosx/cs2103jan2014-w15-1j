@@ -1,6 +1,7 @@
 package view;
 
-import javafx.collections.ObservableList;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -10,7 +11,6 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import logic.CommandFactory;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -27,7 +27,11 @@ public class TaskCell extends ListCell<Task> {
 	private static final int INDEX_WIDTH = 40;
 	private static final int INDEX_HEIGHT = 40;
 	
+	private static final int CELL_WIDTH = 482;
+	
 	private static final int HASHTAG_WIDTH = 100;
+	
+	private static final double PADDING = 2.0;
 
 	// css id for UI elements
 	private static final String HBOX_ID = "hbox";
@@ -39,10 +43,11 @@ public class TaskCell extends ListCell<Task> {
 	private static final String END_ID = "end";
 	private static final String TIME_CLASS = "timestamp";
 	private static final String OVERDUE_CLASS = "overdue-task";
-	private static final String NO_OVERDUE_CLASS = "nooverdue-task";
 	private static final String DONE_ID = "done";
 	private static final String SEPARATOR_ID = "separator";
 	private static final String TASK_CELL_ID = "task-cell";
+	
+	private static final String DATE_FORMAT_PATTERN = "d MMM yy  h:mm a";
 
 	private GridPane grid = new GridPane();
 	private HBox hbox = new HBox();
@@ -54,7 +59,7 @@ public class TaskCell extends ListCell<Task> {
 	private Separator separator = new Separator(Orientation.VERTICAL);
 
 	public TaskCell() {
-		super.setId(TASK_CELL_ID);
+		configureCell();
 		configureGrid();
 		configureHBox();
 		configureIndex(); // id label
@@ -66,12 +71,26 @@ public class TaskCell extends ListCell<Task> {
 
 	}
 	
+	private void configureCell() {
+		super.setId(TASK_CELL_ID);
+		super.setPrefWidth(CELL_WIDTH);
+		super.widthProperty().addListener(new ChangeListener() {
+			public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+				Double width = (Double) newValue;
+				if(width < CELL_WIDTH) {
+					desc.setPrefWidth(PandaUI.APP_WIDTH - PADDING*HASHTAG_WIDTH);
+				} else {
+					desc.setPrefWidth(width - PADDING*HASHTAG_WIDTH);
+				}
+			}
+		});
+	}
+	
 	private void configureGrid() {
 		grid.setHgap(VGAP);
 		grid.setVgap(VGAP);
 		grid.setId(GRID_ID);
-		grid.getColumnConstraints().addAll(new ColumnConstraints(),
-				new ColumnConstraints(120));
+		grid.getColumnConstraints().addAll(new ColumnConstraints(), new ColumnConstraints(120));
 	}
 
 	private void configureHBox() {
@@ -87,12 +106,11 @@ public class TaskCell extends ListCell<Task> {
 	private void configureHashtag() {
 		hashtag.setId(HASHTAG_ID);
 		hashtag.setPrefWidth(HASHTAG_WIDTH);
-		hashtag.setMaxWidth(HASHTAG_WIDTH);
 	}
 
 	private void configureDesc() {
 		desc.setId(DESC_ID);
-		desc.setMaxWidth((PandaUI.APP_WIDTH - 2*HASHTAG_WIDTH));
+		desc.setPrefWidth(PandaUI.APP_WIDTH - PADDING*HASHTAG_WIDTH);
 	}
 
 	private void configureTimestamp() {
@@ -146,7 +164,7 @@ public class TaskCell extends ListCell<Task> {
 			hbox.getStyleClass().remove(OVERDUE_CLASS);
 		}
 
-		DateTimeFormatter fmt = DateTimeFormat.forPattern("d MMM yy  h:mm a");
+		DateTimeFormatter fmt = DateTimeFormat.forPattern(DATE_FORMAT_PATTERN);
 		DateTime startTimestamp = task.getTaskStartTime();
 		if(startTimestamp == null) {
 			start.setText("");
