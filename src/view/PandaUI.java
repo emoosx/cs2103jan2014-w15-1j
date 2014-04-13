@@ -16,7 +16,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -77,7 +76,7 @@ public class PandaUI extends Application {
 	ListView<Task> list = new ListView<Task>();
 	Label overdueLabel = new Label();
 	Text overdueText = new Text();
-	Tooltip tooltip = new Tooltip(INVALID_COMMAND);
+//	Tooltip tooltip = new Tooltip(INVALID_COMMAND);
 
 	TextField inputField;
 
@@ -110,6 +109,7 @@ public class PandaUI extends Application {
 				inputField.setPrefWidth(width);
 				overdueLabel.setPrefWidth(width);
 				list.setPrefWidth(width);
+				
 			}
 		});
 		scene.heightProperty().addListener(new ChangeListener() {
@@ -147,11 +147,11 @@ public class PandaUI extends Application {
 						Command command = new Command(inputField.getText());
 						if (command.command == COMMAND_TYPE.INVALID) {
 							// invalid command
-							inputField.setTooltip(tooltip);
+//							inputField.setTooltip(tooltip);
 							overdueLabel.textProperty().unbind();
 							overdueLabel.setText(INVALID_COMMAND);
 						} else {
-							inputField.setTooltip(null);
+//							inputField.setTooltip(null);
 							commandFactory.process(command);
 							if(command.command != COMMAND_TYPE.SEARCH) {
 							    updateTasksList();
