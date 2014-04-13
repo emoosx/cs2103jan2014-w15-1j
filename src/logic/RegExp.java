@@ -19,6 +19,10 @@ public class RegExp {
 	private static final int INDEX_SECOND_CASE = 1;
 	private static final int INDEX_THIRD_CASE = 2;
 	
+	private static final int INDEX_DAY = 0;
+	private static final int INDEX_MONTH = 1;
+	private static final int INDEX_YEAR = 2;
+	
 	private static final int NUM_MATCHER_GROUP_1 = 1;
 	private static final int NUM_MATCHER_GROUP_2 = 2;
 	private static final int NUM_MATCHER_GROUP_4 = 4;
@@ -229,7 +233,6 @@ public class RegExp {
 	public static String parseDescription(String taskDescription) {
 		taskDescription = removeHybridPatterns(taskDescription);
 		taskDescription = removeTimePatterns(taskDescription);
-		taskDescription = removeDatePatterns(taskDescription);
 		taskDescription = removeHashtagPatterns(taskDescription);
 		PandaLogger.getLogger().info("REGEX - Task Description parsed and obtained: " + taskDescription);
 		return taskDescription.trim();
@@ -242,17 +245,7 @@ public class RegExp {
 		return taskDescription;
 		
 	}
-	
-	private static String removeDatePatterns(String taskDescription) {
-		/*
-		for(int i=0; i<regexDateInputArray.length; i++) {
-			taskDescription = taskDescription.replaceAll(regexDateInputArray[i], "");
-    	}
-    	*/		
-		return taskDescription;
 		
-	}
-	
 	private static String removeTimePatterns(String taskDescription) {
 		for(int i=0; i<regexTimeInputArray.length; i++) {
 			taskDescription = taskDescription.replaceAll(regexTimeInputArray[i], "");
@@ -291,10 +284,10 @@ public class RegExp {
 		while(matcher.find()) {
 			String tempDate = userInput.substring(matcher.start(), matcher.end());
 			String[] dateStringArray = tempDate.split("[-/]");
-			String newDate = dateStringArray[1] + "/" + dateStringArray[0] + "/" + dateStringArray[2];
-			PandaLogger.getLogger().info("REGEX - Dates switched: " + tempDate + " to " + newDate);
+			String newDate = dateStringArray[INDEX_MONTH] + "/" + dateStringArray[INDEX_DAY] + "/" + dateStringArray[INDEX_YEAR];
 			userInput = userInput.replace(tempDate, newDate);
 		}
+		PandaLogger.getLogger().info("REGEX - Dates switched: " + tempDate + " to " + newDate);
 		return userInput;
 	}
 }
