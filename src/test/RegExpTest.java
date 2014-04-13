@@ -139,77 +139,7 @@ public class RegExpTest {
 		assertEquals("14 mar", RegExp.parseDate("add camp from 14 mar to 16 mar").get(0));
 		assertEquals("16 mar", RegExp.parseDate("add camp from 14 mar to 16 mar").get(1));
 	}
-	/*
-	@Test
-	public void testGetDateFromDateString() {
-		int[] date = new int[999];
-		
-		// Partitioned test cases: DD mmm format
-		date = RegExp.dateFromDateString("12 march 2014");
-		assertEquals(12,date[0]);
-		assertEquals(3,date[1]);
-		assertEquals(2014,date[2]);
-		
-		date = RegExp.dateFromDateString("12 MAR 2014");
-		assertEquals(12,date[0]);
-		assertEquals(3,date[1]);
-		assertEquals(2014,date[2]);
-		
-		date = RegExp.dateFromDateString("31 JaN 2014");
-		assertEquals(31,date[0]);
-		assertEquals(1,date[1]);
-		assertEquals(2014,date[2]);
-		
-		// Partitioned test cases: DD/MM/YY format
-		date = RegExp.dateFromDateString("12-2-2014");
-		assertEquals(12,date[0]);
-		assertEquals(2,date[1]);
-		assertEquals(2014,date[2]);
-		
-		date = RegExp.dateFromDateString("12/2/2014");
-		assertEquals(12,date[0]);
-		assertEquals(2,date[1]);
-		assertEquals(2014,date[2]);
-		
-		DateTime dtOrg = new DateTime();
-		DateTime dtPlusOne = dtOrg.plusDays(1);
-		date = RegExp.dateFromDateString("by tomorrow 5pm");
-		assertEquals(dtPlusOne.getDayOfMonth(),date[0]);
-		assertEquals(dtPlusOne.getMonthOfYear(),date[1]);
-		assertEquals(dtPlusOne.getYear(),date[2]);
-		
-		
-		date = RegExp.dateFromDateString("on next monday");
-		assertEquals(7,date[0]);
-		assertEquals(4,date[1]);
-		assertEquals(2014,date[2]);
-		
-		date = RegExp.dateFromDateString("by next friday");
-		assertEquals(11,date[0]);
-		assertEquals(4,date[1]);
-		assertEquals(2014,date[2]);
-		
-	}
-	
-	@Test
-	public void testGetTimeFromTimeString() {
-		int[] time = new int[999];
-		time = RegExp.timeFromTimeString("12:12pm");
-		assertEquals(12,time[0]);
-		assertEquals(12,time[1]);
-		
-		time = RegExp.timeFromTimeString("1:12pm");
-		assertEquals(13,time[0]);
-		assertEquals(12,time[1]);
-		
-		time = RegExp.timeFromTimeString("1:12am");
-		assertEquals(1,time[0]);
-		assertEquals(12,time[1]);
-		
-		time = RegExp.timeFromTimeString("1pm");
-		assertEquals(13,time[0]);
-	}
-	*/
+
 	@Test
 	public void testParseDescription() {
 		
