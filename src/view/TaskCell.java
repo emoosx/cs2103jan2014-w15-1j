@@ -38,7 +38,8 @@ public class TaskCell extends ListCell<Task> {
 	private static final String START_ID = "start";
 	private static final String END_ID = "end";
 	private static final String TIME_CLASS = "timestamp";
-	private static final String OVERDUE_ID = "overdue-task";
+	private static final String OVERDUE_CLASS = "overdue-task";
+	private static final String NO_OVERDUE_CLASS = "nooverdue-task";
 	private static final String DONE_ID = "done";
 	private static final String SEPARATOR_ID = "separator";
 	private static final String TASK_CELL_ID = "task-cell";
@@ -51,7 +52,6 @@ public class TaskCell extends ListCell<Task> {
 	private Label end = new Label();
 	private Label hashtag = new Label();
 	private Separator separator = new Separator(Orientation.VERTICAL);
-	private ObservableList<Task> tasks = CommandFactory.INSTANCE.getDisplayTasks();
 
 	public TaskCell() {
 		super.setId(TASK_CELL_ID);
@@ -66,7 +66,6 @@ public class TaskCell extends ListCell<Task> {
 
 	}
 	
-
 	private void configureGrid() {
 		grid.setHgap(VGAP);
 		grid.setVgap(VGAP);
@@ -140,10 +139,11 @@ public class TaskCell extends ListCell<Task> {
 		}
 
 		// overdue status
+		hbox.getStyleClass().clear();
 		if (task.isOverdue()) {
-			hbox.getStyleClass().add(OVERDUE_ID);
+			hbox.getStyleClass().add(OVERDUE_CLASS);
 		} else {
-			hbox.getStyleClass().remove(OVERDUE_ID);
+			hbox.getStyleClass().remove(OVERDUE_CLASS);
 		}
 
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("d MMM yy  h:mm a");

@@ -327,12 +327,11 @@ public class CommandFactory {
 		// 13/04/2014 - DateTime
 
 		if (!(command.rawText == null)) {
-			Splitter splitter = Splitter.on(COMMA).trimResults()
-					.omitEmptyStrings();
+			Splitter splitter = Splitter.on(COMMA).trimResults().omitEmptyStrings();
 			Iterable<String> criteria = splitter.split(command.rawText);
 			logger.info("Found Criteria " + criteria);
 			Set<Integer> resultSet = new HashSet<Integer>(Criteria.getAllUndeletedTasks(tasks));
-			System.out.println("Before anything :" + resultSet);
+			logger.info("Before anything :" + resultSet);
 			for (String c : criteria) {
 				// some hardcoded scenarios for common keywords
 				if (c.equalsIgnoreCase("tmw") || c.equalsIgnoreCase("tomorrow") || c.equalsIgnoreCase("tmr")) {
@@ -344,7 +343,6 @@ public class CommandFactory {
 				} else if (c.equalsIgnoreCase("next week")) {
 					resultSet.retainAll(Criteria.getAllTasksforNextWeek(tasks));
 				} else if (c.equalsIgnoreCase("misc")) {
-					System.out.println("going in here second :" + Criteria.getAllFloatingTasks(tasks));
 					resultSet.retainAll(Criteria.getAllFloatingTasks(tasks));
 				} else if (c.equalsIgnoreCase("timed")) {
 					resultSet.retainAll(Criteria.getAllTimedTasks(tasks));
@@ -363,9 +361,8 @@ public class CommandFactory {
 					DateTime timestamp = parser.getEndDateTime();
 					resultSet.retainAll(Criteria.getAllUndeletedTasksWithTimestamp(tasks, timestamp));
 				}
-				System.out.println(resultSet);
 			}
-			System.out.println("Result :" + resultSet);
+			logger.info("Result :" + resultSet);
 			for (Integer i : resultSet) {
 				result.add(i);
 			}
@@ -373,17 +370,13 @@ public class CommandFactory {
 			result = Criteria.getAllUndeletedTasks(tasks);
 		}
 
-		System.out.println("Result add tawt mal :" + result);
+		logger.info("Result :" + result);
 		this.tasksMap.clear();
 		for (int i = 0; i < result.size(); i++) {
 			this.tasksMap.put(i, result.get(i));
 		}
 	}
 	
-	private void doSearch(Command command) {
-		
-	}
-
 	private void doEdit(Command command) {
 		String userInput = command.rawText;
 		assert (userInput != null);

@@ -1,6 +1,7 @@
 package view;
 
 import java.io.File;
+import java.io.IOException;
 
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
@@ -96,8 +97,17 @@ public class PandaUI extends Application {
 		border.setCenter(addBottomComponents());
 
 		Scene scene = new Scene(border, APP_WIDTH, APP_HEIGHT);
-		//scene.getStylesheets().add("file:///" + file.getAbsolutePath());
-		scene.getStylesheets().add(CSS_PATH);
+		File cssFile = new File(CSS_PATH);
+		String path;
+		try {
+		path = cssFile.getCanonicalPath();
+		} catch(IOException e) {
+			path = cssFile.getAbsolutePath();
+		}
+		scene.getStylesheets().add("file:///" + path);
+
+//		System.out.println(this.getClass().getResource("/" + CSS_PATH).toExternalForm());
+//		scene.getStylesheets().add(CSS_PATH);
 
 		// for resizing of app
 		scene.widthProperty().addListener(new ChangeListener() {

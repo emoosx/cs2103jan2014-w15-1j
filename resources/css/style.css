@@ -20,17 +20,8 @@
 #task-cell:selected:focused, .task-cell:filled:selected {
   -fx-background-color: #82BA82;
 }
-/* .list-cell:filled:selected:focused, .list-cell:filled:selected { */
-  /* -fx-background-color: #82BA82; */
-  /* -fx-text-fill: #ECEAE9; */
-/* } */
-/* #overdue { */
-  /* -fx-background-color: #E35847; */
-  /* -fx-text-fill: #eceae9; */
-/* } */
-
 .overdue-task {
-  -fx-background-color: #e35847;
+  -fx-background-color: #E35847;
 }
 .done .text {
   -fx-text-fill: #ccc;
