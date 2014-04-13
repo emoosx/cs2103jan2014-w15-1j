@@ -25,7 +25,9 @@ public class TaskCell extends ListCell<Task> {
 	// grid
 	private static final int VGAP = 5;
 	private static final int INDEX_WIDTH = 40;
-	private static final int INDEX_HEIGHT = 60;
+	private static final int INDEX_HEIGHT = 40;
+	
+	private static final int HASHTAG_WIDTH = 100;
 
 	// css id for UI elements
 	private static final String HBOX_ID = "hbox";
@@ -37,11 +39,9 @@ public class TaskCell extends ListCell<Task> {
 	private static final String END_ID = "end";
 	private static final String TIME_CLASS = "timestamp";
 	private static final String OVERDUE_ID = "overdue-task";
-	private static final String FLOATING_ID = "floating";
-	private static final String DEADLINE_ID = "deadline";
-	private static final String TIMED_ID = "timed";
 	private static final String DONE_ID = "done";
 	private static final String SEPARATOR_ID = "separator";
+	private static final String TASK_CELL_ID = "task-cell";
 
 	private GridPane grid = new GridPane();
 	private HBox hbox = new HBox();
@@ -54,14 +54,16 @@ public class TaskCell extends ListCell<Task> {
 	private ObservableList<Task> tasks = CommandFactory.INSTANCE.getDisplayTasks();
 
 	public TaskCell() {
+		super.setId(TASK_CELL_ID);
 		configureGrid();
 		configureHBox();
 		configureIndex(); // id label
+		configureHashtag();
 		configureDesc(); // description label
 		configureTimestamp();
 		configureSeparator();
-		configureHashtag();
 		addControls();
+
 	}
 	
 
@@ -83,8 +85,14 @@ public class TaskCell extends ListCell<Task> {
 		index.setAlignment(Pos.CENTER);
 	}
 
+	private void configureHashtag() {
+		hashtag.setId(HASHTAG_ID);
+		hashtag.setMaxWidth(HASHTAG_WIDTH);
+	}
+
 	private void configureDesc() {
 		desc.setId(DESC_ID);
+		desc.setMaxWidth((PandaUI.APP_WIDTH - 2*HASHTAG_WIDTH));
 	}
 
 	private void configureTimestamp() {
@@ -94,9 +102,6 @@ public class TaskCell extends ListCell<Task> {
 		end.getStyleClass().add(TIME_CLASS);
 	}
 
-	private void configureHashtag() {
-		hashtag.setId(HASHTAG_ID);
-	}
 	
 	private void configureSeparator() {
 		separator.setId(SEPARATOR_ID);
@@ -114,34 +119,33 @@ public class TaskCell extends ListCell<Task> {
 
 	private void addContent(Task task) {
 		setText(null);
-  
 		index.setText(String.valueOf(super.indexProperty().get() + OFFSET));
 		desc.setText(task.getTaskDescription());
-		desc.setMaxWidth(PandaUI.APP_WIDTH - 100);
 		if(task.getTaskTags().isEmpty()) {
 			separator.setVisible(false);
 		}
 		hashtag.setText(task.getTags());
 
 		if (task.getTaskDone() == false) {
-			if (task.getLabel().equals("D")) {
-				hbox.setId(DEADLINE_ID);
-			} else if (task.getLabel().equals("T")) {
-				hbox.setId(TIMED_ID);
-			} else {
-				hbox.setId(FLOATING_ID);
-			}
+			desc.getStyleClass().remove(DONE_ID);
+			start.getStyleClass().remove(DONE_ID);
+			end.getStyleClass().remove(DONE_ID);
+			hashtag.getStyleClass().remove(DONE_ID);
 		} else {
-			hbox.setId(DONE_ID);
+			desc.getStyleClass().add(DONE_ID);
+			start.getStyleClass().add(DONE_ID);
+			end.getStyleClass().add(DONE_ID);
+			hashtag.getStyleClass().add(DONE_ID);
 		}
 
 		// overdue status
 		if (task.isOverdue()) {
-			// hbox.getStyleClass().add(OVERDUE_CLASS);
-			hbox.setId(OVERDUE_ID);
+			hbox.getStyleClass().add(OVERDUE_ID);
+		} else {
+			hbox.getStyleClass().remove(OVERDUE_ID);
 		}
 
-		DateTimeFormatter fmt = DateTimeFormat.forPattern("d MMM yy  hh:mm a");
+		DateTimeFormatter fmt = DateTimeFormat.forPattern("d MMM yy  h:mm a");
 		DateTime startTimestamp = task.getTaskStartTime();
 		if(startTimestamp == null) {
 			start.setText("");

@@ -35,13 +35,13 @@ import core.Task;
 public class PandaUI extends Application {
 
 	// app
-	public static final int APP_WIDTH = 450;
+	public static final int APP_WIDTH = 500;
 	public static final int APP_HEIGHT = 700;
 	private static final String CSS_PATH = "resources/css/style.css";
 
 	// input field
 	private static final String IF_PLACEHOLDER = "Get Busy!";
-	private static final int IF_HEIGHT = 70;
+	private static final int IF_HEIGHT = 90;
 	private static final int IF_WIDTH = APP_WIDTH;
 	private static final int IF_COLUMN_COUNT = 50;
 	private static final String IF_ID = "inputField";
