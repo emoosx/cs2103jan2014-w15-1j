@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import logic.TaskParser;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 //@author A0101810A
 /*
@@ -131,7 +129,6 @@ public class Task {
 			String result = sb.toString();
 			return result.substring(START_INDEX, result.length() - COMMA.length());
 		}
-
 	}
 	
 	public String getLabel() {
@@ -147,26 +144,6 @@ public class Task {
 	public String getRawText() {
 		return this.rawText;
 	}
-	
-	public String getRoughTranslation() {
-		DateTimeFormatter datefmt = DateTimeFormat.forPattern("dd/MM/yyyy hh:mma");
-		String result;
-		if(this.startDateTime == null && this.endDateTime == null) {
-			result = this.taskDescription;
-		} else if(this.startDateTime == null) {
-			result = this.taskDescription + " by " + datefmt.print(this.endDateTime);
-		} else {
-			result =  this.taskDescription + " from " + datefmt.print(this.startDateTime) + " to " + datefmt.print(this.endDateTime); 
-		}
-		
-		if(!this.taskTags.isEmpty()) {
-			for(String tag: this.taskTags) {
-				result = result + " " + tag;
-			}
-		}
-		return result;
-		
-	}
 
 	public DateTime getTaskCreatedTimestamp() {
 		return taskCreatedTimestamp;
@@ -177,8 +154,10 @@ public class Task {
 	}
 	
 	public boolean isOverdue() {
-		if(taskDone == false && markAsDelete == false && endDateTime != null && endDateTime.isBeforeNow())
+		if(taskDone == false && markAsDelete == false && endDateTime != null && endDateTime.isBeforeNow()) {
 			return true;
-		return false;
+		} else {
+			return false;
+		}
 	}
 }
