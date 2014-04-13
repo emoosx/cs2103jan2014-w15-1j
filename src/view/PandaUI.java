@@ -96,8 +96,8 @@ public class PandaUI extends Application {
 		border.setCenter(addBottomComponents());
 
 		Scene scene = new Scene(border, APP_WIDTH, APP_HEIGHT);
-		File file = new File(CSS_PATH);
-		scene.getStylesheets().add("file:///" + file.getAbsolutePath());
+		//scene.getStylesheets().add("file:///" + file.getAbsolutePath());
+		scene.getStylesheets().add(CSS_PATH);
 
 		// for resizing of app
 		scene.widthProperty().addListener(new ChangeListener() {
