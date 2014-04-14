@@ -3,7 +3,7 @@
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\common\DateTimeTypeConverter.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\common\DateTimeTypeConverter.java
 	 */
 
 /*
@@ -26,14 +26,14 @@ public class DateTimeTypeConverter implements JsonSerializer<DateTime>, JsonDese
 	}
 }
 
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\common\DateTimeTypeConverter.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\common\DateTimeTypeConverter.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\common\PandaLogger.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\common\PandaLogger.java
 	 */
 
 /* PandaLogger 
@@ -93,14 +93,14 @@ public class PandaLogger {
 	}
 }
 
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\common\PandaLogger.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\common\PandaLogger.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\core\Task.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\core\Task.java
 	 */
 
 	public boolean isOverdue() {
@@ -111,14 +111,14 @@ public class PandaLogger {
 		}
 	}
 
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\core\Task.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\core\Task.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\core\Task.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\core\Task.java
 	 */
 
 	public String getTags() {
@@ -134,16 +134,36 @@ public class PandaLogger {
 			return result.substring(START_INDEX, result.length() - COMMA.length());
 		}
 	}
-}
-
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\core\Task.java
+	
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\core\Task.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Command.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\core\Task.java
+	 */
+
+	public String getLabel() {
+		if(this.startDateTime == null && this.endDateTime == null) {
+			return "F";
+		} else if(this.startDateTime == null) {
+			return "D";
+		} else {
+			return "T";
+		}
+	}
+}
+
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\core\Task.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\Command.java
 	 */
 
 /* Command model */
@@ -248,14 +268,14 @@ public class Command {
 	}
 }
 
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Command.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\Command.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
 	 */
 
 	private void populateTasksMapWithDefaultCriteria() {
@@ -336,14 +356,14 @@ public class Command {
 		}
 	}
 
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
 	 */
 
 	private void doAdd(Command command) {
@@ -431,14 +451,14 @@ public class Command {
 		}
 	}
 	
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
 	 */
 
 	private void doDelete(Command command) {
@@ -458,14 +478,14 @@ public class Command {
 		}
 	}
 
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
 	 */
 
 	private Integer getFakeIDbyRealId(int realid) {
@@ -498,14 +518,14 @@ public class Command {
 		this.tasksMap.putAll(temp);
 	}
 
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Criteria.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\Criteria.java
 	 */
 
 	/* default criteria */
@@ -580,14 +600,14 @@ public class Command {
 		return result;
 	}
 	
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Criteria.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\Criteria.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Criteria.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\Criteria.java
 	 */
 
 	public static ArrayList<Integer> getAllTasksforToday(List<Task> tasks) {
@@ -603,14 +623,14 @@ public class Command {
 		return result;
 	}
 	
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Criteria.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\Criteria.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Criteria.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\Criteria.java
 	 */
 
 	public static ArrayList<Integer> getAllTasksforTomorrow(List <Task> tasks) {
@@ -626,14 +646,14 @@ public class Command {
 		return result;
 	}
 	
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Criteria.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\Criteria.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Criteria.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\Criteria.java
 	 */
 
 	public static ArrayList<Integer> getAllTasksforThisWeek(List <Task> tasks) {
@@ -658,14 +678,14 @@ public class Command {
 		return result;
 	}
 	
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Criteria.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\Criteria.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Criteria.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\Criteria.java
 	 */
 
 	public static ArrayList<Integer> getAllUndeletedTasksWithTimestamp(List<Task> tasks, DateTime inputDate) {
@@ -692,14 +712,14 @@ public class Command {
 	}
 }
 
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Criteria.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\Criteria.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\storage\StorageHelper.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\storage\StorageHelper.java
 	 */
 
 /* A singleton class to handle the persistence of Task objects
@@ -767,14 +787,14 @@ public class StorageHelper {
 		this.file = createOrGetFile(FILENAME);
 	}
 }
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\storage\StorageHelper.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\storage\StorageHelper.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\test\CommandTest.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\CommandTest.java
 	 */
 
 /* test whether a command is created correctly from the user's input
@@ -866,14 +886,14 @@ public class CommandTest {
 	}
 }
 
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\test\CommandTest.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\CommandTest.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\test\CriteriaTest.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\CriteriaTest.java
 	 */
 
 /* test class for testing of filtering by different which is our main feature in listing */
@@ -1046,14 +1066,14 @@ public class CriteriaTest {
 
 }
 
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\test\CriteriaTest.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\CriteriaTest.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\test\UndoStorageTest.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\UndoStorageTest.java
 	 */
 
 /*
@@ -1136,14 +1156,14 @@ public class UndoStorageTest {
 	}
 }
 
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\test\UndoStorageTest.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\UndoStorageTest.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\view\PandaUI.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\view\PandaUI.java
 	 */
 
 public class PandaUI extends Application {
@@ -1553,14 +1573,14 @@ public class PandaUI extends Application {
 	}
 }
 
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\view\PandaUI.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\view\PandaUI.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\view\TaskCell.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\view\TaskCell.java
 	 */
 
 
@@ -1746,7 +1766,7 @@ public class TaskCell extends ListCell<Task> {
 	}
 }
 
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\view\TaskCell.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\view\TaskCell.java
 
 
 

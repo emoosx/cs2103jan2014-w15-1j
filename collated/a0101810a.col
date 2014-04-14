@@ -3,7 +3,7 @@
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\core\Task.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\core\Task.java
 	 */
 
 /*
@@ -115,17 +115,7 @@ public class Task {
 	public ArrayList<String> getTaskTags() {
 		return taskTags;
 	}
-	
-	public String getLabel() {
-		if(this.startDateTime == null && this.endDateTime == null) {
-			return "F";
-		} else if(this.startDateTime == null) {
-			return "D";
-		} else {
-			return "T";
-		}
-	}
-	
+
 	public String getRawText() {
 		return this.rawText;
 	}
@@ -138,14 +128,14 @@ public class Task {
 		this.taskCreatedTimestamp = taskCreatedTimestamp;
 	}
 	
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\core\Task.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\core\Task.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\RegExp.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\RegExp.java
 	 */
 
 /*
@@ -388,14 +378,14 @@ public class RegExp {
 		return userInput;
 	}
 }
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\RegExp.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\RegExp.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\TaskParser.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\TaskParser.java
 	 */
 
 /*
@@ -426,6 +416,7 @@ public class TaskParser {
 	private static final int ARRAY_SECOND_INDEX = 1;
 	private static final int ARRAY_SIZE_1 = 1;
 	private static final int ARRAY_SIZE_2 = 2;
+	private static final int NATTY_DATE_INDEX = 0;
 
 	// Task object variables
 	private DateTime startDateTime;
@@ -690,7 +681,7 @@ public class TaskParser {
 		List<DateGroup> groups = parser.parse(dateString);
 		for(DateGroup group: groups) {
 			List<Date> dates = group.getDates();
-			MutableDateTime tempDate = new MutableDateTime(dates.get(0));
+			MutableDateTime tempDate = new MutableDateTime(dates.get(NATTY_DATE_INDEX));
 			date[NUM_DAY_INDEX] = tempDate.getDayOfMonth();
 			date[NUM_MONTH_INDEX] = tempDate.getMonthOfYear();
 			date[NUM_YEAR_INDEX] = tempDate.getYear();
@@ -710,7 +701,7 @@ public class TaskParser {
 		List<DateGroup> groups = parser.parse(timeString);
 		for(DateGroup group: groups) {
 			List<Date> dates = group.getDates();
-			MutableDateTime tempTime = new MutableDateTime(dates.get(0));
+			MutableDateTime tempTime = new MutableDateTime(dates.get(NATTY_DATE_INDEX));
 			time[NUM_HOUR_INDEX] = tempTime.getHourOfDay();
 			time[NUM_MIN_INDEX] = tempTime.getMinuteOfHour();
 		}
@@ -733,14 +724,14 @@ public class TaskParser {
 		return endDateTime;
 	}
 }
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\TaskParser.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\TaskParser.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\test\NattyParserTest.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\NattyParserTest.java
 	 */
 
 /*
@@ -836,14 +827,14 @@ public class NattyParserTest {
 	}
 }
 
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\test\NattyParserTest.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\NattyParserTest.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\test\RegExpTest.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\RegExpTest.java
 	 */
 
 /*
@@ -1029,14 +1020,14 @@ public class RegExpTest {
 		assertEquals("3/2/2014", RegExp.changeDateFormat("2/3/2014"));
 	}
 }
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\test\RegExpTest.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\RegExpTest.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\test\TaskTest.java
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\TaskTest.java
 	 */
 
 /*
@@ -1173,7 +1164,7 @@ public class TaskTest {
 	}
 }
 
-	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\test\TaskTest.java
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\TaskTest.java
 
 
 
