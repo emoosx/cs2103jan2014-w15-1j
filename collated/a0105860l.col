@@ -1196,6 +1196,7 @@ public class PandaUI extends Application {
 	private static final int OFFSET = 1;
 	private static final int COMMAND_INDEX = 0;
 	private static final int THE_REST_INDEX = 1;
+	private static final int TOP = 0;
 
 	// listview
 	private static final String LIST_ID = "tasklist";
@@ -1403,6 +1404,7 @@ public class PandaUI extends Application {
 							}
                             if (command.command == COMMAND_TYPE.ADD) {
                                 list.scrollTo(tasks.size() - OFFSET);
+                                list.getFocusModel().focus(tasks.size() - OFFSET);
                                 list.getSelectionModel().select(tasks.size() - OFFSET);
                             }
 							overdueLabel.textProperty().bind(Bindings.format(OVERDUE_TXT, Bindings.size(overduetasks)));
@@ -1425,6 +1427,7 @@ public class PandaUI extends Application {
 					}
 				} else if (e.getCode() == KeyCode.DOWN) {
 					list.requestFocus();
+					list.getSelectionModel().select(TOP);
 				}
 			}
 		});
