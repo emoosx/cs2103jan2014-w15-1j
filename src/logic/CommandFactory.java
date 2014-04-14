@@ -67,8 +67,7 @@ public class CommandFactory {
 	public final String UNDO_DONEALL = "doneall";
 
 	// DateTime printing
-	private static final DateTimeFormatter dateDisplay = DateTimeFormat
-			.forPattern("dd/MM/YY");
+	private static final DateTimeFormatter dateDisplay = DateTimeFormat.forPattern("dd/MM/YY");
 	private static final DateTimeFormatter timeDisplay = DateTimeFormat
 			.forPattern("HH:mm");
 	private static final DateTimeFormatter dateTimeDisplay = DateTimeFormat

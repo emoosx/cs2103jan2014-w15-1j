@@ -26,8 +26,8 @@ import org.junit.FixMethodOrder;
 public class CommandFactoryTest {
 
 	private CommandFactory cf = CommandFactory.INSTANCE;
-	private static final DateTimeFormatter dateTimeDisplay = DateTimeFormat
-			.forPattern("dd/MM/YY HH:mm");
+	private static final DateTimeFormatter dateTimeDisplay = DateTimeFormat.forPattern("dd/MM/YY HH:mm");
+	private LinkedHashMap<Integer, Integer> map;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -40,27 +40,24 @@ public class CommandFactoryTest {
 
 	@Before
 	public void setUp() throws Exception {
+		map = new LinkedHashMap<Integer, Integer>();
+		map.put(0, 0);
+		map.put(1, 1);
+		map.put(2, 2);
+		map.put(3, 3);
+		map.put(4, 4);
+		map.put(5, 5);
+		map.put(6, 6);
 	}
 
 	@After
 	public void tearDown() throws Exception {
-	}
-
-	@Test
-	public void test() {
-		LinkedHashMap<Integer, Integer> map = new LinkedHashMap<Integer, Integer>();
-		map.put(0, 0);
-		map.put(1, 1);
-		map.put(2, 2);
-		map.put(3, 3);
-		map.put(4, 4);
-		map.put(5, 5);
-		map.put(6, 6);
+		map.clear();
 	}
 
 	@Test
 	public void testHashMapUpdate() {
-		LinkedHashMap<Integer, Integer> map = new LinkedHashMap<Integer, Integer>();
+		map = new LinkedHashMap<Integer, Integer>();
 		map.put(0, 0);
 		map.put(1, 1);
 		map.put(2, 2);
@@ -68,10 +65,9 @@ public class CommandFactoryTest {
 		map.put(4, 4);
 		map.put(5, 5);
 		map.put(6, 6);
-		map = updateHashMapAfterDelete2(map, 3);
-		System.out.println("After:" + map);
+		map = updateHashMapAfterDelete(map, 3);
 		assertEquals("{0=0, 1=1, 2=2, 3=4, 4=5, 5=6}", map.toString());
-		map = updateHashMapAfterDelete2(map, 2);
+		map = updateHashMapAfterDelete(map, 2);
 		assertEquals("{0=0, 1=1, 2=4, 3=5, 4=6}", map.toString());
 	}
 
@@ -207,33 +203,8 @@ public class CommandFactoryTest {
 		cf.clearUndoRedoAfterTesting();	
 	}
 
-	
-	
-
 	private LinkedHashMap<Integer, Integer> updateHashMapAfterDelete(
-			LinkedHashMap<Integer, Integer> tasksMap, int fakeid) {
-		LinkedHashMap<Integer, Integer> temp = new LinkedHashMap<Integer, Integer>();
-
-		Iterator<Entry<Integer, Integer>> it = tasksMap.entrySet().iterator();
-		while (it.hasNext()) {
-			Entry<Integer, Integer> pair = (Entry<Integer, Integer>) it.next();
-			if (pair.getKey() < fakeid) {
-				temp.put(pair.getKey(), pair.getValue());
-			} else {
-				if (it.hasNext()) {
-					int key = pair.getKey();
-					Entry<Integer, Integer> next = (Entry<Integer, Integer>) it
-							.next();
-					int value = next.getValue();
-					temp.put(key, value);
-				}
-			}
-		}
-		return temp;
-	}
-
-	private LinkedHashMap<Integer, Integer> updateHashMapAfterDelete2(
-			LinkedHashMap<Integer, Integer> tasksMap, int fakeid) {
+		LinkedHashMap<Integer, Integer> tasksMap, int fakeid) {
 		LinkedHashMap<Integer, Integer> temp = new LinkedHashMap<Integer, Integer>();
 		for (int i = 0; i < tasksMap.size(); i++) {
 			if (i < fakeid) {
@@ -245,5 +216,4 @@ public class CommandFactoryTest {
 		temp.remove(tasksMap.size() - 1);
 		return temp;
 	}
-
 }

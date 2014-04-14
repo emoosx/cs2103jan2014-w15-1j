@@ -1,6 +1,6 @@
 package test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +18,10 @@ import org.junit.Test;
 
 import storage.UndoStorage;
 
+//@author A0105860L
+/*
+ * testing of stack behavior and reading and writing of command stack in file
+ */
 public class UndoStorageTest {
 	
 	private static final String TEST_FILENAME = "UndoStorageTest.json";
@@ -25,7 +29,6 @@ public class UndoStorageTest {
 	private static File file;
 	private static UndoStorage undoStorage = UndoStorage.INSTANCE;
 	
-	private Stack<Command> commands;
 	private Stack<SimpleEntry<Integer, Command>> commandStack;
 	
 	private static File createOrGetFile(String filename) {
@@ -47,29 +50,25 @@ public class UndoStorageTest {
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-//		file.delete();
+		file.delete();
 	}
 
 	@Before
 	public void setUp() throws Exception {
-		commands = new Stack<Command>();
-		commands.push(new Command("add go to school"));
-		commands.push(new Command("add invoker"));
-		commands.push(new Command("add spectre"));
-		
 		commandStack = new Stack<SimpleEntry<Integer, Command>>();
-		commandStack.push(new SimpleEntry<Integer, Command>(1, new Command("add go to school")));
-		commandStack.push(new SimpleEntry<Integer, Command>(2, new Command("add invoker")));
-		commandStack.push(new SimpleEntry<Integer, Command>(3, new Command("add ccc")));
-		commandStack.push(new SimpleEntry<Integer, Command>(3, new Command("edit 3")));
+		commandStack.push(new SimpleEntry<Integer, Command>(1, new Command("add submit video #cs2103 by 2359")));
+		commandStack.push(new SimpleEntry<Integer, Command>(2, new Command("add ask a girl out")));
+		commandStack.push(new SimpleEntry<Integer, Command>(3, new Command("delete 1")));
+		commandStack.push(new SimpleEntry<Integer, Command>(4, new Command("edit 1 nice to meet you #dream")));
+		commandStack.push(new SimpleEntry<Integer, Command>(5, new Command("done 1")));
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		commandStack = new Stack<SimpleEntry<Integer, Command>>();
 	}
-
 	
+	// test both read and write methods behavior
 	@Test
 	public void testReadandWrite() {
 		undoStorage.writeCommands(commandStack, file);
@@ -77,6 +76,7 @@ public class UndoStorageTest {
 		assertEquals(allCommands.toString(), commandStack.toString());
 	}
 	
+	// just want to see the string representation of a stack
 	@Test
 	public void testStack() {
 		Stack<String> testStack = new Stack<String>();
