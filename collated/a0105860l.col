@@ -1,0 +1,1754 @@
+//@author: a0105860l
+
+
+
+	/**
+	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\common\DateTimeTypeConverter.java
+	 */
+
+/*
+ * Json serializer to properly serialize datetime objects
+ */
+public class DateTimeTypeConverter implements JsonSerializer<DateTime>, JsonDeserializer<DateTime> {
+
+	@Override
+	public DateTime deserialize(JsonElement json, Type type,
+			JsonDeserializationContext context) throws JsonParseException {
+		assert(json!=null);
+		return new DateTime(json.getAsString());
+
+	}
+
+	@Override
+	public JsonElement serialize(DateTime datetime, Type type,
+			JsonSerializationContext context) {
+		return new JsonPrimitive(datetime.toString());
+	}
+}
+
+	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\common\DateTimeTypeConverter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\common\PandaLogger.java
+	 */
+
+/* PandaLogger 
+ * 
+ * For logging purposes. Set it up for file and console logging.
+ * 
+ * LVL_LOG_CONSOLE_LVL = Level of logging to output to console
+ * LVL_LOG_LVL = Level of logging to external log file
+ */
+
+public class PandaLogger {
+	
+	private static final String PANDA_LOG_FILE = "panda.log";
+	private static final String LOGGER_NAME = "log_file";
+	
+	private static final Level LVL_LOG_CONSOLE_LVL = Level.INFO;
+	private static final Level LVL_LOG_LVL = Level.ALL;
+	
+	private static PandaLogger instance = null;
+	private static FileHandler fileHandler;
+	private static ConsoleHandler consoleHandler;
+	private static Logger logger;
+
+	public static Logger getLogger() {
+		if(instance == null) {
+			instance = new PandaLogger();
+		}
+		return logger;
+	}
+	private PandaLogger() {
+		try {
+			setUpLogger();
+			setUpFileHandler();
+			setUpConsoleHandler();
+		} catch(SecurityException e) {
+			e.printStackTrace();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void setUpLogger() {
+		logger = Logger.getLogger(LOGGER_NAME);
+		logger.setLevel(LVL_LOG_LVL);
+		logger.setUseParentHandlers(false);
+	}
+	
+	private void setUpFileHandler() throws IOException {
+		fileHandler = new FileHandler(PANDA_LOG_FILE);
+		logger.addHandler(fileHandler);
+	}
+	
+	private void setUpConsoleHandler() {
+		consoleHandler = new ConsoleHandler();
+		consoleHandler.setLevel(LVL_LOG_CONSOLE_LVL);
+		logger.addHandler(consoleHandler);
+	}
+}
+
+	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\common\PandaLogger.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\core\Task.java
+	 */
+
+	public boolean isOverdue() {
+		if(taskDone == false && markAsDelete == false && endDateTime != null && endDateTime.isBeforeNow()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\core\Task.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\core\Task.java
+	 */
+
+	public String getTags() {
+		StringBuilder sb = new StringBuilder();
+		if(taskTags.isEmpty()) {
+			return sb.toString();
+		} else {
+			for(String tag: taskTags) {
+				sb.append(tag);
+				sb.append(COMMA);
+			}
+			String result = sb.toString();
+			return result.substring(START_INDEX, result.length() - COMMA.length());
+		}
+	}
+}
+
+	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\core\Task.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Command.java
+	 */
+
+/* Command model */
+public class Command {
+	
+	private static final int INDEX_COMMAND = 0;
+	private static final int INDEX_RAWTEXT = 1;
+
+	public String rawText;
+	public COMMAND_TYPE command;
+
+	public enum COMMAND_TYPE {
+		ADD ("add"), 
+		LIST ("list"), 
+		EDIT ("edit"), 
+		UNDO ("undo"), 
+		REDO ("redo"),
+		CLEAR ("clear"), 
+		DONE ("done"),
+		UNDONE ("undone"),
+		DONEALL ("doneall"), 
+		DELETE ("delete"), 
+		HELP ("help"), 
+		SEARCH ("search"),
+		INVALID ("invalid");
+		
+		
+		private String commandName;
+
+		private COMMAND_TYPE(String commandName) {
+			this.commandName = commandName;
+		}
+		
+		private String getCommandName() {
+			return commandName;
+		}
+	}
+
+	public Command(String commandText) {
+		this.rawText = commandText;
+		this.command = COMMAND_TYPE.INVALID;
+		this.parse();
+	}
+	
+	private void parse() {
+		String[] rawText = stripCommand(this.rawText);
+		this.rawText = rawText[INDEX_RAWTEXT];
+		this.command = determineCommandType(rawText[INDEX_COMMAND]);
+	}
+
+	/* splits raw user input into (Command + user input) */
+	private String[] stripCommand(String commandText) {
+		assert(commandText != null);
+		String cmd, rawText;
+		int spaceIndex = commandText.indexOf(' ');
+		if(spaceIndex > 0) {
+			cmd = commandText.substring(0, spaceIndex);
+			rawText = commandText.substring(spaceIndex+1).trim();
+			if (rawText.equals("")) {
+				rawText = null;
+			}
+		} else {
+			cmd = commandText.trim(); 
+			rawText = null;
+		}
+		String[] ans = {cmd, rawText};
+		return ans;
+	}
+
+	/* determine command type given user command */
+	private COMMAND_TYPE determineCommandType(String command) {
+		assert(command != null);
+		if(command.equalsIgnoreCase(COMMAND_TYPE.ADD.getCommandName())) {
+			return COMMAND_TYPE.ADD;
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.LIST.getCommandName())) {
+			return COMMAND_TYPE.LIST;
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.EDIT.getCommandName())) {
+			return COMMAND_TYPE.EDIT;
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.UNDO.getCommandName())) {
+			return COMMAND_TYPE.UNDO;
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.REDO.getCommandName())) {
+			return COMMAND_TYPE.REDO;
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.DONE.getCommandName())) {
+			return COMMAND_TYPE.DONE;
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.UNDONE.getCommandName())) {
+			return COMMAND_TYPE.UNDONE;
+		}else if (command.equalsIgnoreCase(COMMAND_TYPE.CLEAR.getCommandName())) {
+			return COMMAND_TYPE.CLEAR;
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.DELETE.getCommandName())) {
+			return COMMAND_TYPE.DELETE;
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.SEARCH.getCommandName())) {
+			return COMMAND_TYPE.SEARCH;
+		} else if (command.equalsIgnoreCase(COMMAND_TYPE.HELP.getCommandName())) {
+			return COMMAND_TYPE.HELP;
+		}
+		return COMMAND_TYPE.INVALID; 
+	}
+
+	/* just for debugging purpose */
+	public String toString() {
+		return command.getCommandName() + " " + this.rawText;
+	}
+}
+
+	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Command.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
+	 */
+
+	private void populateTasksMapWithDefaultCriteria() {
+		ArrayList<Integer> undeletedTasksIDs = Criteria
+				.getAllUndeletedTasks(tasks);
+		for (int i = 0; i < undeletedTasksIDs.size(); i++) {
+			this.tasksMap.put(i, undeletedTasksIDs.get(i));
+		}
+	}
+
+	public List<Task> getTasks() {
+		return this.tasks;
+	}
+
+	public ObservableList<Task> getDisplayTasks() {
+		this.display.clear();
+		for (Map.Entry<Integer, Integer> entry : tasksMap.entrySet()) {
+			this.display.add(tasks.get(entry.getValue()));
+		}
+		return FXCollections.observableArrayList(this.display);
+	}
+
+	public ObservableList<Task> getOverdueTasks() {
+		return FXCollections.observableArrayList(Criteria
+				.getAllOverdueTasks(tasks));
+	}
+
+	public LinkedHashMap<Integer, Integer> getTasksMap() {
+		return this.tasksMap;
+	}
+
+	public void process(Command command) {
+		executeCommand(command);
+	}
+
+	public void executeCommand(Command command) {
+		assert (command.rawText != null);
+		switch (command.command) {
+		case ADD:
+			doAdd(command);
+			this.redoStack.clear();
+			break;
+		case LIST:
+			doList(command);
+			break;
+		case EDIT:
+			doEdit(command);
+			this.redoStack.clear();
+			break;
+		case UNDO:
+			doUndo();
+			break;
+		case DONE:
+			doDone(command);
+			this.redoStack.clear();
+			break;
+		case REDO:
+			doRedo();
+			break;
+		case UNDONE:
+			doUndone(command);
+			this.redoStack.clear();
+			break;
+		case CLEAR:
+			break;
+		case DONEALL:
+			break;
+		case SEARCH:
+			break;
+		case DELETE:
+			doDelete(command);
+			this.redoStack.clear();
+			break;
+		case HELP:
+			break;
+		default:
+			break;
+		}
+	}
+
+	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
+	 */
+
+	private void doAdd(Command command) {
+		assert (command.rawText != null);
+		Task newTask = new Task(command.rawText);
+		this.tasks.add(newTask);
+		this.tasksMap.put(tasksMap.size(), tasks.size() - OFFSET);
+		this.undoStack.push(new SimpleEntry<Integer, Command>(this.tasks.size()- OFFSET, command));
+		syncTasks();
+	}
+
+	private void doUndoAdd(int taskid, Command command) {
+		/*
+		 * remove it from the buffer remove the entry from the map
+		 */
+		this.redoStack.push(convertModifiedTaskToCommand(command.command,
+				taskid));
+		this.tasks.remove(taskid);
+		Integer fakeID = getFakeIDbyRealId(taskid);
+		assert (fakeID != null);
+		this.tasksMap.remove(fakeID);
+		syncTasks();
+	}
+
+	private void doList(Command command) {
+		logger.info("doList");
+		ArrayList<Integer> result = new ArrayList<Integer>();
+
+		// Supports any combination of criteria delimited by comma
+		// list today, timed, floating, deadline, 13/04/2014 6:00pm
+		// list today
+		// list tmw, today
+
+		// 13/04/2014 6:00pm - DateTime
+		// 13/04/2014 - DateTime
+
+		if (!(command.rawText == null)) {
+			Splitter splitter = Splitter.on(COMMA).trimResults().omitEmptyStrings();
+			Iterable<String> criteria = splitter.split(command.rawText);
+			logger.info("Found Criteria " + criteria);
+			Set<Integer> resultSet = new HashSet<Integer>(Criteria.getAllUndeletedTasks(tasks));
+			logger.info("Before anything :" + resultSet);
+			for (String c : criteria) {
+				// some hardcoded scenarios for common keywords
+				if (c.equalsIgnoreCase("tmw") || c.equalsIgnoreCase("tomorrow") || c.equalsIgnoreCase("tmr")) {
+					resultSet.retainAll(Criteria.getAllTasksforTomorrow(tasks));
+				} else if (c.equalsIgnoreCase("today")) {
+					resultSet.retainAll(Criteria.getAllTasksforToday(tasks));
+				} else if (c.equalsIgnoreCase("this week")) {
+					resultSet.retainAll(Criteria.getAllTasksforThisWeek(tasks));
+				} else if (c.equalsIgnoreCase("next week")) {
+					resultSet.retainAll(Criteria.getAllTasksforNextWeek(tasks));
+				} else if (c.equalsIgnoreCase("misc")) {
+					resultSet.retainAll(Criteria.getAllFloatingTasks(tasks));
+				} else if (c.equalsIgnoreCase("timed")) {
+					resultSet.retainAll(Criteria.getAllTimedTasks(tasks));
+				} else if (c.equalsIgnoreCase("deadline")) {
+					resultSet.retainAll(Criteria.getAllDeadlineTasks(tasks));
+				} else if (c.equalsIgnoreCase("overdue")) {
+					resultSet.retainAll(Criteria.getAllOverdueTaskIDs(tasks));
+				} else if (c.equalsIgnoreCase("done")) {
+					resultSet.clear();
+					resultSet.addAll(Criteria.getAllDoneTasks(tasks));
+				} else if (c.startsWith("#")) {
+					resultSet.retainAll(Criteria.getAllUndeletedTasksWithHashTag(tasks, c));
+				} else {
+					TaskParser parser = new TaskParser();
+					parser.parseTask(FILLER + c);
+					DateTime timestamp = parser.getEndDateTime();
+					resultSet.retainAll(Criteria.getAllUndeletedTasksWithTimestamp(tasks, timestamp));
+				}
+			}
+			logger.info("Result :" + resultSet);
+			for (Integer i : resultSet) {
+				result.add(i);
+			}
+		} else {
+			result = Criteria.getAllUndeletedTasks(tasks);
+		}
+
+		logger.info("Result :" + result);
+		this.tasksMap.clear();
+		for (int i = 0; i < result.size(); i++) {
+			this.tasksMap.put(i, result.get(i));
+		}
+	}
+	
+	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
+	 */
+
+	private void doDelete(Command command) {
+		String rawText = command.rawText;
+		assert (rawText != null);
+		if (checkDeleteInput(rawText)) {
+			int displayId = Integer.parseInt(rawText) - OFFSET;
+			int realId = tasksMap.get(displayId);
+
+			Task task = tasks.get(realId);
+			task.setMarkAsDelete();
+			updateHashMapAfterDelete(displayId);
+
+			Command delCommand = commandWithPreviousIndex(command.command, displayId);
+			this.undoStack.push(new SimpleEntry<Integer, Command>(realId, delCommand));
+			syncTasks();
+		}
+	}
+
+	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
+	 */
+
+	private Integer getFakeIDbyRealId(int realid) {
+		Integer removalKey = null;
+		for (Entry<Integer, Integer> entry : tasksMap.entrySet()) {
+			if (realid == entry.getValue()) {
+				removalKey = entry.getKey();
+			}
+		}
+		return removalKey;
+	}
+
+	private void syncTasks() {
+		this.undoStorage.writeCommands(undoStack);
+		this.redoStorage.writeCommands(redoStack);
+		this.storage.writeTasks(tasks);
+	}
+
+	private void updateHashMapAfterDelete(int fakeid) {
+		LinkedHashMap<Integer, Integer> temp = new LinkedHashMap<Integer, Integer>();
+		for (int i = 0; i < tasksMap.size(); i++) {
+			if (i < fakeid) {
+				temp.put(i, tasksMap.get(i));
+			} else {
+				temp.put(i, tasksMap.get(i + 1));
+			}
+		}
+		temp.remove(tasksMap.size() - 1);
+		this.tasksMap.clear();
+		this.tasksMap.putAll(temp);
+	}
+
+	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Criteria.java
+	 */
+
+	/* default criteria */
+	public static ArrayList<Integer> getAllUndeletedTasks(List<Task> tasks) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		for(Task t: tasks) {
+			if(t.getMarkAsDelete() == false && t.getTaskDone() == false) {
+				result.add(tasks.indexOf(t));
+			}
+		}
+		return result;
+	}
+	
+
+	public static ArrayList<Integer> getAllUndeletedFloatingTasks(List <Task> tasks) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		for(Task t: tasks){
+			if(t.getMarkAsDelete() == false && t.getTaskDone() == false) {
+				if(t.getTaskStartTime() == null && t.getTaskEndTime()== null)
+				result.add(tasks.indexOf(t));
+			}
+		}
+		return result;
+	}
+	
+	public static ArrayList<Integer> getAllFloatingTasks(List <Task> tasks) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		for(Task t: tasks){
+				if(t.getTaskStartTime() == null && t.getTaskEndTime()== null)
+				result.add(tasks.indexOf(t));
+			}
+		return result;
+	}
+	
+	public static ArrayList<Integer> getAllUndeletedTimedTasks(List <Task> tasks) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		for(Task t: tasks){
+			if(t.getMarkAsDelete() == false && t.getTaskDone() == false) {
+				if(t.getTaskStartTime() != null && t.getTaskEndTime() != null)
+				result.add(tasks.indexOf(t));
+			}
+		}
+		return result;
+	}
+	
+	public static ArrayList<Integer> getAllTimedTasks(List <Task> tasks) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		for(Task t: tasks){
+				if(t.getTaskStartTime() != null && t.getTaskEndTime() != null)
+				result.add(tasks.indexOf(t));		
+		}
+		return result;
+	}
+	
+	public static ArrayList<Integer> getAllUndeletedDeadlineTasks(List <Task> tasks) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		for(Task t: tasks){
+			if(t.getMarkAsDelete() == false && t.getTaskDone() == false) {
+				if(t.getTaskStartTime() == null && t.getTaskEndTime() != null)
+				result.add(tasks.indexOf(t));
+			}
+		}
+		return result;
+	}
+	
+	public static ArrayList<Integer> getAllDeadlineTasks(List <Task> tasks) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		for(Task t: tasks){
+				if(t.getTaskStartTime() == null && t.getTaskEndTime() != null)
+				result.add(tasks.indexOf(t));
+		}
+		return result;
+	}
+	
+	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Criteria.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Criteria.java
+	 */
+
+	public static ArrayList<Integer> getAllTasksforToday(List<Task> tasks) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		DateTime today = new DateTime();
+		for(Task t: tasks) {
+			if(t.getMarkAsDelete()==false && t.getTaskEndTime() != null && !t.getTaskDone() &&
+			   t.getTaskEndTime().withTimeAtStartOfDay().isEqual(today.withTimeAtStartOfDay())) {
+				result.add(tasks.indexOf(t));
+			}
+		}
+		System.out.println(result.size());
+		return result;
+	}
+	
+	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Criteria.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Criteria.java
+	 */
+
+	public static ArrayList<Integer> getAllTasksforTomorrow(List <Task> tasks) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		DateTime today = new DateTime();
+		DateTime tomorrow = today.plusDays(1);
+		for(Task t: tasks) {
+			if(t.getMarkAsDelete() == false && t.getTaskEndTime() != null && !t.getTaskDone() && 
+               t.getTaskEndTime().withTimeAtStartOfDay().isEqual(tomorrow.withTimeAtStartOfDay())) {
+				result.add(tasks.indexOf(t));
+			}
+		}
+		return result;
+	}
+	
+	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Criteria.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Criteria.java
+	 */
+
+	public static ArrayList<Integer> getAllTasksforThisWeek(List <Task> tasks) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		DateTime today = new DateTime();
+		DateTime nextWeek = today.plusWeeks(1);
+		Interval interval = new Interval(today, nextWeek);
+		for(Task t: tasks) {
+			if(t.getMarkAsDelete() == false && t.getTaskDone() == false) {
+				// deadline tasks - check with end timestamp
+				if(t.getTaskStartTime() == null && t.getTaskEndTime() != null) {
+					if(interval.contains(t.getTaskEndTime())) {
+						result.add(tasks.indexOf(t));
+					}
+				// timed tasks - check with start timestamp
+				} else if(t.getTaskStartTime() != null && t.getTaskEndTime() != null) {
+					if(interval.contains(t.getTaskStartTime()))
+						result.add(tasks.indexOf(t));
+				}
+			}
+		}
+		return result;
+	}
+	
+	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Criteria.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Criteria.java
+	 */
+
+	public static ArrayList<Integer> getAllUndeletedTasksWithTimestamp(List<Task> tasks, DateTime inputDate) {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		for(Task t: tasks) {
+			// deadline tasks
+			if(t.getTaskStartTime() == null && t.getTaskEndTime() != null && t.getMarkAsDelete() == false && t.getTaskDone() == false) {
+				if(t.getTaskEndTime().withTimeAtStartOfDay().isEqual(inputDate.withTimeAtStartOfDay())) {
+					result.add(tasks.indexOf(t));
+				}
+
+			// timed tasks
+			} else if(t.getTaskStartTime() != null && t.getTaskEndTime() != null && t.getMarkAsDelete() == false && t.getTaskDone() == false) {
+                Interval interval = new Interval(t.getTaskStartTime(), t.getTaskEndTime());
+                if(t.getTaskStartTime().withTimeAtStartOfDay().isEqual(inputDate.withTimeAtStartOfDay()) ||
+                   t.getTaskEndTime().withTimeAtStartOfDay().isEqual(inputDate.withTimeAtStartOfDay()) ||
+                   interval.contains(inputDate)) 
+                {
+                	result.add(tasks.indexOf(t));
+                }
+			}
+		}
+		return result;
+	}
+}
+
+	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\logic\Criteria.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\storage\StorageHelper.java
+	 */
+
+/* A singleton class to handle the persistence of Task objects
+ */
+public class StorageHelper {
+
+	public static StorageHelper INSTANCE = new StorageHelper();
+
+	protected static final String FILENAME = "data.json";
+	private static final String ERROR_FILE_CREATION = "Error in file creation of " + FILENAME;
+	private static final String ERROR_TASK_WRITE = "Error in writing tasks to " + FILENAME;
+	private static final String ERROR_FILE_IO = "Error in File IO";
+
+	private Gson gson;
+	private File file;
+
+	private StorageHelper() {
+		this.file = createOrGetFile(FILENAME);
+		this.gson = new GsonBuilder()
+				.registerTypeAdapter(DateTime.class, new DateTimeTypeConverter())
+				.enableComplexMapKeySerialization().create();
+	}
+
+	public void writeTasks(List<Task> t) {
+		PandaLogger.getLogger().info("writeTasks: Length of Task array = " + t.size());
+		try (Writer writer = new OutputStreamWriter(new FileOutputStream(this.file), "UTF-8")) {
+			gson.toJson(t, writer);
+		} catch (IOException e) {
+			throw new Error(ERROR_TASK_WRITE);
+		}
+	}
+
+	public ArrayList<Task> getAllTasks() {
+		PandaLogger.getLogger().info("getAllTasks");
+		ArrayList<Task> tasks = null;
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(this.file));
+			tasks = this.gson.fromJson(br, new TypeToken<List<Task>>() {
+			}.getType());
+			if (tasks == null) {
+				return new ArrayList<Task>();
+			}
+			PandaLogger.getLogger().info(String.valueOf(tasks.size()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Error(ERROR_FILE_IO);
+		}
+		return tasks;
+	}
+
+	private File createOrGetFile(String filename) {
+		file = new File(filename);
+		if (!file.isFile()) {
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				throw new Error(ERROR_FILE_CREATION);
+			}
+		}
+		return file;
+	}
+
+	public void clearFile() {
+		file.delete();
+		this.file = createOrGetFile(FILENAME);
+	}
+}
+	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\storage\StorageHelper.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\test\CommandTest.java
+	 */
+
+/* test whether a command is created correctly from the user's input
+ * desired result is strip out the command verb from the input and create a command object
+ * the result of the string goes into attribute of the command as command.rawText
+ */
+public class CommandTest {
+	
+	private String c0Txt = "";
+	private String c1Txt = "add";			// test whether it works with no space
+	private String c2Txt = "add ";			// one space
+	private String c3Txt = "list #project, 14 apr";		// multiple space
+	private String c4Txt = "add hackathon from 12:00 to 13:00";
+	private String c5Txt = "done 1";
+	private String c6Txt = "delete 1";
+	private String c7Txt = "delete lajalsjfdsa";
+	private String c8Txt = "undone 5";
+	private String c9Txt = "edit xxxx yyy ggg ";
+	
+	private Command command0;
+	private Command command1;
+	private Command command2;
+	private Command command3;
+	private Command command4;
+	private Command command5;
+	private Command command6;
+	private Command command7;
+	private Command command8;
+	private Command command9;
+	
+	@Before
+	public void setUp() {
+		command0 = new Command(c0Txt);
+		command1 = new Command(c1Txt);
+		command2 = new Command(c2Txt);
+		command3 = new Command(c3Txt);
+		command4 = new Command(c4Txt);
+		command5 = new Command(c5Txt);
+		command6 = new Command(c6Txt);
+		command7 = new Command(c7Txt);
+		command8 = new Command(c8Txt);
+		command9 = new Command(c9Txt);
+	}
+	
+	public void testAttemptAutoComplete() {
+	}
+	
+	@Test
+	public void testStripCommand() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Class<?> params[] = new Class[1];
+		params[0] = String.class;
+
+		Method m;
+		m = command1.getClass().getDeclaredMethod("stripCommand", params);
+		m.setAccessible(true);
+
+		String[] result = (String[])m.invoke(command0, c0Txt);
+		String[] expected = {"", null};
+
+		String[] result1 = (String[])m.invoke(command1, c1Txt);
+		String[] expected1 = {"add", null};
+		
+		String[] result2 = (String[])m.invoke(command2, c2Txt);
+		String[] expected2 = {"add", null};
+		
+		String[] result3 = (String[])m.invoke(command3, c3Txt);
+		String[] expected3 = {"list", "#project, 14 apr"};
+
+		String[] result4 = (String[])m.invoke(command4, c4Txt);
+		String[] expected4 = {"add", "hackathon from 12:00 to 13:00"};
+			
+		String[] result5 = (String[])m.invoke(command5, c5Txt);
+		String[] expected5 = {"done", "1"};
+
+		String[] result6 = (String[])m.invoke(command6, c6Txt);
+		String[] expected6 = {"delete", "1"};
+
+		String[] result7 = (String[])m.invoke(command7, c7Txt);
+		String[] expected7 = {"delete", "lajalsjfdsa"};				// still get the invalid string, but won't be executed
+
+		assertArrayEquals("command 0", expected, result);
+		assertArrayEquals("command 1", expected1, result1);
+		assertArrayEquals("command 2", expected2, result2);
+		assertArrayEquals("command 3", expected3, result3);
+		assertArrayEquals("command 4", expected4, result4);
+		assertArrayEquals("command 5", expected5, result5);
+		assertArrayEquals("command 5", expected6, result6);
+		assertArrayEquals("command 6", expected7, result7);
+	}
+}
+
+	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\test\CommandTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\test\CriteriaTest.java
+	 */
+
+/* test class for testing of filtering by different which is our main feature in listing */
+/* also serves as an integration test to make sure parser is parsing the details correctly
+ * upon create a new Task object
+ */
+public class CriteriaTest {
+	
+	private static List<Task> tasks;
+	
+	// by the time the input become tasks, the command verb has been stripped out
+	private static String[] rawTexts = {
+		"cs2101 critical reflection by 11 apr 12pm", 				// already overdue
+		"cs2103 demo video by tuesday #project",					
+		"cs2103 V0.5 demo on next Wednesday from 3:30pm to 4pm",
+		"ask a girl out on Friday",
+		"freshmen orientation camp from 10 june 2014 12pm to 15 june 2014 6pm",
+		"regular #project",
+		"next week stuffs by 22 apr 2014",
+		"go to school tomorrow from 2pm to 6pm"						// already overdue
+	};
+	
+	private static String FILLER = "by ";
+
+	@Before
+	public void setUp() throws Exception {
+		tasks = new ArrayList<Task>();
+		for(String text: rawTexts) {
+			tasks.add(new Task(text));
+		}
+
+	}
+
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+		tasks.clear();
+	}
+
+	@Test
+	public void testGetAllOverdueTaskIDs() {
+		ArrayList<Integer> result = Criteria.getAllOverdueTaskIDs(tasks);
+		assertEquals("[0, 7]", result.toString());
+
+		// done tasks don't count
+		tasks.get(0).setTaskDone();
+		result = Criteria.getAllOverdueTaskIDs(tasks);
+		assertEquals("[7]", result.toString());
+		
+		// floating tasks don't count
+		tasks.get(7).setTaskStartTime(null);
+		tasks.get(7).setTaskEndTime(null);
+		result = Criteria.getAllOverdueTaskIDs(tasks);
+		assertEquals(new ArrayList<Integer>(), result);
+
+	}
+	
+
+	@Test
+	public void testGetAllDoneTasks() {
+		tasks.get(0).setTaskDone();
+		tasks.get(2).setTaskDone();
+		ArrayList<Integer> result = Criteria.getAllDoneTasks(tasks);
+		assertEquals("[0, 2]", result.toString());
+		
+		// deleted tasks don't count
+		tasks.get(0).setMarkAsDelete();
+		result = Criteria.getAllDoneTasks(tasks);
+		assertEquals("[2]", result.toString());
+		
+	}
+
+	@Test
+	public void testGetAllUndeletedTasks() {
+		ArrayList<Integer> result = Criteria.getAllUndeletedTasks(tasks);
+		assertEquals("[0, 1, 2, 3, 4, 5, 6, 7]", result.toString());
+		
+		// deleted tasks don't count
+		tasks.get(0).setMarkAsDelete();
+		tasks.get(2).setMarkAsDelete();
+		tasks.get(5).setMarkAsDelete();
+		result = Criteria.getAllUndeletedTasks(tasks);
+		assertEquals("[1, 3, 4, 6, 7]", result.toString());
+		
+		// by default, we don't show done tasks
+		tasks.get(6).setTaskDone();
+		result = Criteria.getAllUndeletedTasks(tasks);
+		assertEquals("[1, 3, 4, 7]", result.toString());
+	}
+
+	@Test
+	public void testGetAllUndeletedFloatingTasks() {
+		ArrayList<Integer> result = Criteria.getAllUndeletedFloatingTasks(tasks);
+		assertEquals("[5]", result.toString());
+		
+		tasks.get(5).setTaskEndTime(new DateTime());
+		result = Criteria.getAllUndeletedFloatingTasks(tasks);
+		assertEquals("[]", result.toString());
+		
+		// deleted tasks don't count
+		tasks.get(5).setTaskEndTime(null);
+		tasks.get(5).setMarkAsDelete();
+		result = Criteria.getAllUndeletedFloatingTasks(tasks);
+		assertEquals("[]", result.toString());
+	}
+
+
+	@Test
+	public void testGetAllUndeletedTimedTasks() {
+		ArrayList<Integer> result = Criteria.getAllUndeletedTimedTasks(tasks);
+		assertEquals("[2, 4, 7]", result.toString());
+	}
+
+
+	@Test
+	public void testGetAllUndeletedDeadlineTasks() {
+		tasks.get(0).setMarkAsDelete();
+		ArrayList<Integer> result = Criteria.getAllUndeletedDeadlineTasks(tasks);
+		assertEquals("[1, 3, 6]", result.toString());
+	}
+
+	@Test
+	public void testGetAllDeadlineTasks() {
+		ArrayList<Integer> result = Criteria.getAllDeadlineTasks(tasks);
+		assertEquals("[0, 1, 3, 6]", result.toString());
+	}
+
+	// mark as done/delete should be working fine.
+	// start testing timestamp comparison from here onwards
+	@Test
+	public void testGetAllTasksforToday() {
+		ArrayList<Integer> result = Criteria.getAllTasksforToday(tasks);
+		assertEquals("[7]", result.toString());
+	}
+
+	@Test
+	public void testGetAllTasksforTomorrow() {
+		ArrayList<Integer> result = Criteria.getAllTasksforTomorrow(tasks);
+		assertEquals("[1]", result.toString());
+	}
+
+	@Test
+	public void testGetAllTasksforThisWeek() {
+		// this week = Interval between (today, today.plusWeeks(1));
+		ArrayList<Integer> result = Criteria.getAllTasksforThisWeek(tasks);
+		assertEquals("[1, 3]", result.toString());
+	}
+
+	@Test
+	public void testGetAllTasksforNextWeek() {
+		// next week = Interval between (today.plusWeeks(1), today.plusWeeks(2));
+		ArrayList<Integer> result = Criteria.getAllTasksforNextWeek(tasks);
+		assertEquals("[2, 6]", result.toString());
+	}
+
+	@Test
+	public void testGetAllUndeletedTasksWithHashTag() {
+		ArrayList<Integer> result = Criteria.getAllUndeletedTasksWithHashTag(tasks, "#project");
+		assertEquals("[1, 5]", result.toString());
+	}
+
+	// integration test, also tests whether our parser is parsing the input datetime correctly
+	@Test
+	public void testGetAllUndeletedTasksWithTimestamp() {
+		TaskParser parser = new TaskParser();
+		parser.parseTask(FILLER + "11 apr");
+		DateTime timestamp = parser.getEndDateTime();
+		ArrayList<Integer> result = Criteria.getAllUndeletedTasksWithTimestamp(tasks, timestamp);
+		assertEquals("[0]", result.toString());
+	}
+
+}
+
+	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\test\CriteriaTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\test\UndoStorageTest.java
+	 */
+
+/*
+ * testing of stack behavior and reading and writing of command stack in file
+ */
+public class UndoStorageTest {
+	
+	private static final String TEST_FILENAME = "UndoStorageTest.json";
+	private static final String ERROR_FILE_CREATION = "Error in creating json file for testing";;
+	private static File file;
+	private static UndoStorage undoStorage = UndoStorage.INSTANCE;
+	
+	private Stack<SimpleEntry<Integer, Command>> commandStack;
+	
+	private static File createOrGetFile(String filename) {
+		File file = new File(filename);
+		if(!file.isFile()) {
+			try {
+				file.createNewFile();
+			} catch(IOException e) {
+				throw new Error(ERROR_FILE_CREATION);
+			}
+		}
+		return file;
+	}
+
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+		file = createOrGetFile(TEST_FILENAME);
+	}
+
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+		file.delete();
+	}
+
+	@Before
+	public void setUp() throws Exception {
+		commandStack = new Stack<SimpleEntry<Integer, Command>>();
+		commandStack.push(new SimpleEntry<Integer, Command>(1, new Command("add submit video #cs2103 by 2359")));
+		commandStack.push(new SimpleEntry<Integer, Command>(2, new Command("add ask a girl out")));
+		commandStack.push(new SimpleEntry<Integer, Command>(3, new Command("delete 1")));
+		commandStack.push(new SimpleEntry<Integer, Command>(4, new Command("edit 1 nice to meet you #dream")));
+		commandStack.push(new SimpleEntry<Integer, Command>(5, new Command("done 1")));
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		commandStack = new Stack<SimpleEntry<Integer, Command>>();
+	}
+	
+	// test both read and write methods behavior
+	@Test
+	public void testReadandWrite() {
+		undoStorage.writeCommands(commandStack, file);
+		Stack<SimpleEntry<Integer, Command>> allCommands = undoStorage.getAllCommands(file);
+		assertEquals(allCommands.toString(), commandStack.toString());
+	}
+	
+	// just want to see the string representation of a stack
+	@Test
+	public void testStack() {
+		Stack<String> testStack = new Stack<String>();
+		testStack.push("aaa");
+		testStack.push("bbb");
+		testStack.push("ccc");
+		assertEquals("[aaa, bbb, ccc]", testStack.toString());
+	}
+	
+	@Test
+	public void testNullMap() {
+		Stack<AbstractMap.Entry<Integer, String>> testStack = new Stack<AbstractMap.Entry<Integer, String>>();
+		testStack.push(new AbstractMap.SimpleEntry<Integer, String>(1, "aaa"));
+		testStack.push(new AbstractMap.SimpleEntry<Integer, String>(2, "bbb"));
+		testStack.push(new AbstractMap.SimpleEntry<Integer, String>(3, "ccc"));
+		testStack.push(new AbstractMap.SimpleEntry<Integer, String>(4, "ddd"));
+		testStack.push(new AbstractMap.SimpleEntry<Integer, String>(4, "edit woohoo"));
+		testStack.push(new AbstractMap.SimpleEntry<Integer, String>(4, "ccc"));
+		assertEquals("[1=aaa, 2=bbb, 3=ccc, 4=ddd, 4=edit woohoo, 4=ccc]", testStack.toString());
+	}
+}
+
+	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\test\UndoStorageTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\view\PandaUI.java
+	 */
+
+public class PandaUI extends Application {
+
+	// app
+	public static final String APP_TITLE = "TaskPanda";
+	public static final String APP_ICON = "panda.png";
+	public static final String APP_TRAY_ICON = "panda_small.png";
+	public static final int APP_WIDTH = 500;
+	public static final int APP_HEIGHT = 700;
+	public static final String APP_SHORTCUT = "ctrl SPACE";
+	private static final String CSS_PATH = "css/style.css";
+	
+	// system tray
+	private static final String TRAY_SHOW = "Show";
+	private static final String TRAY_CLOSE =  "Close";
+	private static final String TRAY_ICON_ERROR =  "Error locating tray icon";
+	private static final String TRAY_ADD_ERROR =  "Error adding TaskPanda tray icon to System Icon Tray";
+
+	// input field
+	private static final String IF_PLACEHOLDER = "Get Busy!";
+	private static final int IF_HEIGHT = 90;
+	private static final int IF_WIDTH = APP_WIDTH;
+	private static final int IF_COLUMN_COUNT = 50;
+	private static final String IF_ID = "inputField";
+
+	private static final String SPACE = " ";
+	private static final String SPLIT = "\\s+";
+
+	private static final int OFFSET = 1;
+	private static final int COMMAND_INDEX = 0;
+	private static final int THE_REST_INDEX = 1;
+
+	// listview
+	private static final String LIST_ID = "tasklist";
+
+	private static final String OVERDUE_TXT = "You have %d overdue task(s).";
+	private static final String OVERDUE_ID = "overdue-label";
+	private static final String OVERDUE_VBOX_ID = "overdue-vbox";
+	private static final int OVERDUE_HEIGHT = 40;
+	
+	private static final String EDIT_TXT = "edit %1d %2s";
+	private static final String DELETE_TXT = "delete %1d";
+	
+	
+	private static final String HELP_TITLE_ID = "help-title";
+	private static final String HELP_TEXT_ID = "help-text";
+
+	private static final String INVALID_COMMAND = "Invalid Command! Type \"Help\" for Manual";
+	
+	// help manual
+	private static final String HELP_TITLE = "\nTaskPanda Help Manual";
+
+	CommandFactory commandFactory = CommandFactory.INSTANCE;
+	ObservableList<Task> tasks = commandFactory.getDisplayTasks();
+	ObservableList<Task> overduetasks = commandFactory.getOverdueTasks();
+
+	ListView<Task> list = new ListView<Task>();
+	Label overdueLabel = new Label();
+	Text overdueText = new Text();
+
+	TextField inputField;
+
+	VBox bottomBox;
+	VBox overBox = addOverStatus();
+	VBox taskBox = addTaskList();
+	VBox helpBox = addHelpText();
+	
+	private TrayIcon trayIcon;
+
+	public static void main(String[] args) {
+		launch(args);
+	}
+
+	@Override
+	public void start(Stage primaryStage) {
+		BorderPane border = new BorderPane();
+		border.setTop(addInputField());
+		border.setCenter(addBottomComponents());
+
+		createTrayIcon(primaryStage);
+		setupGlobalHotKey(primaryStage);
+		Platform.setImplicitExit(false);
+		primaryStage.setScene(setUpScene(border));
+		primaryStage.getIcons().add(new Image(APP_ICON));
+		primaryStage.setTitle(APP_TITLE);
+		primaryStage.show();
+		primaryStage.toFront();
+	}
+	
+	private void createTrayIcon(final Stage stage) {
+		if(SystemTray.isSupported()) {
+			SystemTray tray = SystemTray.getSystemTray();
+			stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+				@Override
+				public void handle(WindowEvent e) {
+					hide(stage);
+				}
+			});
+		
+            ActionListener showListener = new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                	show(stage);
+                }
+		    };
+		    
+		    ActionListener exitListener = new ActionListener() {
+		    	@Override
+		    	public void actionPerformed(ActionEvent e) {
+		    		System.exit(0);
+		    	}
+		    };
+		
+		    // Popup menu
+		    PopupMenu menu = new PopupMenu();
+		    MenuItem showItem = new MenuItem(TRAY_SHOW);
+		    showItem.addActionListener(showListener);
+		    menu.add(showItem);
+		    
+		    MenuItem exitItem = new MenuItem(TRAY_CLOSE);
+		    exitItem.addActionListener(exitListener);
+		    menu.add(exitItem);
+		
+		    java.awt.Image trayImage = null;
+		    try {
+		        trayImage = ImageIO.read(this.getClass().getClassLoader().getResourceAsStream(APP_TRAY_ICON));
+		    } catch(IOException e) {
+		    	System.err.println(TRAY_ICON_ERROR);
+		    }
+		    
+		    // setup tray icon
+		    trayIcon = new TrayIcon(trayImage, APP_TITLE , menu);
+		    trayIcon.addActionListener(showListener);
+		    try {
+			    tray.add(trayIcon);
+		    } catch(AWTException e) {
+		    	System.err.println(TRAY_ADD_ERROR);
+		    }
+		}
+	}
+	
+	private void setupGlobalHotKey(final Stage stage) {
+		HotKeyListener hotkeylistener = new HotKeyListener() {
+	    	@Override
+	    	public void onHotKey(HotKey hotkey) {
+	    		show(stage);
+	    	}
+	    };
+	    Provider provider = Provider.getCurrentProvider(true);
+	    provider.reset();
+	    provider.register(KeyStroke.getKeyStroke(APP_SHORTCUT), hotkeylistener);
+	}
+	
+	private void hide(final Stage stage) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				if(SystemTray.isSupported()) {
+					stage.hide();
+				} else {
+					System.exit(0);
+				}
+			}
+		});
+	}
+	
+	private void show(final Stage stage) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				stage.show();
+				stage.toFront();
+				stage.requestFocus();
+			}
+		});
+	}
+	
+	private Scene setUpScene(BorderPane border) {
+		Scene scene = new Scene(border, APP_WIDTH, APP_HEIGHT);
+		scene.getStylesheets().add(this.getClass().getClassLoader().getResource(CSS_PATH).toExternalForm());
+
+		// for resizing of app
+		scene.widthProperty().addListener(new ChangeListener() {
+			public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+				Double width = (Double) newValue;
+				inputField.setPrefWidth(width);
+				overdueLabel.setPrefWidth(width);
+				list.setPrefWidth(width);
+				
+			}
+		});
+		scene.heightProperty().addListener(new ChangeListener() {
+			public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+				Double height = (Double) newValue;
+				list.setPrefHeight((height - (IF_HEIGHT + OVERDUE_HEIGHT)));
+			}
+		});
+		return scene;
+	}
+
+	private HBox addInputField() {
+		HBox hbox = new HBox();
+
+		inputField = new TextField();
+		inputField.setPromptText(IF_PLACEHOLDER);
+		inputField.setPrefColumnCount(IF_COLUMN_COUNT);
+		inputField.setPrefSize(IF_WIDTH, IF_HEIGHT);
+		inputField.setId(IF_ID);
+		inputField.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable,
+					String oldValue, String newValue) {
+				handleSearch(oldValue, newValue);
+			}
+		});
+		handleInputKeyListener();
+		hbox.getChildren().addAll(inputField);
+		return hbox;
+	}
+	
+	private void handleInputKeyListener() {
+		inputField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent e) {
+				if (e.getCode() == KeyCode.ENTER) {
+					if (inputField.getText().length() > 0) {
+						Command command = new Command(inputField.getText());
+						if (command.command == COMMAND_TYPE.INVALID) {
+							// invalid command
+							overdueLabel.textProperty().unbind();
+							overdueLabel.setText(INVALID_COMMAND);
+						} else {
+							commandFactory.process(command);
+							if(command.command != COMMAND_TYPE.SEARCH) {
+							    updateTasksList();
+							}
+                            if (command.command == COMMAND_TYPE.ADD) {
+                                list.scrollTo(tasks.size() - OFFSET);
+                                list.getSelectionModel().select(tasks.size() - OFFSET);
+                            }
+							overdueLabel.textProperty().bind(Bindings.format(OVERDUE_TXT, Bindings.size(overduetasks)));
+							if (command.command == COMMAND_TYPE.HELP) {
+								// show help text
+								bottomBox.getChildren().remove(taskBox);
+								bottomBox.getChildren().add(helpBox);
+							} else {
+								// remove help text
+								if(bottomBox.getChildren().contains(helpBox)) {
+									bottomBox.getChildren().remove(helpBox);
+								}
+								if(!bottomBox.getChildren().contains(taskBox)) {
+									bottomBox.getChildren().add(taskBox);
+								}
+
+							}
+							inputField.clear();
+						}
+					}
+				} else if (e.getCode() == KeyCode.DOWN) {
+					list.requestFocus();
+				}
+			}
+		});
+	}
+
+	private VBox addBottomComponents() {
+		bottomBox = new VBox();
+		bottomBox.getChildren().addAll(overBox);
+		if(list.getItems().size() > 0) {
+			bottomBox.getChildren().add(taskBox);
+		}
+		return bottomBox;
+	}
+
+	private VBox addHelpText() {
+		helpBox = new VBox();
+		Label title = new Label(HELP_TITLE);
+		Label helpText = new Label(
+
+		"add <description> \n" + 
+		"add <description> <timestamp> \n" + 
+		"add <description> from <timestamp> to <timestamp> \n\n" +
+
+		"list \n" + 
+		"list misc \n" + 
+		"list timed \n" + 
+		"list deadline \n\n" +
+		"list today \n" + 
+		"list tomorrow \n" + 
+		"list this week \n" + 
+		"list <date> \n\n" +
+
+		"edit <id> <description> <timestamp> \n\n" +
+
+		"done <id> \n" + "undone <id> \n\n" +
+
+		"undo \n\n" + "redo \n\n" +
+
+		"search <keyword> \n");
+
+		title.setId(HELP_TITLE_ID);
+		helpText.setId(HELP_TEXT_ID);
+		helpBox.getChildren().addAll(title, helpText);
+		return helpBox;
+	}
+
+	private VBox addOverStatus() {
+		VBox overBox = new VBox();
+		overBox.setId(OVERDUE_VBOX_ID);
+		overdueLabel.setId(OVERDUE_ID);
+		overdueLabel.setAlignment(Pos.CENTER);
+		overdueLabel.setPrefWidth(APP_WIDTH);
+		overdueLabel.setPrefHeight(OVERDUE_HEIGHT);
+		overdueLabel.textProperty().bind(Bindings.format(OVERDUE_TXT, Bindings.size(overduetasks)));
+		overBox.getChildren().addAll(overdueLabel);
+		return overBox;
+	}
+
+	private VBox addTaskList() {
+		VBox taskBox = new VBox();
+		list.setItems(tasks);
+		list.setId(LIST_ID);
+		list.setPrefHeight(APP_HEIGHT - (IF_HEIGHT + OVERDUE_HEIGHT));
+		list.setCellFactory(new Callback<ListView<Task>, ListCell<Task>>() {
+			@Override
+			public ListCell<Task> call(ListView<Task> param) {
+				TaskCell taskcell = new TaskCell();
+				return taskcell;
+			}
+		});
+		handleListKeyListener();
+		taskBox.getChildren().addAll(list);
+		return taskBox;
+	}
+	
+	private void handleListKeyListener() {
+
+		// for bigger scrolling across page
+		list.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent e) {
+				if (e.getCode() == KeyCode.ENTER) {
+					handleEnterKey();
+				} else if (e.getCode() == KeyCode.ESCAPE) {
+					handleEscKey();
+				} else if (e.getCode() == KeyCode.DELETE) {
+					handleDeleteKey();
+				}
+			}
+		});
+	}
+	
+	private void handleEnterKey() {
+        int index = list.getSelectionModel().getSelectedIndex() + OFFSET;
+		Task t = list.getSelectionModel().getSelectedItem();
+		inputField.setText(String.format(EDIT_TXT, index, t.getRawText()));
+		inputField.requestFocus();
+	}
+	
+	private void handleEscKey() {
+		inputField.requestFocus();
+	}
+	
+	private void handleDeleteKey() {
+		int index = list.getSelectionModel().getSelectedIndex() + OFFSET;
+		inputField.setText(String.format(DELETE_TXT, index));
+		inputField.requestFocus();
+	}
+
+	private void handleSearch(String oldValue, String newValue) {
+		// user pressed delete and reverse back to the old list
+		if (oldValue != null && (newValue.length() < oldValue.length())) {
+			updateTasksList();
+		}
+
+		String[] pieces = newValue.split(SPLIT);
+		if ((!pieces[COMMAND_INDEX].equalsIgnoreCase(COMMAND_TYPE.SEARCH.name())) || pieces.length <= THE_REST_INDEX) {
+			updateTasksList();
+		} else {
+			newValue = pieces[THE_REST_INDEX];
+			String[] parts = newValue.toLowerCase().split(SPACE);
+			// create a temporary subentries list matching list and replace it
+			ObservableList<Task> subentries = FXCollections.observableArrayList();
+			for (Task task : list.getItems()) {
+				boolean match = true;
+				for (String part : parts) {
+					if (!task.getTaskDescription().toLowerCase().contains(part)) {
+						match = false;
+						break;
+					}
+				}
+				if (match) {
+					subentries.add(task);
+				}
+			}
+
+			list.setItems(subentries);
+		}
+
+	}
+
+	private void updateTasksList() {
+		tasks = commandFactory.getDisplayTasks();
+		overduetasks = commandFactory.getOverdueTasks();
+		list.setItems(tasks);
+	}
+}
+
+	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\view\PandaUI.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\view\TaskCell.java
+	 */
+
+
+/*
+ * class to control the UI of individual list cell
+ */
+public class TaskCell extends ListCell<Task> {
+
+	private static final int OFFSET = 1;
+
+	// grid
+	private static final int VGAP = 5;
+	private static final int INDEX_WIDTH = 40;
+	private static final int INDEX_HEIGHT = 40;
+	
+	private static final int CELL_WIDTH = 482;
+	
+	private static final int HASHTAG_WIDTH = 100;
+	
+	private static final double PADDING = 2.0;
+
+	// css id for UI elements
+	private static final String HBOX_ID = "hbox";
+	private static final String GRID_ID = "grid";
+	private static final String DESC_ID = "description";
+	private static final String HASHTAG_ID = "hashtag";
+	private static final String INDEX_ID = "index";
+	private static final String START_ID = "start";
+	private static final String END_ID = "end";
+	private static final String TIME_CLASS = "timestamp";
+	private static final String OVERDUE_CLASS = "overdue-task";
+	private static final String DONE_ID = "done";
+	private static final String SEPARATOR_ID = "separator";
+	private static final String TASK_CELL_ID = "task-cell";
+	
+	private static final String DATE_FORMAT_PATTERN = "d MMM yy  h:mm a";
+
+	private GridPane grid = new GridPane();
+	private HBox hbox = new HBox();
+	private Label index = new Label();
+	private Label desc = new Label();
+	private Label start = new Label();
+	private Label end = new Label();
+	private Label hashtag = new Label();
+	private Separator separator = new Separator(Orientation.VERTICAL);
+
+	public TaskCell() {
+		configureCell();
+		configureGrid();
+		configureHBox();
+		configureIndex(); 				// id label
+		configureHashtag();
+		configureDesc();
+		configureTimestamp();
+		configureSeparator();
+		addControls();
+
+	}
+	
+	private void configureCell() {
+		super.setId(TASK_CELL_ID);
+		super.setPrefWidth(CELL_WIDTH);
+		super.widthProperty().addListener(new ChangeListener() {
+			public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+				Double width = (Double) newValue;
+				if(width < CELL_WIDTH) {
+					desc.setPrefWidth(PandaUI.APP_WIDTH - PADDING*HASHTAG_WIDTH);
+				} else {
+					desc.setPrefWidth(width - PADDING*HASHTAG_WIDTH);
+				}
+			}
+		});
+	}
+	
+	private void configureGrid() {
+		grid.setHgap(VGAP);
+		grid.setVgap(VGAP);
+		grid.setId(GRID_ID);
+		grid.getColumnConstraints().addAll(new ColumnConstraints(), new ColumnConstraints(120));
+	}
+
+	private void configureHBox() {
+		hbox.setId(HBOX_ID);
+	}
+
+	private void configureIndex() {
+		index.setPrefSize(INDEX_WIDTH, INDEX_HEIGHT);
+		index.setId(INDEX_ID);
+		index.setAlignment(Pos.CENTER);
+	}
+
+	private void configureHashtag() {
+		hashtag.setId(HASHTAG_ID);
+		hashtag.setPrefWidth(HASHTAG_WIDTH);
+	}
+
+	private void configureDesc() {
+		desc.setId(DESC_ID);
+		desc.setPrefWidth(PandaUI.APP_WIDTH - PADDING*HASHTAG_WIDTH);
+	}
+
+	private void configureTimestamp() {
+		start.getStyleClass().add(TIME_CLASS);
+		start.setId(START_ID);
+		end.setId(END_ID);
+		end.getStyleClass().add(TIME_CLASS);
+	}
+	
+	private void configureSeparator() {
+		separator.setId(SEPARATOR_ID);
+	}
+
+	private void addControls() {
+		grid.add(index, 0, 0, 1, 3);
+		grid.add(desc, 1, 0, 3, 1);
+		grid.add(start, 1, 1, 1, 1);
+		grid.add(end, 3, 1, 1, 1);
+//		grid.gridLinesVisibleProperty().set(true);
+		hbox.getChildren().addAll(grid, separator, hashtag);
+		HBox.setHgrow(grid, Priority.ALWAYS);
+	}
+
+	private void addContent(Task task) {
+		setText(null);
+		index.setText(String.valueOf(super.indexProperty().get() + OFFSET));
+		desc.setText(task.getTaskDescription());
+		if(task.getTaskTags().isEmpty()) {
+			separator.setVisible(false);
+		}
+		hashtag.setText(task.getTags());
+
+		if (task.getTaskDone() == false) {
+			desc.getStyleClass().remove(DONE_ID);
+			start.getStyleClass().remove(DONE_ID);
+			end.getStyleClass().remove(DONE_ID);
+			hashtag.getStyleClass().remove(DONE_ID);
+		} else {
+			desc.getStyleClass().add(DONE_ID);
+			start.getStyleClass().add(DONE_ID);
+			end.getStyleClass().add(DONE_ID);
+			hashtag.getStyleClass().add(DONE_ID);
+		}
+
+		// overdue status
+		hbox.getStyleClass().clear();
+		if (task.isOverdue()) {
+			hbox.getStyleClass().add(OVERDUE_CLASS);
+		} else {
+			hbox.getStyleClass().remove(OVERDUE_CLASS);
+		}
+
+		DateTimeFormatter fmt = DateTimeFormat.forPattern(DATE_FORMAT_PATTERN);
+		DateTime startTimestamp = task.getTaskStartTime();
+		if(startTimestamp == null) {
+			start.setText("");
+		} else {
+			start.setText(fmt.print(startTimestamp));
+		}
+
+		DateTime endTimestamp = task.getTaskEndTime();
+		if (endTimestamp == null) {
+			end.setText("");
+		} else {
+			end.setText(fmt.print(endTimestamp));
+		}
+
+		setGraphic(hbox);
+	}
+
+	private void clearContent() {
+		setText(null);
+		setGraphic(null);
+	}
+
+	@Override
+	public void updateItem(Task task, boolean empty) {
+		super.updateItem(task, empty);
+		if (empty) {
+			clearContent();
+		} else {
+			addContent(task);
+		}
+	}
+}
+
+	// End of segment: C:\Users\Clement\Desktop\finaltest\cs2103jan2014-w15-1j\src\view\TaskCell.java
+
+
+
+
+
