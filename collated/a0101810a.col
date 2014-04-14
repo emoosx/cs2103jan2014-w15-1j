@@ -1,0 +1,1172 @@
+//@author: a0101810a
+
+
+
+	/**
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\core\Task.java
+	 */
+
+/*
+ * Task class stores all required attributes of a task specified by the user input
+ * Given a user input, Task class calls the TaskParser class which will parse the input
+ * This class will then obtain all necessary fields from TaskParser
+ * Task objects will be converted into GSON objects which will be handled by storage
+ */
+
+public class Task {
+
+	private static int START_INDEX = 0;
+	private static String COMMA = ", ";
+	
+	private int taskID;
+	private String rawText;
+	private String taskDescription;
+	private ArrayList<String> taskTags;			// tags are in lowercase
+	private DateTime startDateTime;
+	private DateTime endDateTime;
+	private boolean taskDone;
+	private DateTime taskCreatedTimestamp; 
+	private boolean markAsDelete;
+
+	public Task(String rawText) {
+		this.rawText = rawText;
+		setTaskDescription(null);
+		setTaskStartTime(null);
+		setTaskEndTime(null);
+		setTaskCreatedTimestamp(new DateTime());
+		setTaskUndone();
+		setMarkAsUndelete();
+		parse(rawText);
+	}
+	
+	private void parse(String rawText) {
+		assert(!rawText.equals(null));
+		TaskParser parser = new TaskParser();
+		parser.parseTask(rawText);
+		taskDescription = parser.getTaskDescription();
+		startDateTime = parser.getStartDateTime();
+		endDateTime = parser.getEndDateTime();
+		taskTags = parser.getHashTag();
+	}
+	
+	public void setID(int id) {
+		this.taskID = id;
+	}
+	public int getID() {
+		return taskID;
+	}
+	
+	public void setTaskDescription(String tDesc){
+		this.taskDescription = tDesc;
+	}
+	
+	public String getTaskDescription(){
+		return this.taskDescription;
+	}
+	
+	public DateTime getTaskStartTime() {
+		return this.startDateTime;
+	}
+
+	public DateTime getTaskEndTime() {
+		return this.endDateTime;
+	}
+	
+	public void setTaskStartTime(DateTime newStartDateTime) {
+		this.startDateTime = newStartDateTime;
+	}
+
+	public void setTaskEndTime(DateTime newEndDateTime) {
+		this.endDateTime = newEndDateTime;
+	}
+	
+	public void setTaskTags(ArrayList<String> tags) {
+		this.taskTags = tags;
+	}
+	
+	public void addNewTag(String newTag) {
+		this.taskTags.add(newTag.trim().toLowerCase());
+	}
+	
+	public void setTaskDone() {
+		this.taskDone = true;
+	}
+	
+	public void setTaskUndone() {
+		this.taskDone = false;
+	}
+	
+	public boolean getTaskDone() {
+		return this.taskDone;
+	}
+	
+	public void setMarkAsDelete(){
+		this.markAsDelete = true;
+	}
+	
+	public void setMarkAsUndelete() {
+		this.markAsDelete = false;
+	}
+	
+	public boolean getMarkAsDelete(){
+	   return this.markAsDelete;	
+	}
+	
+	public ArrayList<String> getTaskTags() {
+		return taskTags;
+	}
+
+	public String getRawText() {
+		return this.rawText;
+	}
+
+	public DateTime getTaskCreatedTimestamp() {
+		return taskCreatedTimestamp;
+	}
+
+	public void setTaskCreatedTimestamp(DateTime taskCreatedTimestamp) {
+		this.taskCreatedTimestamp = taskCreatedTimestamp;
+	}
+	
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\core\Task.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\RegExp.java
+	 */
+
+/*
+ * RegExp class contains regular expression patterns of supported time and date formats
+ * It is called by TaskParser.java to extract time and date values from input strings
+ * RegExp will match and extract matched date and time patterns to return to TaskParser in string forms
+ * 
+ * List of examples: 
+ * "next Thursday"
+ * "tomorrow"
+ * "5:15pm"
+ * "2359"
+ * "17:00"
+ * "mon"
+ * "1am"
+ * 
+ * Written by A0101810A - Tan Zheng Jie (Matthew)
+ */
+
+public class RegExp {
+
+	private static final int INDEX_FIRST_CASE = 0;
+	private static final int INDEX_SECOND_CASE = 1;
+	private static final int INDEX_THIRD_CASE = 2;
+	
+	private static final int INDEX_DAY = 0;
+	private static final int INDEX_MONTH = 1;
+	private static final int INDEX_YEAR = 2;
+	
+	private static final int NUM_MATCHER_GROUP_1 = 1;
+	private static final int NUM_MATCHER_GROUP_2 = 2;
+	private static final int NUM_MATCHER_GROUP_4 = 4;
+	private static final int NUM_MATCHER_GROUP_8 = 8;
+	private static final int NUM_MATCHER_GROUP_15 = 15;
+	private static final int NUM_MATCHER_GROUP_36 = 36;
+
+
+    /*
+     *  Time Input Expressions
+     *  These patterns contains keywords and time formats (eg. by 2:15pm)
+     *  These patterns are used to compare with user's raw input to extract pure time formats (eg. 2:15pm)
+     */
+    private static String[] regexTimeInputArray = {
+    	// Case 1: "from TIME to TIME", where TIME is HH:MM(am/pm) or HH(am/pm), all cases are insensitive and HH is between 1-12 and MM is between 0 to 59
+    	"\\bfrom\\s(([1-9]|1[0-2])(:[0-5][0-9])?[aApP][mM])\\sto\\s(([1-9]|1[0-2])(:[0-5][0-9])?[aApP][mM])\\b",
+    	// Case 2: "from TIME to TIME", where TIME is HH:MM or HHMM, H is between 0-23 and MM is between 0 to 59									
+    	"\\bfrom\\s(([0-1][0-9]|2[0-3]):?([0-5][0-9]))\\sto\\s(([0-1][0-9]|2[0-3]):?[0-5][0-9])\\b",											
+    	// Case 3: "at/by TIME", where TIME can be HH:MM(am/pm) or HH(am/pm) or HH:MM or HHMM, all cases are insensitive
+    	"\\b(at|by)\\s((([1-9]|1[0-2])(:[0-5][0-9])?[aApP][mM])|(([0-1][0-9]|2[0-3]):?[0-5][0-9]))\\b"
+    	};
+    
+    /* 
+     * Hybrid patterns that captures date and time under one keyword such as "from, by, to" (eg. by 16 mar 5pm)
+     * These patterns are used twice, once by parseTime and once by parseDate
+     * As of v0.5, regexDateInputArray is merged with this array due to overlap in patterns matched. 
+     * Hence, these patterns can be used to detect date patterns followed by an optional time pattern
+     */ 
+    private static String[] regexHybridInputArray = {
+    	// Case 1: (by/on/from/to/at) <date> <time> or (by/on/from/to/at) <date>
+    	"\\b(?i)(by |on |from |to |at )(((0?[1-9]|[12]\\d|3[01])[-/](0?[13578]|1[02])[-/](\\d{4}|\\d{2})|(0?[1-9]|[12]\\d|30)[-/](0?[1-9]|1[012])[-/](\\d{4}|\\d{2}))|(((0?[1-9]|[12]\\d|3[01])\\s(jan(uary)?|mar(ch)?|may|jul(y)?|aug(ust)?|oct(ober)?|dec(ember)?)(\\s\\d{4})?|(0?[1-9]|[12]\\d|30)\\s(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(tember)?|oct(ober)?|nov(ember)?|dec(ember)?)(\\s\\d{4})?)))(\\s(([1-9]|1[0-2])(:[0-5][0-9])?[AaPp][Mm]|([0-1][0-9]|2[0-3]):?[0-5][0-9]))?\\b",
+        // Case 2: (by/on/from/to/at) <relative date> <time>
+    	"\\b(?i)(by |on |from |to |at )(((next|this)?\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?))|(the day after )?tomorrow)(\\s(([1-9]|1[0-2])(:[0-5][0-9])?[AaPp][Mm]|([0-1][0-9]|2[0-3]):?[0-5][0-9]))?\\b",
+    	// Case 3: (by/on/from/to/at) <time> <relative date>
+    	"\\b(?i)(by |on |at )(((([1-9]|1[0-2])(:[0-5][0-9])?[AaPp][Mm]|([0-1][0-9]|2[0-3]):?[0-5][0-9])))(((\\snext|this)?\\s)?((mon(day)?|tues(day)?|wed(nesday)?|thurs(day)?|fri(day)?|sat(urday)?|sun(day)?))|( tomorrow))?\\b"
+    };
+    
+    /*
+     *  Hash Tag Regular Expressions
+     */
+    private static String REGEX_HASHTAG = "(?<=^|(?<=[^a-zA-Z0-9-\\.]))#([A-Za-z]+[A-Za-z0-9]+)";
+          
+    /*
+     *  This pattern is used to identify the date format: DD/MM/YYYY or DD-MM-YYYY
+     *  and used to interchange DD and MM to the correct parsing of NattyTime
+     */
+    private static String REGEX_DATE_EXCHANGE_PATTERN = "((0?[1-9]|[12]\\d|3[01])[-/](0?[13578]|1[02])[-/](\\d{4}|\\d{2})|(0?[1-9]|[12]\\d|30)[-/](0?[1-9]|1[012])[-/](\\d{4}|\\d{2}))";
+    
+    
+    /*
+     *  Method parses raw input into an array list of date strings
+     *  It will match user input with all supported date patterns 
+     *  @return an ArrayList<String> of dates 
+     */
+    public static ArrayList<String> parseDate(String userInput) {
+    	ArrayList<String> dateArray = new ArrayList<String>();
+
+    	// Case 1: in the form of proper date format followed by an optional time input (eg. by 14/2/2014 2pm whereby the time is optional) 
+    	Pattern pattern = Pattern.compile(regexHybridInputArray[INDEX_FIRST_CASE]);
+    	Matcher matcher = pattern.matcher(userInput);
+    	while(matcher.find()) {
+    		if(matcher.group(NUM_MATCHER_GROUP_2) != null) {
+    			dateArray.add(matcher.group(NUM_MATCHER_GROUP_2));
+    		}
+    	}
+
+    	// Case 2: in the form of hybrid input with relative date followed by an optional time input (eg. by next wed 2pm) 
+    	pattern = Pattern.compile(regexHybridInputArray[INDEX_SECOND_CASE]);
+    	matcher = pattern.matcher(userInput);   	
+    	while(matcher.find()) {
+    		if(matcher.group(NUM_MATCHER_GROUP_2) != null) {
+    			dateArray.add(matcher.group(NUM_MATCHER_GROUP_2));
+    		}
+    	}
+    	
+    	// Case 3: in the form of hybrid input with time followed by an optional relative date (eg. by 5pm tomorrow, at 2359 next monday)
+    	pattern = Pattern.compile(regexHybridInputArray[INDEX_THIRD_CASE]);
+		matcher = pattern.matcher(userInput);
+		while(matcher.find()) {
+			if(matcher.group(NUM_MATCHER_GROUP_8) != null) {
+				dateArray.add(matcher.group(NUM_MATCHER_GROUP_8));
+			}
+		}
+
+		return dateArray;
+    }
+    
+    /*
+     *  Method parses raw input into an array list of time strings
+     *  It will match user input with all supported time patterns 
+     *  @return an ArrayList<String> of time
+     */
+    public static ArrayList<String> parseTime(String userInput) {
+    	ArrayList<String> timeArray = new ArrayList<String>();
+    	
+    	// Case 1: "from TIME to TIME", where TIME can be HH:MM(am/pm) or HH(am/pm)
+    	Pattern pattern = Pattern.compile(regexTimeInputArray[INDEX_FIRST_CASE]);
+		Matcher matcher = pattern.matcher(userInput);
+		if(matcher.find()) {
+			timeArray.add(matcher.group(NUM_MATCHER_GROUP_1));
+			timeArray.add(matcher.group(NUM_MATCHER_GROUP_4));
+			return timeArray;
+		}
+    	
+		// Case 2: "from TIME to TIME", where TIME can be HH:MM or HHMM
+		pattern = Pattern.compile(regexTimeInputArray[INDEX_SECOND_CASE]);
+		matcher = pattern.matcher(userInput);
+		if(matcher.find()) {
+			timeArray.add(matcher.group(NUM_MATCHER_GROUP_1));
+			timeArray.add(matcher.group(NUM_MATCHER_GROUP_4));
+			return timeArray;
+		}
+
+		
+		// Case 3: in the form of proper date format followed by an optional time input (eg. by 14/2/2014 2pm whereby the time is optional)
+		pattern = Pattern.compile(regexHybridInputArray[INDEX_FIRST_CASE]);
+		matcher = pattern.matcher(userInput);
+		while(matcher.find()) {
+			// As pattern contains both time and date, this condition does not add time if date is specified but time is not
+			if(matcher.group(NUM_MATCHER_GROUP_36)!=null) {
+				timeArray.add(matcher.group(NUM_MATCHER_GROUP_36));
+			}
+		}
+    	
+    	// Case 4: in the form of relative date hybrid input followed by optional time input (eg. by next wed 2pm)  
+    	pattern = Pattern.compile(regexHybridInputArray[INDEX_SECOND_CASE]);
+    	matcher = pattern.matcher(userInput);   	
+    	while(matcher.find()) {
+    		// As pattern contains both time and date, this condition does not add time if date is specified but time is not
+    		if(matcher.group(NUM_MATCHER_GROUP_15) != null) {
+    			timeArray.add(matcher.group(NUM_MATCHER_GROUP_15));
+    		}
+    	}
+    	
+		// Case 5: in the form of hybrid input with time followed by an optional relative date (eg. by 5pm tomorrow, at 2359 next monday)
+		pattern = Pattern.compile(regexHybridInputArray[INDEX_THIRD_CASE]);
+		matcher = pattern.matcher(userInput);
+		while(matcher.find()) {
+			// As pattern contains both time and date, this condition does not add time if date is specified but time is not
+			if(matcher.group(NUM_MATCHER_GROUP_2) != null) {
+				timeArray.add(matcher.group(NUM_MATCHER_GROUP_2));
+			}
+			return timeArray;
+		}
+    	
+    	return timeArray; 
+    }
+
+    /*
+     *  Method will remove all matched patterns to obtain task description
+     *  @returns task description:String
+     */
+	public static String parseDescription(String taskDescription) {
+		taskDescription = removeHybridPatterns(taskDescription);
+		taskDescription = removeTimePatterns(taskDescription);
+		taskDescription = removeHashtagPatterns(taskDescription);
+		PandaLogger.getLogger().info("REGEX - Task Description parsed and obtained: " + taskDescription);
+		return taskDescription.trim();
+	}
+	
+	private static String removeHybridPatterns(String taskDescription) {
+		for(int i=0; i<regexHybridInputArray.length; i++) {
+			taskDescription = taskDescription.replaceAll(regexHybridInputArray[i], "");
+		}
+		return taskDescription;
+		
+	}
+		
+	private static String removeTimePatterns(String taskDescription) {
+		for(int i=0; i<regexTimeInputArray.length; i++) {
+			taskDescription = taskDescription.replaceAll(regexTimeInputArray[i], "");
+		}
+		return taskDescription;
+		
+	}
+	
+	private static String removeHashtagPatterns(String taskDescription) {
+		taskDescription = taskDescription.replaceAll(REGEX_HASHTAG, "");
+		return taskDescription;
+	}
+	
+	/*
+	 *  Method will attempt to parse hashtags given user input
+	 *  @return a list of hashtags or empty list if no hashtag exists
+	 */
+	public static ArrayList<String> parseHashtag(String userInput) {
+		ArrayList<String> hashtag = new ArrayList<String>();
+		Pattern pattern = Pattern.compile(REGEX_HASHTAG);
+		Matcher matcher = pattern.matcher(userInput);
+		while(matcher.find()) {
+			hashtag.add(userInput.substring(matcher.start(), matcher.end()));
+		}
+		PandaLogger.getLogger().info("REGEX - Hashtag obtained: " + hashtag);
+		return hashtag;
+	}
+	
+	/*
+	 *  Method changes DD-MM-YYYY format to MM-DD-YYYY to ensure correct parsing by NattyTime that only supports USA date format
+	 *  @return a modified userInput with switched date format
+	 */
+	public static String changeDateFormat(String userInput) {
+		Pattern pattern = Pattern.compile(REGEX_DATE_EXCHANGE_PATTERN);
+		Matcher matcher = pattern.matcher(userInput);
+		while(matcher.find()) {
+			String tempDate = userInput.substring(matcher.start(), matcher.end());
+			String[] dateStringArray = tempDate.split("[-/]");
+			String newDate = dateStringArray[INDEX_MONTH] + "/" + dateStringArray[INDEX_DAY] + "/" + dateStringArray[INDEX_YEAR];
+			userInput = userInput.replace(tempDate, newDate);
+			PandaLogger.getLogger().info("REGEX - Dates switched: " + tempDate + " to " + newDate);
+		}
+		return userInput;
+	}
+}
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\RegExp.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\TaskParser.java
+	 */
+
+/*
+ * TaskParser class will aid the adding of tasks through parsing of user's raw data
+ * It will take in a raw user input given by Task.java 
+ * and create 2 DateTime objects and 1 task description string using RegExp class
+ * The task object then get these data through getter methods available. 
+ */
+
+public class TaskParser {
+
+	private static final int TOTAL_DATE_FIELDS = 3;
+	private static final int TOTAL_TIME_FIELDS = 2;
+	
+	private static final int NUM_HOUR_INDEX = 0;
+	private static final int NUM_MIN_INDEX = 1;
+	private static final int NUM_YEAR_INDEX = 2;
+	private static final int NUM_MONTH_INDEX = 1;
+	private static final int NUM_DAY_INDEX = 0;
+	private static final int NUM_CALENDAR_MONTH_OFFSET = 1;
+	private static final int NUM_TIME_MIDNIGHT = 0;
+	private static final int NUM_FLOATING_DATE_SIZE = 0;
+	private static final int NUM_FLOATING_TIME_SIZE = 0;
+	private static final int NUM_TIMED_DATE_SIZE = 2;
+	private static final int NUM_TIMED_TIME_SIZE = 2;
+	
+	private static final int ARRAY_FIRST_INDEX = 0;
+	private static final int ARRAY_SECOND_INDEX = 1;
+	private static final int ARRAY_SIZE_1 = 1;
+	private static final int ARRAY_SIZE_2 = 2;
+	private static final int NATTY_DATE_INDEX = 0;
+
+	// Task object variables
+	private DateTime startDateTime;
+	private DateTime endDateTime;
+	private String taskDescription;
+	private ArrayList<String> hashtags;
+
+	// Primitive time variables
+	private Integer startHour;
+	private Integer startMin;
+	private Integer endHour;
+	private Integer endMin;
+
+	// Primitive date variables
+	private Integer startYear;
+	private Integer startMonth;
+	private Integer startDay;
+	private Integer endYear;
+	private Integer endMonth;
+	private Integer endDay;
+
+	// Task booleans
+	private Boolean isFloatingTask;
+	private Boolean isDeadlineTask;
+	private Boolean isTimedTask;
+	
+	/*
+	 *  Constructor method for TaskParser
+	 */
+	public TaskParser() {
+		hashtags = new ArrayList<String>();
+		startHour = null;
+		startMin = null;
+		endHour = null;
+		endMin = null;
+		startYear = null;
+		startMonth = null;
+		startDay = null;
+		endYear = null;
+		endMonth = null;
+		endDay = null;
+		isFloatingTask = false;
+		isDeadlineTask = false;
+		isTimedTask = false;
+	}
+
+	/*
+	 * Method calls on static class RegExp.java to obtain date and time strings from user inputs
+	 * It will then attempt to create DateTime JODA objects
+	 */
+	public void parseTask(String userInput) {
+		PandaLogger.getLogger().info("Parsing of user input in TaskParser: " + userInput);
+		taskDescription = userInput;
+		
+		ArrayList<String> timeArray = RegExp.parseTime(taskDescription);
+		ArrayList<String> dateArray = RegExp.parseDate(taskDescription);
+		hashtags = RegExp.parseHashtag(taskDescription);
+		taskDescription = RegExp.parseDescription(taskDescription);
+		
+		PandaLogger.getLogger().info("TaskParser - Task Description: " + taskDescription);
+		PandaLogger.getLogger().info("TaskParser - Time Strings: " + timeArray);
+		PandaLogger.getLogger().info("TaskParser - Date Strings: " + dateArray);
+		PandaLogger.getLogger().info("TaskParser - Hashtags: " + hashtags);
+		
+		initializeDateTimeObjects(timeArray, dateArray);
+	}
+	
+	/* 
+	 * Method creates 2 DateTime objects given a list of time strings and date strings
+	 * Method will first call two methods to initialize primitive date and time variables
+	 * It will then finalize the DateTime objects by initializing the DateTime variables
+	 */
+	private void initializeDateTimeObjects(ArrayList<String> timeArray, ArrayList<String> dateArray) {
+		try {
+			initializeTime(timeArray);
+			initializeDate(dateArray);
+			initializeTaskType(timeArray.size(), dateArray.size());
+			finalizeDateTime();
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/*
+	 * Given a string array of time input, method will parse and initialize the primitive time variables. 
+	 */
+	private void initializeTime(ArrayList<String> timeArray) {
+		PandaLogger.getLogger().info("TaskParser - Initializing time variables");
+		// Case 1: User input contains one time string
+		if(timeArray.size() == ARRAY_SIZE_1) {
+			int[] endTimeArray = timeFromTimeString(timeArray.get(ARRAY_FIRST_INDEX));
+			initializeEndTime(endTimeArray);
+		}
+		// Case 2: User input contains two time strings
+		else if(timeArray.size() == ARRAY_SIZE_2) {
+			int[] startTimeArray = timeFromTimeString(timeArray.get(ARRAY_FIRST_INDEX));
+			initializeStartTime(startTimeArray);
+			int[] endTimeArray = timeFromTimeString(timeArray.get(ARRAY_SECOND_INDEX));
+			initializeEndTime(endTimeArray);
+		}
+	}
+
+	private void initializeStartTime(int[] startTimeArray) {
+		startHour = startTimeArray[NUM_HOUR_INDEX];
+		startMin = startTimeArray[NUM_MIN_INDEX];
+	}
+
+	private void initializeEndTime(int[] endTimeArray) {
+		endHour = endTimeArray[NUM_HOUR_INDEX];
+		endMin = endTimeArray[NUM_MIN_INDEX];
+	}
+
+	/*
+	 * Given an array of user date inputs, method will parse and initialize 
+	 * the primitive date variables. 
+	 */
+	private void initializeDate(ArrayList<String> dateArray) {
+		// Case 0: user inputs a floating task
+		if (dateArray.isEmpty()) {
+			return;
+		// Case 1: user input having start date and end date
+		} else if (dateArray.size() == ARRAY_SIZE_2) {
+			int[] startDateArray = dateFromDateString(dateArray.get(ARRAY_FIRST_INDEX));
+			initializeStartDate(startDateArray);
+			int[] endDateArray = dateFromDateString(dateArray.get(ARRAY_SECOND_INDEX));
+			initializeEndDate(endDateArray);
+		// Case 2: user input having only end deadline
+		} else {
+			int[] endDateArray = dateFromDateString(dateArray.get(ARRAY_FIRST_INDEX));
+			initializeEndDate(endDateArray);
+		}
+	}
+
+	private void initializeStartDate(int[] startDateArray) {
+		startYear = startDateArray[NUM_YEAR_INDEX];
+		startMonth = startDateArray[NUM_MONTH_INDEX];
+		startDay = startDateArray[NUM_DAY_INDEX];
+	}
+
+	private void initializeEndDate(int[] endDateArray) {
+		endYear = endDateArray[NUM_YEAR_INDEX];
+		endMonth = endDateArray[NUM_MONTH_INDEX];
+		endDay = endDateArray[NUM_DAY_INDEX];
+	}
+
+	/*
+	 * Method will deduce what kind of task was specified by user
+	 * The boolean variables will be used to set default date/time settings later on
+	 */
+	private void initializeTaskType(int timeSize, int dateSize) {
+		if(timeSize == NUM_FLOATING_TIME_SIZE && dateSize == NUM_FLOATING_DATE_SIZE) {
+			isFloatingTask = true;
+		} else if(timeSize == NUM_TIMED_TIME_SIZE || dateSize == NUM_TIMED_DATE_SIZE) {
+			isTimedTask = true;
+		} else {
+			isDeadlineTask = true;
+		}
+	}
+	
+	/* 
+	 * Method will finalize all DateTime objects accordingly
+	 * Main function of this method is to set unspecified date or time to default settings
+	 * and to create DateTime objects for Task.java
+	 * Default time: 00:00, Default date: today
+	 */
+	private void finalizeDateTime() {
+		if(isFloatingTask) {
+			finalizeFloatingTask();
+		} else if(isTimedTask) {
+			finalizeTimedTask();
+		} else if(isDeadlineTask) {
+			finalizeDeadlineTask();
+		} else {
+			assert(false);
+		}
+	}
+
+	/* 
+	 * Method creates 2 dateTime objects which are null based on logical interpretations earlier
+	 */
+	private void finalizeFloatingTask() {
+		startDateTime = null;
+		endDateTime = null;
+	}
+
+	/*
+	 *  Method will finalize date and time if variables fits that of a timed task
+	 */
+	private void finalizeTimedTask() {
+		if(startYear == null) {
+			// Initialize both dates to today if no dates are specified
+			if(endYear == null) {
+				initializeDateToToday();
+			}
+			// Initialize both dates to the same day if only 1 date is specified
+			else {
+				startYear = endYear;
+				startMonth = endMonth;
+				startDay = endDay;
+			}
+		}
+		if(startHour == null) {
+			initializeStartTimeToMidnight();
+		}
+		if(endHour == null) {
+			initializeEndTimeToMidnight();
+		}
+		startDateTime = new DateTime(startYear, startMonth, startDay, startHour, startMin);
+		endDateTime = new DateTime(endYear, endMonth, endDay, endHour, endMin);
+	}
+
+	/*
+	 *  Method will finalize date and time if variables fits that of a deadline task
+	 */
+	private void finalizeDeadlineTask() {
+		if(endYear == null) {
+			// Initialize date to local date if only time is stated by user
+			initializeDateToToday();
+		}
+		if(endHour == null) {
+			// Initialize time to midnight if only date is stated by user
+			initializeTimeToMidnight();
+		}
+		startDateTime = null;
+		endDateTime = new DateTime(endYear, endMonth, endDay, endHour, endMin);
+	}
+
+	private void initializeDateToToday() {
+		startYear = endYear = Calendar.getInstance().get(Calendar.YEAR);
+		startMonth = endMonth = Calendar.getInstance().get(Calendar.MONTH) + NUM_CALENDAR_MONTH_OFFSET;
+		startDay = endDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+	}
+	
+	private void initializeTimeToMidnight() {
+		initializeStartTimeToMidnight();
+		initializeEndTimeToMidnight();
+	}
+	
+	private void initializeStartTimeToMidnight() {
+		startHour = NUM_TIME_MIDNIGHT;
+		startMin = NUM_TIME_MIDNIGHT; 
+	}
+	
+	private void initializeEndTimeToMidnight() {
+		endHour = NUM_TIME_MIDNIGHT;
+		endMin = NUM_TIME_MIDNIGHT; 
+	}
+	
+	/*
+     *  Given a time string such as 5:15pm,
+     *  Method parses the string accordingly using NattyTime library 
+     *  @return integer array of 3 elements: year, month and day
+     */
+    public static int[] dateFromDateString(String dateString) {
+    	int[] date = new int[TOTAL_DATE_FIELDS];
+    	
+    	// Overcoming NattyTime limitation (Natty parses dates as MM/DD/YYYY) 
+		dateString = RegExp.changeDateFormat(dateString);
+		
+		// Calling NattyTime parser
+		Parser parser = new Parser();
+		List<DateGroup> groups = parser.parse(dateString);
+		for(DateGroup group: groups) {
+			List<Date> dates = group.getDates();
+			MutableDateTime tempDate = new MutableDateTime(dates.get(NATTY_DATE_INDEX));
+			date[NUM_DAY_INDEX] = tempDate.getDayOfMonth();
+			date[NUM_MONTH_INDEX] = tempDate.getMonthOfYear();
+			date[NUM_YEAR_INDEX] = tempDate.getYear();
+		}
+		return date;
+    }
+    
+    /* Given a string of time format (eg. "5pm"),
+     * Method will parse the string accordingly using NattyTime
+     * @return integer array with 2 elements: hour and minute 
+     */
+    public static int[] timeFromTimeString(String timeString) {
+    	int[] time = new int[TOTAL_TIME_FIELDS];
+    	
+    	// Calling NattyTime parser
+		Parser parser = new Parser();
+		List<DateGroup> groups = parser.parse(timeString);
+		for(DateGroup group: groups) {
+			List<Date> dates = group.getDates();
+			MutableDateTime tempTime = new MutableDateTime(dates.get(NATTY_DATE_INDEX));
+			time[NUM_HOUR_INDEX] = tempTime.getHourOfDay();
+			time[NUM_MIN_INDEX] = tempTime.getMinuteOfHour();
+		}
+		return time;
+    }
+
+	public ArrayList<String> getHashTag() {
+		return hashtags;
+	}
+	
+	public String getTaskDescription() {
+		return taskDescription;
+	}
+
+	public DateTime getStartDateTime() {
+		return startDateTime;
+	}
+
+	public DateTime getEndDateTime() {
+		return endDateTime;
+	}
+}
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\TaskParser.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\NattyParserTest.java
+	 */
+
+/*
+ * NattyParserTest is a unit test to ensure that the strings extracted from RegExp.java 
+ * are parsed correctly by NattyTime which is used in TaskParser.java
+ * Written by A0101810A - Tan Zheng Jie (Matthew)
+ */
+
+public class NattyParserTest {
+
+	@Test
+	public void testDateFromDateString() {
+		int[] date = new int[3];
+		// Partitioned test cases: DD mmm format
+		date = TaskParser.dateFromDateString("12 march 2014");
+		assertEquals(12,date[0]);
+		assertEquals(3,date[1]);
+		assertEquals(2014,date[2]);
+		
+		date = TaskParser.dateFromDateString("12 MAR 2014");
+		assertEquals(12,date[0]);
+		assertEquals(3,date[1]);
+		assertEquals(2014,date[2]);
+		
+		date = TaskParser.dateFromDateString("31 JaN 2014");
+		assertEquals(31,date[0]);
+		assertEquals(1,date[1]);
+		assertEquals(2014,date[2]);
+		
+		// Partitioned test cases: DD/MM/YY format
+		date = TaskParser.dateFromDateString("12-2-2014");
+		assertEquals(12,date[0]);
+		assertEquals(2,date[1]);
+		assertEquals(2014,date[2]);
+		
+		date = TaskParser.dateFromDateString("12/2/2014");
+		assertEquals(12,date[0]);
+		assertEquals(2,date[1]);
+		assertEquals(2014,date[2]);
+		
+		// Partitioned test cases: relative date format
+		DateTime datetime = new DateTime();
+		datetime = datetime.plusDays(1);
+		date = TaskParser.dateFromDateString("tomorrow 5pm");
+		assertEquals(datetime.getDayOfMonth(),date[0]);
+		assertEquals(datetime.getMonthOfYear(),date[1]);
+		assertEquals(datetime.getYear(),date[2]);
+		
+		datetime = new DateTime();
+		datetime = datetime.plusDays(2);
+		date = TaskParser.dateFromDateString("the day after tomorrow 5pm");
+		assertEquals(datetime.getDayOfMonth(),date[0]);
+		assertEquals(datetime.getMonthOfYear(),date[1]);
+		assertEquals(datetime.getYear(),date[2]);
+	}
+
+	@Test
+	public void testGetTimeFromTimeString() {
+		int[] time = new int[2];
+		
+		time = TaskParser.timeFromTimeString("12:12pm");
+		assertEquals(12,time[0]);
+		assertEquals(12,time[1]);
+		
+		time = TaskParser.timeFromTimeString("1:12pm");
+		assertEquals(13,time[0]);
+		assertEquals(12,time[1]);
+		
+		time = TaskParser.timeFromTimeString("1:12am");
+		assertEquals(1,time[0]);
+		assertEquals(12,time[1]);
+		
+		time = TaskParser.timeFromTimeString("1pm");
+		assertEquals(13,time[0]);
+		assertEquals(0, time[1]);
+		
+		time = TaskParser.timeFromTimeString("1pm");
+		assertEquals(13,time[0]);
+		assertEquals(0, time[1]);
+		
+		time = TaskParser.timeFromTimeString("1pm");
+		assertEquals(13,time[0]);
+		assertEquals(0, time[1]);
+		
+		time = TaskParser.timeFromTimeString("2359");
+		assertEquals(23,time[0]);
+		assertEquals(59, time[1]);
+		
+		time = TaskParser.timeFromTimeString("23:59");
+		assertEquals(23,time[0]);
+		assertEquals(59, time[1]);
+		
+	}
+}
+
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\NattyParserTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\RegExpTest.java
+	 */
+
+/*
+ * This class does unit testing on the various methods in static class RegExp.java
+ * It mainly tests whether the regular expression patterns are matched and extracted out correctly 
+ * Function coverage - 100% 
+ * Written by A0101810A - Tan Zheng Jie (Matthew)
+ */
+
+public class RegExpTest {
+	
+	@Test
+	public void testParseTimeFloating() {
+		// Partition: inputs with no matched time input
+		ArrayList<String> list = new ArrayList<String>();
+		assertEquals(list, RegExp.parseTime("add haha by tomorrow"));
+		assertEquals(list, RegExp.parseTime("add meeting"));
+		assertEquals(list, RegExp.parseTime("add deadline by 5/4/2014"));
+		assertEquals(list, RegExp.parseTime("add deadline 5pm"));
+		assertEquals(list, RegExp.parseTime("add watch 2pm concert"));
+		assertEquals(list, RegExp.parseTime("add buy present for april and may"));
+	}
+	
+	@Test
+	public void testParseTimeDeadline() {
+		// Partition: cases which results in 1 matched time pattern
+		assertEquals("2:15pm", RegExp.parseTime("add haha on 30 november by 2:15pm").get(0));
+		assertEquals("5:15pm", RegExp.parseTime("add haha on 14/2/2014 by 5:15pm").get(0));
+		assertEquals("5pm", RegExp.parseTime("add haha by 14 mar 5pm").get(0));
+		assertEquals("12am", RegExp.parseTime("add haha on 30 may 12am").get(0));
+		assertEquals("23:59", RegExp.parseTime("add haha by 23:59").get(0));
+		assertEquals("01:59", RegExp.parseTime("add haha by 01:59").get(0));
+		assertEquals("2359", RegExp.parseTime("add haha by 2359").get(0));
+		assertEquals("5pm", RegExp.parseTime("add something by 5pm tomorrow").get(0));
+		
+		// Boundary case for invalid input
+		ArrayList<String> list = new ArrayList<String>();
+		assertEquals(list, RegExp.parseTime("add haha by 1:59"));
+		assertEquals(list, RegExp.parseTime("add haha by 12:60pm"));
+		assertEquals(list, RegExp.parseTime("add haha by 11:60am"));
+		assertEquals(list, RegExp.parseTime("add haha at 13:00am"));
+	}
+	
+	@Test
+	public void testParseTimeTimed() {
+		// Partition: cases which results in 2 matched time patterns
+		assertEquals("5pm", RegExp.parseTime("add haha on 14/2/2014 from 5pm to 6pm").get(0));
+		assertEquals("6pm", RegExp.parseTime("add haha on 14/2/2014 from 5pm to 6pm").get(1));
+		
+		assertEquals("5:15pm", RegExp.parseTime("add haha on 14/2/2014 from 5:15pm to 6:45pm").get(0));
+		assertEquals("6:45pm", RegExp.parseTime("add haha on 14/2/2014 from 5:15pm to 6:45pm").get(1));
+		
+		assertEquals("12:15pm", RegExp.parseTime("add haha on 14 feb from 12:15pm to 6:45pm").get(0));
+		assertEquals("6pm", RegExp.parseTime("add haha on 14 feb from 12:15pm to 6pm").get(1));
+		
+		assertEquals("15:15", RegExp.parseTime("add haha on 14/2/2014 from 15:15 to 16:45").get(0));
+		assertEquals("16:45", RegExp.parseTime("add haha on 14/2/2014 from 15:15 to 16:45").get(1));
+		
+		assertEquals("15:15", RegExp.parseTime("add haha from 1/2/2014 15:15 to 1/2/2014 16:45").get(0));
+		assertEquals("16:45", RegExp.parseTime("add haha from 1/2/2014 15:15 to 1/2/2014 16:45").get(1));
+		
+		assertEquals("15:15", RegExp.parseTime("add haha from 1 jan 15:15 to 3 jan 16:45").get(0));
+		assertEquals("16:45", RegExp.parseTime("add haha from 1 jan 15:15 to 3 jan 16:45").get(1));
+		
+		// Boundary case for invalid inputs
+		assertEquals(0, RegExp.parseTime("add haha from 11:60am to 12pm").size());
+		assertEquals(0, RegExp.parseTime("add haha from 23:59 to 24:00").size());
+	}
+	
+	@Test
+	public void testParseDateFloating() {
+		// Partition: inputs with no matched date input
+		ArrayList<String> list = new ArrayList<String>();
+		assertEquals(list, RegExp.parseDate("add something at 5pm"));
+		assertEquals(list, RegExp.parseDate("add meeting"));
+		assertEquals(list, RegExp.parseDate("add deadline 11/2/2014 5pm"));
+		assertEquals(list, RegExp.parseDate("add renew phone number to 91122014"));
+		assertEquals(list, RegExp.parseDate("add buy present for april and may"));
+		assertEquals(list, RegExp.parseDate("add 11/1/2014"));
+	}
+	
+	@Test
+	public void testDateRegexDeadline() {
+		// Partitioned format: on DD-/MM-/YYYY
+		assertEquals("14-2-14", RegExp.parseDate("add haha on 14-2-14").get(0));
+		assertEquals("14-2-2014", RegExp.parseDate("add haha on 14-2-2014").get(0));
+		
+		assertEquals("14/11/14", RegExp.parseDate("add haha on 14/11/14").get(0));
+		assertEquals("14/11/2014", RegExp.parseDate("add haha on 14/11/2014").get(0));
+		
+		// Partitioned format: by DD-/MM-/YYYY
+		assertEquals("14-2-14", RegExp.parseDate("add haha by 14-2-14").get(0));
+		assertEquals("14-2-2014", RegExp.parseDate("add haha by 14-2-2014").get(0));
+		
+		assertEquals("14/2/14", RegExp.parseDate("add haha by 14/2/14").get(0));
+		assertEquals("14/2/2014", RegExp.parseDate("add haha by 14/2/2014").get(0));
+		
+		// Boundary case for invalid inputs
+		assertEquals(0, RegExp.parseDate("add haha on 31/2/2014").size());
+		assertEquals(0, RegExp.parseDate("add haha on 55/2/2014").size());
+		
+		assertEquals(0, RegExp.parseDate("add haha on 31/4/2014").size());
+		assertEquals(0, RegExp.parseDate("add haha on 60/4/2014").size());
+		
+		assertEquals(0, RegExp.parseDate("add haha on 31/6/2014").size());
+		assertEquals(0, RegExp.parseDate("add haha on 45/6/2014").size());
+		
+		assertEquals(0, RegExp.parseDate("add haha on 31/9/2014").size());
+		assertEquals(0, RegExp.parseDate("add haha on 77/9/2014").size());
+		
+		assertEquals(0, RegExp.parseDate("add haha on 31/11/2014").size());
+		assertEquals(0, RegExp.parseDate("add haha on 35/11/2014").size());
+		
+		assertEquals(0, RegExp.parseDate("add haha on 20/13/2014").size());
+		
+		// Partitioned format: DD mmm YYYY
+		assertEquals("14 march 2014", RegExp.parseDate("add haha on 14 march 2014").get(0));
+		assertEquals("14 mar 2014", RegExp.parseDate("add haha on 14 mar 2014").get(0));
+		assertEquals("14 march", RegExp.parseDate("add haha on 14 march").get(0));
+	
+		// Partitioned format: relative dates
+		assertEquals(" tomorrow", RegExp.parseDate("add something by 5pm tomorrow").get(0));
+		assertEquals("the day after tomorrow", RegExp.parseDate("add something by 5pm on the day after tomorrow").get(0));
+	}
+	
+	@Test
+	public void testDateRegexTimed() {
+		assertEquals("14 mar", RegExp.parseDate("add camp from 14 mar 5pm to 16 mar 6pm").get(0));
+		assertEquals("16 mar", RegExp.parseDate("add camp from 14 mar 5pm to 16 mar 6pm").get(1));
+		
+		assertEquals("14 mar 2014", RegExp.parseDate("add camp from 14 mar 2014 5pm to 16 mar 2014 6pm").get(0));
+		assertEquals("16 mar 2014", RegExp.parseDate("add camp from 14 mar 2014 5pm to 16 mar 2014 6pm").get(1));
+		
+		assertEquals("14 mar", RegExp.parseDate("add camp from 14 mar to 16 mar").get(0));
+		assertEquals("16 mar", RegExp.parseDate("add camp from 14 mar to 16 mar").get(1));
+		
+		assertEquals("14/4/2014", RegExp.parseDate("add camp from 14/4/2014 to 16/4/2014").get(0));
+		assertEquals("16/4/2014", RegExp.parseDate("add camp from 14/4/2014 to 16/4/2014").get(1));
+		
+		assertEquals("14/4/14", RegExp.parseDate("add camp from 14/4/14 to 16/4/14").get(0));
+		assertEquals("16/4/14", RegExp.parseDate("add camp from 14/4/14 to 16/4/14").get(1));
+	}
+
+	@Test
+	public void testParseDescription() {
+		
+		// Partitioned test cases: floating tasks
+		assertEquals("meeting", RegExp.parseDescription("meeting"));
+		assertEquals("wash car", RegExp.parseDescription("wash car"));
+		// Edge test cases:
+		assertEquals("meeting 14/2/2014", RegExp.parseDescription("meeting 14/2/2014"));
+		assertEquals("meeting 14-2-2014", RegExp.parseDescription("meeting 14-2-2014"));
+		assertEquals("meeting 14 jan", RegExp.parseDescription("meeting 14 jan"));
+		
+		// Partitioned test cases: deadline tasks
+		assertEquals("add meeting", RegExp.parseDescription("add meeting by 10pm"));
+		assertEquals("meeting", RegExp.parseDescription("meeting by 2359"));
+		assertEquals("2pm concert", RegExp.parseDescription("2pm concert by 10:45pm"));
+		
+		// Partitioned test cases: timed tasks
+		assertEquals("add meeting", RegExp.parseDescription("add meeting from 5pm to 6pm"));
+		assertEquals("add from to from to", RegExp.parseDescription("add from to from to from 5:15pm to 6:15pm"));
+		assertEquals("add meeting", RegExp.parseDescription("add meeting on 14-2-2014 from 5pm to 6pm"));
+	}
+	
+	@Test
+	public void testParseHashtag() {
+		ArrayList<String> hashtags = new ArrayList<String>();
+		hashtags.add("#work");
+		assertEquals(hashtags, RegExp.parseHashtag("add ##### on 2/2/2014 from 2pm to 3pm #work"));
+		
+		hashtags = new ArrayList<String>();
+		assertEquals(hashtags, RegExp.parseHashtag("add ##### on 2/2/2014 from 2pm to 3pm"));
+	}
+	
+	@Test
+	public void testChangeDateFormat() {
+		assertEquals("2/22/2014", RegExp.changeDateFormat("22/2/2014"));
+		assertEquals("2/10/2014", RegExp.changeDateFormat("10/2/2014"));
+		assertEquals("10/10/2014", RegExp.changeDateFormat("10/10/2014"));
+		assertEquals("meeting on 2/22/2014", RegExp.changeDateFormat("meeting on 22/2/2014"));
+		assertEquals("from 1/11/2014 to 1/12/2014", RegExp.changeDateFormat("from 11/1/2014 to 12/1/2014"));
+		assertEquals("3/2/2014", RegExp.changeDateFormat("2/3/2014"));
+	}
+}
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\RegExpTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\TaskTest.java
+	 */
+
+/*
+ * This class does an integration test on several different classes. 
+ * They are namely: Task.java, TaskParser.java and RegExp.java
+ * The test class spans across the logic (RegExp, TaskParser) and core components (Task). 
+ * This test class will create Task objects out of user inputs and compare the DateTime objects of Task objects
+ * Test cases are run through a single TestTask method as it is an integration test rather than a unit test
+ * Written by A0101810A - Tan Zheng Jie (Matthew)
+ */
+
+public class TaskTest {
+	
+	/****************************** Partitioned floating test cases *******************************/
+	String[] floatTasks = {		
+		"climb mount everest",
+		"ride an elephant and dinosaur",
+		"watch 2pm concert",
+		"go to garden by the bay",
+		"watch the day after tomorrow",
+		"buy present for april and may",
+		"go to 2pm concert", 
+		"renew phone number to 96692359"
+	};
+	
+	
+	/****************************** Partitioned deadline test cases *******************************/
+	String[] deadlineTasks = {
+		"reflection deadline on 14/2/2014 at 2359",
+		"reflection deadline on 14/2/2014 at 11:59pm",
+		"renew passport by 30/5/2014 3pm",
+		"meeting on 8 march at 11am",
+		"submit homework by 11/4/2014"
+	};
+	
+	DateTime[] expectedDeadlineDateTime = {
+		new DateTime(2014, 2, 14, 23, 59),
+		new DateTime(2014, 2, 14, 23, 59),
+		new DateTime(2014, 5, 30, 15, 0),
+		new DateTime(2014, 3, 8, 11, 0),
+		new DateTime(2014, 4, 11, 0, 0)		
+	};
+	
+	String[] expectedDeadlineDescription = {
+		"reflection deadline",
+		"reflection deadline",
+		"renew passport",
+		"meeting",
+		"submit homework"
+	};
+	
+		
+	/****************************** Partitioned timed test cases *******************************/
+	String[] timedTasks = {
+		"valentines date on 14/2/2014 from 5pm to 7pm",
+		"meeting on 15 march 2014 from 1000 to 1200",
+		"camp from 15 march 2014 12pm to 17 march 2014 7pm",
+		"camp from 11/12/2014 1am to 30/12/2014 3pm"
+	};
+	
+	String[] expectedTimedDescription = {
+		"valentines date",
+		"meeting",
+		"camp",
+		"camp"
+	};
+	
+	DateTime[] expectedStartDateTime = {
+		new DateTime(2014, 2, 14, 17, 0),
+		new DateTime(2014, 3, 15, 10, 0),
+		new DateTime(2014, 3, 15, 12, 0),
+		new DateTime(2014,12, 11, 1, 0)
+	};
+	
+	DateTime[] expectedEndDateTime = {
+		new DateTime(2014, 2, 14, 19, 0),
+		new DateTime(2014, 3, 15, 12, 0),
+		new DateTime(2014, 3, 17, 19, 0),
+		new DateTime(2014,12, 30, 15, 0)
+	};
+	
+	@Test
+	public void testFloatingTask() {
+		for(int i=0; i<floatTasks.length; i++) {
+			testTask(floatTasks[i], floatTasks[i], null, null);
+		}
+	}
+	
+	@Test
+	public void testDeadlineTask() {
+		for(int i=0; i<deadlineTasks.length; i++) {
+			testTask(deadlineTasks[i], expectedDeadlineDescription[i], null, expectedDeadlineDateTime[i]);
+		}
+	}
+	
+	@Test
+	public void testTimedTask() {
+		for(int i=0; i<timedTasks.length; i++) {
+			testTask(timedTasks[i], expectedTimedDescription[i], expectedStartDateTime[i], expectedEndDateTime[i]);
+		}
+	}
+	
+	/*
+	 * Method that takes in userInput and creates a task object out of it
+	 * It will then compare the object's description, start time and end time 
+	 * with expected description, start time and end time parameters
+	 */
+	public void testTask(String userInput, String expectedDescription, DateTime expectedStart, DateTime expectedEnd) {
+		// Asserting task description
+		Task task = new Task(userInput);
+		assertEquals(task.getTaskDescription(), expectedDescription);
+		
+		// Asserting start date time
+		if(expectedStart==null) {
+			assertEquals(task.getTaskStartTime(), expectedStart);
+		} else {
+			assertEquals(task.getTaskStartTime().getYear(), expectedStart.getYear());
+			assertEquals(task.getTaskStartTime().getMonthOfYear(), expectedStart.getMonthOfYear());
+			assertEquals(task.getTaskStartTime().getDayOfMonth(), expectedStart.getDayOfMonth());
+			assertEquals(task.getTaskStartTime().getHourOfDay(), expectedStart.getHourOfDay());
+			assertEquals(task.getTaskStartTime().getMinuteOfHour(), expectedStart.getMinuteOfHour());
+		}
+		
+		// Asserting end date time
+		if(expectedEnd==null) {
+			assertEquals(task.getTaskEndTime(), expectedEnd);
+		} else {
+			assertEquals(task.getTaskEndTime().getYear(), expectedEnd.getYear());
+			assertEquals(task.getTaskEndTime().getMonthOfYear(), expectedEnd.getMonthOfYear());
+			assertEquals(task.getTaskEndTime().getDayOfMonth(), expectedEnd.getDayOfMonth());
+			assertEquals(task.getTaskEndTime().getHourOfDay(), expectedEnd.getHourOfDay());
+			assertEquals(task.getTaskEndTime().getMinuteOfHour(), expectedEnd.getMinuteOfHour());
+		}
+	}
+}
+
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\TaskTest.java
+
+
+
+
+

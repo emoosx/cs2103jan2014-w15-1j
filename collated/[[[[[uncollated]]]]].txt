@@ -1,0 +1,655 @@
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\common\DateTimeTypeConverter.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package common;
+
+import java.lang.reflect.Type;
+
+import org.joda.time.DateTime;
+
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\common\PandaLogger.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package common;
+
+import java.io.IOException;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\core\Task.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package core;
+
+import java.util.ArrayList;
+
+import logic.TaskParser;
+
+import org.joda.time.DateTime;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\Command.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package logic;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\CommandFactory.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package logic;
+
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.Stack;
+import java.util.logging.Logger;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import logic.Command.COMMAND_TYPE;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
+import storage.RedoStorage;
+import storage.StorageHelper;
+import storage.UndoStorage;
+
+import com.google.common.base.Splitter;
+import common.PandaLogger;
+
+import core.Task;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\Criteria.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package logic;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
+
+import core.Task;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\RegExp.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package logic;
+
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import common.PandaLogger;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\logic\TaskParser.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package logic;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import org.joda.time.DateTime;
+import org.joda.time.MutableDateTime;
+
+import com.joestelmach.natty.DateGroup;
+import com.joestelmach.natty.Parser;
+
+import common.PandaLogger;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\Main.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+import view.TaskPandaUI;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\storage\RedoStorage.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package storage;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Stack;
+
+import logic.Command;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import common.PandaLogger;
+
+import java.util.AbstractMap;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\storage\StorageHelper.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package storage;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.joda.time.DateTime;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import common.DateTimeTypeConverter;
+import common.PandaLogger;
+
+import core.Task;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\storage\UndoStorage.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package storage;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Stack;
+
+import logic.Command;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import common.PandaLogger;
+
+import java.util.AbstractMap;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\CommandFactoryTest.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package test;
+
+import static org.junit.Assert.assertEquals;
+
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+import java.util.List;
+
+import logic.CommandFactory;
+import logic.Command;
+import core.Task;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
+import org.junit.FixMethodOrder;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\CommandTest.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package test;
+
+import static org.junit.Assert.*;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import logic.Command;
+
+import org.junit.Before;
+import org.junit.Test;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\CriteriaTest.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import logic.Criteria;
+import logic.TaskParser;
+
+import org.joda.time.DateTime;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.Test;
+
+import core.Task;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\NattyParserTest.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package test;
+
+import static org.junit.Assert.*;
+import logic.TaskParser;
+
+import org.joda.time.DateTime;
+import org.junit.Test;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\RegExpTest.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package test;
+
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+
+import logic.RegExp;
+
+import org.junit.Test;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\TaskParserTest.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package test;
+
+import static org.junit.Assert.assertEquals;
+import logic.TaskParser;
+
+import org.joda.time.DateTime;
+import org.joda.time.MutableDateTime;
+import org.junit.Test;
+
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\TaskTest.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+
+import logic.Command;
+import logic.CommandFactory;
+
+import org.joda.time.DateTime;
+import org.joda.time.MutableDateTime;
+import org.junit.Before;
+import org.junit.Test;
+
+import common.PandaLogger;
+import core.Task;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\UndoStorageTest.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package test;
+
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Stack;
+
+import logic.Command;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import storage.UndoStorage;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\view\PandaUI.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package view;
+
+
+import java.awt.AWTException;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import javafx.util.Callback;
+
+import javax.imageio.ImageIO;
+import javax.swing.KeyStroke;
+
+import logic.Command;
+import logic.Command.COMMAND_TYPE;
+import logic.CommandFactory;
+
+import com.tulskiy.keymaster.common.HotKey;
+import com.tulskiy.keymaster.common.HotKeyListener;
+import com.tulskiy.keymaster.common.Provider;
+
+import core.Task;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\view\PlaceholderTextField.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package view;
+
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.text.Document;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\view\TaskCell.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package view;
+
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.Separator;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
+import core.Task;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\view\TaskPandaUI.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package view;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTable;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import logic.Command;
+import logic.Command.COMMAND_TYPE;
+import logic.CommandFactory;
+
+
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+File Location:
+C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\view\TaskTableModel.java
+uncollated source code:
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+package view;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import javax.swing.table.AbstractTableModel;
+
+import logic.CommandFactory;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
+import common.PandaLogger;
+
+import core.Task;
+
+
+
+
+

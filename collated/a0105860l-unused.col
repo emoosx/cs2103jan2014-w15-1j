@@ -1,0 +1,415 @@
+//@author: a0105860l-unused
+
+
+
+	/**
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\Main.java
+	 */
+
+
+// now longer used from V0.3 onwards since we switched to javafx instead of Swing
+// current mainly class is in view/PandaUI.java
+public class Main {
+
+	public static void main(String[] args) {
+		TaskPandaUI taskpanda = new TaskPandaUI();
+	}
+}
+
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\Main.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\TaskParserTest.java
+	 */
+
+/*
+ * A test case file in V0.3 to start testing natty behaviour and introduce matthew with natty parser framework.
+ * check TaskTest.java, NattyParserTest.java for matthew's tests related to parser's parsing tests
+ */
+public class TaskParserTest {
+	
+	// By the the time the input reaches the Task creation,
+	// the command verb has already been striped
+    String[] insaneFloating = {
+        "just a floating task",
+        "",
+        " ",
+        "null"
+    };
+    
+    String[] insaneTimed = {
+        "attend a meeting next week from 2pm to 4pm",
+        "go to the school from 2pm to 4pm",
+        "remind boss of meeting next week by the day after tomorrow 5pm"
+    };
+    
+    String[] insaneDeadline = {
+        "watch the day after tomorrow the day after tomorrow at 5pm",
+        "renew phone number to 91832015 tomorrow morning at 7:54am",
+        "buy birthday presents for may and april by 4 march 10am",
+        "download eath wind fire by september by 20th march 5pm",
+        "2pm concert on 2/2/2014 6pm",
+        "2pm concert on 2014/2/22 at 6pm"
+    };
+    
+//	@Test
+//	public void testInsaneTimed() {
+//		testTimedTask(insaneTimed[0], "attend a meeting", null, null);
+//		testTimedTask(insaneTimed[1], "go to the school", null, null);
+//	}
+	
+//	@Test
+//	public void testInsaneFloating() {
+//		testFloatingTask(insaneFloating[0], "just a floating task");
+//	}
+	
+	@Test
+	public void testInsaneDeadline() {
+		// "watch the day after tomorrow the day after tomorrow at 5pm",
+		MutableDateTime  endDateTime = new MutableDateTime();  
+		endDateTime.addDays(2);
+		endDateTime.setTime(17, 0, 0, 0);
+//		testDeadlineTask(insaneDeadline[0], "watch the day after tomorrow", endDateTime);
+
+		endDateTime = new MutableDateTime();
+		endDateTime.addDays(1);
+		endDateTime.setTime(7, 54, 0, 0);
+//		testDeadlineTask(insaneDeadline[1], "renew phone number to 91832014", endDateTime);
+		
+		endDateTime = new MutableDateTime();
+		endDateTime.setDate(endDateTime.getYear(), 3, 4);
+		endDateTime.setTime(10, 0, 0, 0);
+//		testDeadlineTask(insaneDeadline[2], "buy birthday presents for may and april", endDateTime);
+		
+		endDateTime = new MutableDateTime();
+		endDateTime.setDate(endDateTime.getYear(), 3, 20);
+		endDateTime.setTime(17, 0, 0, 0);
+//		testDeadlineTask(insaneDeadline[3], "download eath wind fire", endDateTime);
+		
+		endDateTime = new MutableDateTime();
+		endDateTime.setDate(2014, 2, 2);
+		endDateTime.setTime(18, 0, 0, 0);
+//		testDeadlineTask(insaneDeadline[4], "2pm concert", endDateTime);
+		
+		//"2pm concert on 22/2/2014 at 6pm"
+		endDateTime = new MutableDateTime();
+		endDateTime.setDate(2014, 2, 22);
+		endDateTime.setTime(18, 0, 0, 0);
+//		testDeadlineTask(insaneDeadline[5], "2pm concert", endDateTime);
+		
+//		testDeadlineTask("go watch a movie on Sunday", "go watch a movie", new DateTime(2014, 4, 6, 0, 0));
+	}
+	
+
+//	public void testTimedTask(String input, String expectedDesc, DateTime expectedStartDateTime, DateTime expectedEndDateTime) {
+//		TaskParser parser = new TaskParser(input);
+//		parser.parseTask2();
+//		assertEquals(expectedDesc, parser.getTaskDescription());
+//		assertEquals(expectedStartDateTime, parser.getStartDateTime());
+//		assertEquals(expectedEndDateTime, parser.getEndDateTime());
+//	}
+	
+//	public void testFloatingTask(String input, String expectedDesc) {
+//		TaskParser parser = new TaskParser(input);
+//		parser.parseTask2();
+//		assertEquals(expectedDesc, parser.getTaskDescription());
+//		assertEquals(null, parser.getMutableStartDateTime());
+//		assertEquals(null, parser.getMutableEndDateTime());
+//	}
+	
+//	public void testDeadlineTask(String input, String expectedDesc, DateTime expectedEndDateTime) {
+		//TaskParser parser = new TaskParser(input);
+		//parser.parseTask();
+//		assertEquals(expectedDesc, parser.getTaskDescription());
+		//assertEquals(null, parser.getStartDateTime());
+		//assertEquals(expectedEndDateTime, parser.getEndDateTime());
+//	}
+}
+
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\test\TaskParserTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\view\PlaceholderTextField.java
+	 */
+
+//now longer used from V0.3 onwards since we switched to javafx instead of Swing
+@SuppressWarnings("serial")
+public class PlaceholderTextField extends JTextField {
+
+    private String placeholder;
+
+    public PlaceholderTextField() {
+    	setOpaque(false);
+    }
+
+    public PlaceholderTextField(
+        final Document pDoc,
+        final String pText,
+        final int pColumns)
+    {
+        super(pDoc, pText, pColumns);
+    }
+
+    public PlaceholderTextField(final int pColumns) {
+        super(pColumns);
+    }
+
+    public PlaceholderTextField(final String pText) {
+        super(pText);
+    }
+
+    public PlaceholderTextField(final String pText, final int pColumns) {
+        super(pText, pColumns);
+    }
+
+    public String getPlaceholder() {
+        return placeholder;
+    }
+
+    @Override
+    protected void paintComponent(final Graphics pG) {
+
+        super.paintComponent(pG);
+        if (placeholder.length() == 0 || getText().length() > 0) {
+            return;
+        }
+        final Graphics2D g = (Graphics2D) pG;
+        g.setRenderingHint(
+            RenderingHints.KEY_ANTIALIASING,
+            RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setColor(getDisabledTextColor());
+        g.drawString(placeholder, getInsets().left, pG.getFontMetrics()
+            .getMaxAscent() + getInsets().top);
+    }
+
+    public void setPlaceholder(final String s) {
+        placeholder = s;
+    }
+}
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\view\PlaceholderTextField.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\view\TaskPandaUI.java
+	 */
+
+//now longer used from V0.3 onwards since we switched to javafx instead of Swing
+public class TaskPandaUI extends JFrame {
+
+	protected PlaceholderTextField inputField;
+	protected CommandFactory commandFactory;
+	protected JTable table;
+	protected TaskTableModel tableModel;
+	protected JPanel basic, bottomPanel, topPanel;
+	
+	private Border cache;
+	
+	private static final String PLACEHOLDER_DEFAULT = "Enter command";
+	private static final int PADDING = 5;
+	private static final String COLOR_BG = "#FCFFFF";
+
+	public TaskPandaUI() {
+		this.commandFactory = CommandFactory.INSTANCE;
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				initUI();
+				setVisible(true);
+			}
+		});
+	}
+
+	private void initUI() {
+		basic = new JPanel();
+		basic.setOpaque(true);
+		basic.setBackground(new Color(255, 255, 255, 1));
+		basic.setLayout(new BoxLayout(basic, BoxLayout.Y_AXIS));
+		add(basic);
+
+		topPanel = new JPanel(new BorderLayout(0, 0));
+		inputField = new PlaceholderTextField(40);
+		inputField.setOpaque(false);
+		inputField.setBackground(new Color(236, 240, 241, 1));
+		inputField.setPlaceholder("Hello there!");
+		inputField.setPreferredSize(new Dimension(450, 45));
+		inputField.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createLineBorder(Color.decode(COLOR_BG)),
+				BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING)));
+		inputField.setFont(new Font("Sans-Serif", Font.BOLD, 18));
+		
+		inputField.addKeyListener(new KeyAdapter() {
+			public void keyReleased(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					processCommand(inputField.getText());
+					inputField.setText("");
+				}
+			}
+
+			public void keyTyped(KeyEvent e) {
+			}
+
+			public void keyPressed(KeyEvent e) {
+			}
+		});
+		
+		inputField.getDocument().addDocumentListener(new DocumentListener() {
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				System.out.println("insertUpdate");
+				System.out.println(inputField.getText());
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				System.out.println("removeUPdate");
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				System.out.println("changedUpdate");
+			}
+			
+		});
+		JSeparator separator = new JSeparator();
+		separator.setForeground(Color.BLACK);
+		topPanel.add(inputField, BorderLayout.CENTER);
+		// topPanel.add(separator, BorderLayout.SOUTH);
+
+		basic.add(topPanel);
+
+		bottomPanel = new JPanel(new BorderLayout());
+		tableModel = new TaskTableModel();
+		table = new JTable(tableModel);
+		table.setMaximumSize(getMaximumSize());
+
+		JScrollPane scrollPane = new JScrollPane(table);
+		bottomPanel.add(scrollPane);
+
+		add(basic);
+		setUndecorated(true);	// Remove title bar
+		pack();
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
+	}
+
+	private void processCommand(String inputText) {
+		assert (inputText != null);
+		Command command = new Command(inputText);
+		if (command.command != COMMAND_TYPE.INVALID) {
+			inputField.setBorder(
+					BorderFactory.createCompoundBorder(
+							BorderFactory.createLineBorder(Color.decode(COLOR_BG)),
+							BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING)
+                    )
+            );
+			inputField.setPlaceholder(PLACEHOLDER_DEFAULT);
+			commandFactory.process(command);
+			basic.add(bottomPanel);
+			basic.revalidate();
+			basic.repaint();
+			pack();
+			tableModel.fireTableDataChanged();
+		} else {
+			inputField.setBorder(BorderFactory.createCompoundBorder(
+					BorderFactory.createLineBorder(Color.decode("#c0392b")), 
+					BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING)));
+			inputField.setPlaceholder("Invalid Command!");
+		}
+	}
+}
+
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\view\TaskPandaUI.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\view\TaskTableModel.java
+	 */
+
+//now longer used from V0.3 onwards since we switched to javafx instead of Swing
+@SuppressWarnings("serial")
+public class TaskTableModel extends AbstractTableModel {
+
+	private String[] columnNames = { "Task ID", "Description",
+			"Start Time", "End Time", "Tags" };//, "Marked", "Done"};
+	
+	private List<Task> l;
+	private LinkedHashMap<Integer, Integer> map = new LinkedHashMap<Integer, Integer>();
+	
+	private final int OFFSET = 1;
+	
+	public TaskTableModel() {
+		l = CommandFactory.INSTANCE.getTasks();
+		map = CommandFactory.INSTANCE.getTasksMap();
+	}
+
+	@Override
+	public String getColumnName(int column) {
+		return columnNames[column];
+	}
+
+	@Override
+	public int getRowCount() {
+		return map.size();
+	}
+
+	@Override
+	public int getColumnCount() {
+		return columnNames.length;
+	}
+	
+	@Override
+	public boolean isCellEditable(int row, int col) {
+		return false;
+	}
+
+	@Override
+	public Object getValueAt(int rowIndex, int columnIndex) {
+		Task t = l.get(map.get(rowIndex));
+		if(columnIndex == 0) {
+			Integer idToDisplay = (Integer)map.keySet().toArray()[rowIndex];
+			return idToDisplay + OFFSET;
+		} else if(columnIndex == 1) {
+			return t.getTaskDescription();
+		} else if(columnIndex == 2) {
+			DateTime startTime = t.getTaskStartTime();
+			if(startTime == null) {
+				return null;
+			}
+			DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM d, yyyy HH:mm");
+			return fmt.print(startTime);
+		} else if(columnIndex == 3) {
+			DateTime endTime = t.getTaskEndTime();
+			if (endTime == null) {
+				return null;
+			}
+			DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM d, yyyy HH:mm");
+			return fmt.print(endTime);
+		} else if(columnIndex == 4) {
+			return t.getTaskTags();
+		}
+		return null;
+	}
+
+}
+
+	// End of segment: C:\Users\Matthew\workspace\cs2103jan2014-w15-1j\src\view\TaskTableModel.java
+
+
+
+
+
