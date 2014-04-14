@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 import common.PandaLogger;
 
+//@author A0101810A
 /*
  * RegExp class contains regular expression patterns of supported time and date formats
  * It is called by TaskParser.java to extract time and date values from input strings

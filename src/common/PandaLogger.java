@@ -6,6 +6,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+//@author A0105860L
 /* PandaLogger 
  * 
  * For logging purposes. Set it up for file and console logging.

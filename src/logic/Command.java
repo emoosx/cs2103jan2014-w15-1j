@@ -1,5 +1,7 @@
 package logic;
 
+//@author A0105860L
+/* Command model */
 public class Command {
 	
 	private static final int INDEX_COMMAND = 0;
@@ -39,14 +41,6 @@ public class Command {
 		this.rawText = commandText;
 		this.command = COMMAND_TYPE.INVALID;
 		this.parse();
-	}
-	
-	/*
-	 * Attempts to auto complete a command based on supplied string
-	 * TODO
-	 */
-	public static String attemptAutoComplete(String s) {
-		return s;
 	}
 	
 	private void parse() {
@@ -93,8 +87,6 @@ public class Command {
 			return COMMAND_TYPE.UNDONE;
 		}else if (command.equalsIgnoreCase(COMMAND_TYPE.CLEAR.getCommandName())) {
 			return COMMAND_TYPE.CLEAR;
-		} else if (command.equalsIgnoreCase(COMMAND_TYPE.DONEALL.getCommandName())) {
-			return COMMAND_TYPE.DONEALL;
 		} else if (command.equalsIgnoreCase(COMMAND_TYPE.DELETE.getCommandName())) {
 			return COMMAND_TYPE.DELETE;
 		} else if (command.equalsIgnoreCase(COMMAND_TYPE.SEARCH.getCommandName())) {
@@ -105,6 +97,7 @@ public class Command {
 		return COMMAND_TYPE.INVALID; 
 	}
 
+	/* just for debugging purpose */
 	public String toString() {
 		return command.getCommandName() + " " + this.rawText;
 	}

@@ -20,6 +20,7 @@ import common.PandaLogger;
 
 import core.Task;
 
+//@author A0105860L
 /* A singleton class to handle the persistence of Task objects
  */
 public class StorageHelper {
@@ -52,16 +53,6 @@ public class StorageHelper {
 			throw new Error(ERROR_TASK_WRITE);
 		}
 	}
-
-	// public ArrayList<Task> getAll() {
-	// try(Reader reader = new
-	// InputStreamReader(JsonToJava.class.getResourceAsStream(this.file),
-	// "UTF-8")) {
-	// Gson gson = new GsonBuilder().create();
-	// } catch(IOException e) {
-	// throw new Error(ERROR_FILE_IO);
-	// }
-	// }
 
 	public ArrayList<Task> getAllTasks() {
 		PandaLogger.getLogger().info("getAllTasks");

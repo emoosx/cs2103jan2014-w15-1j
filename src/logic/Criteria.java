@@ -8,11 +8,13 @@ import org.joda.time.Interval;
 
 import core.Task;
 
+//@author A0097784H
 /* 
- * Class to help with the filtering of tasks
+ * Criteria to help with the filtering of tasks. Used in listing and searching
  */
 public class Criteria {
 	
+
 	public static ArrayList<Task> getAllOverdueTasks(List<Task> tasks) {
 		ArrayList<Task> result = new ArrayList<Task>();
 		for(Task t: tasks) {
@@ -42,6 +44,8 @@ public class Criteria {
 		}
 		return result;
 	}
+
+	//@author A0105860L
 	/* default criteria */
 	public static ArrayList<Integer> getAllUndeletedTasks(List<Task> tasks) {
 		ArrayList<Integer> result = new ArrayList<Integer>();
@@ -114,6 +118,7 @@ public class Criteria {
 		return result;
 	}
 	
+	//@author A0105860L
 	public static ArrayList<Integer> getAllTasksforToday(List<Task> tasks) {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		DateTime today = new DateTime();
@@ -127,6 +132,7 @@ public class Criteria {
 		return result;
 	}
 	
+	//@author A0105860L
 	public static ArrayList<Integer> getAllTasksforTomorrow(List <Task> tasks) {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		DateTime today = new DateTime();
@@ -140,6 +146,7 @@ public class Criteria {
 		return result;
 	}
 	
+	//@author A0105860L
 	public static ArrayList<Integer> getAllTasksforThisWeek(List <Task> tasks) {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		DateTime today = new DateTime();
@@ -162,6 +169,7 @@ public class Criteria {
 		return result;
 	}
 	
+	//@author A0097784H
 	public static ArrayList<Integer> getAllTasksforNextWeek(List <Task> tasks) {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		DateTime today = new DateTime();
@@ -193,6 +201,7 @@ public class Criteria {
 		return result;
 	}
 	
+	//@author A0105860L
 	public static ArrayList<Integer> getAllUndeletedTasksWithTimestamp(List<Task> tasks, DateTime inputDate) {
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		for(Task t: tasks) {
