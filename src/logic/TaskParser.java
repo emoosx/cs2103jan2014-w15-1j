@@ -42,6 +42,7 @@ public class TaskParser {
 	private static final int ARRAY_SECOND_INDEX = 1;
 	private static final int ARRAY_SIZE_1 = 1;
 	private static final int ARRAY_SIZE_2 = 2;
+	private static final int NATTY_DATE_INDEX = 0;
 
 	// Task object variables
 	private DateTime startDateTime;
@@ -306,7 +307,7 @@ public class TaskParser {
 		List<DateGroup> groups = parser.parse(dateString);
 		for(DateGroup group: groups) {
 			List<Date> dates = group.getDates();
-			MutableDateTime tempDate = new MutableDateTime(dates.get(0));
+			MutableDateTime tempDate = new MutableDateTime(dates.get(NATTY_DATE_INDEX));
 			date[NUM_DAY_INDEX] = tempDate.getDayOfMonth();
 			date[NUM_MONTH_INDEX] = tempDate.getMonthOfYear();
 			date[NUM_YEAR_INDEX] = tempDate.getYear();
@@ -326,7 +327,7 @@ public class TaskParser {
 		List<DateGroup> groups = parser.parse(timeString);
 		for(DateGroup group: groups) {
 			List<Date> dates = group.getDates();
-			MutableDateTime tempTime = new MutableDateTime(dates.get(0));
+			MutableDateTime tempTime = new MutableDateTime(dates.get(NATTY_DATE_INDEX));
 			time[NUM_HOUR_INDEX] = tempTime.getHourOfDay();
 			time[NUM_MIN_INDEX] = tempTime.getMinuteOfHour();
 		}

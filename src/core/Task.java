@@ -116,17 +116,7 @@ public class Task {
 	public ArrayList<String> getTaskTags() {
 		return taskTags;
 	}
-	
-	public String getLabel() {
-		if(this.startDateTime == null && this.endDateTime == null) {
-			return "F";
-		} else if(this.startDateTime == null) {
-			return "D";
-		} else {
-			return "T";
-		}
-	}
-	
+
 	public String getRawText() {
 		return this.rawText;
 	}
@@ -160,6 +150,17 @@ public class Task {
 			}
 			String result = sb.toString();
 			return result.substring(START_INDEX, result.length() - COMMA.length());
+		}
+	}
+	
+	//@author A0105860L
+	public String getLabel() {
+		if(this.startDateTime == null && this.endDateTime == null) {
+			return "F";
+		} else if(this.startDateTime == null) {
+			return "D";
+		} else {
+			return "T";
 		}
 	}
 }
