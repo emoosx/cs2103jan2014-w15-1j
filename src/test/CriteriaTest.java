@@ -1,23 +1,14 @@
 package test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-
-import logic.Criteria;
-
-import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import core.Task;
-
 public class CriteriaTest {
-	
-	ArrayList<Task> tasks;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -35,27 +26,84 @@ public class CriteriaTest {
 	public void tearDown() throws Exception {
 	}
 
-//	@Test
-	public void test() {
-		tasks = new ArrayList<Task>();
-		tasks.add(new Task("go do something today"));
-		tasks.add(new Task("go to school from 2pm to 4pm"));
-		tasks.add(new Task("random floating task"));
-		tasks.add(new Task("go to school tomorrow from 3pm to 6pm"));
-		
-		ArrayList<Integer> filtered = Criteria.getAllTasksforToday(tasks);
-		for(Integer i: filtered) {
-			System.out.print(i + "\t");
-		}
-		assertEquals(filtered, "xx");
-	}
-	
 	@Test
-	public void testDummy() {
-		Task task = new Task("go to school from 2pm to 4pm");
-		DateTime endDateTime = task.getTaskEndTime();
-		DateTime today = new DateTime();
-		assertEquals(today.withTimeAtStartOfDay(), endDateTime.withTimeAtStartOfDay());
+	public final void testGetAllOverdueTasks() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public final void testGetAllOverdueTaskIDs() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public final void testGetAllDoneTasks() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public final void testGetAllUndeletedTasks() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public final void testGetAllUndeletedFloatingTasks() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public final void testGetAllFloatingTasks() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public final void testGetAllUndeletedTimedTasks() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public final void testGetAllTimedTasks() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public final void testGetAllUndeletedDeadlineTasks() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public final void testGetAllDeadlineTasks() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public final void testGetAllTasksforToday() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public final void testGetAllTasksforTomorrow() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public final void testGetAllTasksforThisWeek() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public final void testGetAllTasksforNextWeek() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public final void testGetAllUndeletedTasksWithHashTag() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public final void testGetAllUndeletedTasksWithTimestamp() {
+		fail("Not yet implemented");
 	}
 
 }

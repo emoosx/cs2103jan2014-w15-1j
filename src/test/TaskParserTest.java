@@ -8,7 +8,11 @@ import org.joda.time.MutableDateTime;
 import org.junit.Test;
 
 
-
+//@author A0105860L-unused
+/*
+ * A test case file in V0.3 to start testing natty behaviour and introduce matthew with natty parser framework.
+ * check TaskTest.java, NattyParserTest.java for matthew's tests related to parser's parsing tests
+ */
 public class TaskParserTest {
 	
 	// By the the time the input reaches the Task creation,
@@ -80,7 +84,7 @@ public class TaskParserTest {
 		endDateTime.setTime(18, 0, 0, 0);
 //		testDeadlineTask(insaneDeadline[5], "2pm concert", endDateTime);
 		
-		testDeadlineTask("go watch a movie on Sunday", "go watch a movie", new DateTime(2014, 4, 6, 0, 0));
+//		testDeadlineTask("go watch a movie on Sunday", "go watch a movie", new DateTime(2014, 4, 6, 0, 0));
 	}
 	
 
@@ -100,11 +104,11 @@ public class TaskParserTest {
 //		assertEquals(null, parser.getMutableEndDateTime());
 //	}
 	
-	public void testDeadlineTask(String input, String expectedDesc, DateTime expectedEndDateTime) {
+//	public void testDeadlineTask(String input, String expectedDesc, DateTime expectedEndDateTime) {
 		//TaskParser parser = new TaskParser(input);
 		//parser.parseTask();
 //		assertEquals(expectedDesc, parser.getTaskDescription());
 		//assertEquals(null, parser.getStartDateTime());
 		//assertEquals(expectedEndDateTime, parser.getEndDateTime());
-	}
+//	}
 }

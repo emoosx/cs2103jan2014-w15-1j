@@ -53,8 +53,7 @@ public class UndoStorage {
 	}
 	
 	public void writeCommands(Stack<SimpleEntry<Integer, Command>> c, File f) {
-		try(Writer writer = new OutputStreamWriter(new FileOutputStream(
-				f), "UTF-8")) {
+		try(Writer writer = new OutputStreamWriter(new FileOutputStream(f), "UTF-8")) {
 			gson.toJson(c, writer);
 		} catch(IOException e) {
 			throw new Error(ERROR_COMMAND_WRITE);
