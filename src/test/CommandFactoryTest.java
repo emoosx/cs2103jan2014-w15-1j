@@ -73,7 +73,7 @@ public class CommandFactoryTest {
 
 	@Test
 	/*Method to test the adding of tasks including undo/redo operation of add*/
-	public void test1() {
+	public void test1Add() {
 		Command testCommand = new Command("add testing task on 14/06/14 from 2pm to 3pm");
 		cf.testAdd(testCommand);
 		List<Task> testList = cf.getTasks();
@@ -84,7 +84,7 @@ public class CommandFactoryTest {
 
 	@Test
 	/*Method to test the editing of tasks including undo/redo operation of edit*/
-	public void test2() {
+	public void test2Edit() {
 		int lastIndex = cf.getLastIndex();
 		int displayID = cf.testGetDisplayId(lastIndex);
 		String edit = ("edit " + displayID + " edited task on 12/06/14 from 1pm to 5pm");
@@ -139,7 +139,7 @@ public class CommandFactoryTest {
 	
 	@Test
 	/*Method to test the marking of task as done including undo/redo operation of done*/
-	public void test3() {
+	public void test3Done() {
 		int lastIndex = cf.getLastIndex();
 		System.out.println("done test last index:" + lastIndex);
 		int displayID = cf.testGetDisplayId(lastIndex);
@@ -160,16 +160,15 @@ public class CommandFactoryTest {
 	    assertEquals(true, redoList.get(lastIndex).getTaskDone());
 
 	    // Test undone
-	    String undone = ("undone " + 1);
-	    Command testUndoneCommand = new Command(undone);
-	    cf.testUndone(testUndoneCommand);
-	    List<Task> undoneList = cf.getTasks();
-	    assertEquals(false, undoneList.get(lastIndex).getTaskDone());
+	    redoList.get(lastIndex).setTaskUndone();
+	    assertEquals(false, redoList.get(lastIndex).getTaskDone());
+	   // Restore stack back to original order
+	    cf.testUndo();
 	}
 
 	@Test
 	/*Method to test the deletion of task including undo/redo operation of delete*/
-	public void test4() {
+	public void test4Delete() {
 		int lastIndex = cf.getLastIndex();
 		int displayID = cf.testGetDisplayId(lastIndex);
 	    String delete = ("delete " + displayID);

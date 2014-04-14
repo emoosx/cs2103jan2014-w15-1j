@@ -42,8 +42,9 @@ public class CommandFactory {
 	private static Integer NUMBER_TASK_INDEX = 0;
 	private static Integer EDIT_OFFSET = 1;
 	private static Integer OFFSET = 1;
-
-	private static final int LIST_PARSE_TIMESTAMP = 0;
+	// Number of test cases entry to clear from undo stack
+    private static Integer NUM_TEST = 6;
+	
 
 	String userInputDesc;
 	String commandType;
@@ -805,7 +806,7 @@ public class CommandFactory {
 	}
 
 	public void clearUndoRedoAfterTesting() {
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < NUM_TEST; i++) {
 			this.undoStack.pop();
 		}
 		this.syncTasks();
