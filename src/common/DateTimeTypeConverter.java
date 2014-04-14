@@ -12,9 +12,10 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
-//DateTimeTypeConverter
-//Json converter for Joda DateTime object
-
+//@author A0105860L
+/*
+ * Json serializer to properly serialize datetime objects
+ */
 public class DateTimeTypeConverter implements JsonSerializer<DateTime>, JsonDeserializer<DateTime> {
 
 	@Override
@@ -30,5 +31,4 @@ public class DateTimeTypeConverter implements JsonSerializer<DateTime>, JsonDese
 			JsonSerializationContext context) {
 		return new JsonPrimitive(datetime.toString());
 	}
-
 }
