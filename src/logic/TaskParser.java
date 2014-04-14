@@ -40,7 +40,6 @@ public class TaskParser {
 	
 	private static final int ARRAY_FIRST_INDEX = 0;
 	private static final int ARRAY_SECOND_INDEX = 1;
-	private static final int ARRAY_SIZE_0 = 0;
 	private static final int ARRAY_SIZE_1 = 1;
 	private static final int ARRAY_SIZE_2 = 2;
 
@@ -232,33 +231,33 @@ public class TaskParser {
 	 *  Method will finalize date and time if variables fits that of a timed task
 	 */
 	private void finalizeTimedTask() {
-			if(startYear == null) {
-				// Initialize both dates to today if no dates are specified
-				if(endYear == null) {
-					initializeDateToToday();
-				}
-				// Initialize both dates to the same day if only 1 date is specified
-				else {
-					startYear = endYear;
-					startMonth = endMonth;
-					startDay = endDay;
-				}
+		if(startYear == null) {
+			// Initialize both dates to today if no dates are specified
+			if(endYear == null) {
+				initializeDateToToday();
 			}
-			if(startHour == null) {
-				initializeStartTimeToMidnight();
+			// Initialize both dates to the same day if only 1 date is specified
+			else {
+				startYear = endYear;
+				startMonth = endMonth;
+				startDay = endDay;
 			}
-			if(endHour == null) {
-				initializeEndTimeToMidnight();
-			}
-			startDateTime = new DateTime(startYear, startMonth, startDay, startHour, startMin);
-			endDateTime = new DateTime(endYear, endMonth, endDay, endHour, endMin);
+		}
+		if(startHour == null) {
+			initializeStartTimeToMidnight();
+		}
+		if(endHour == null) {
+			initializeEndTimeToMidnight();
+		}
+		startDateTime = new DateTime(startYear, startMonth, startDay, startHour, startMin);
+		endDateTime = new DateTime(endYear, endMonth, endDay, endHour, endMin);
 	}
 
 	/*
 	 *  Method will finalize date and time if variables fits that of a deadline task
 	 */
 	private void finalizeDeadlineTask() {
-		if (endYear == null) {
+		if(endYear == null) {
 			// Initialize date to local date if only time is stated by user
 			initializeDateToToday();
 		}
