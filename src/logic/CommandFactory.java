@@ -486,7 +486,7 @@ public class CommandFactory {
 			syncTasks();
 		}
 	}
-
+   /* Method to update task map with the original order of the deleted/done task */
 	private void updateHashMapAfterUndoDelete(int realId, int prevId) {
 		LinkedHashMap<Integer, Integer> beforeID = new LinkedHashMap<Integer, Integer>();
 		LinkedHashMap<Integer, Integer> afterID = new LinkedHashMap<Integer, Integer>();
@@ -833,7 +833,6 @@ public class CommandFactory {
 	}
 
 	public void testDelete(Command command) {
-
 		this.executeCommand(command);
 	}
 
@@ -841,11 +840,4 @@ public class CommandFactory {
 		this.executeCommand(command);
 	}
 
-	public void testUndone(Command command) {
-		Command undone = new Command("list done");
-		doList(undone);
-		this.executeCommand(command);
-		Command listingDefault = new Command("list");
-		doList(listingDefault);
-	}
 }
