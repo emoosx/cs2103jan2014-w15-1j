@@ -28,6 +28,7 @@ import common.PandaLogger;
 
 import core.Task;
 
+//@author A0097784H
 public class CommandFactory {
 
 	private static final String COMMA = ",";
@@ -69,10 +70,8 @@ public class CommandFactory {
 
 	// DateTime printing
 	private static final DateTimeFormatter dateDisplay = DateTimeFormat.forPattern("dd/MM/YY");
-	private static final DateTimeFormatter timeDisplay = DateTimeFormat
-			.forPattern("HH:mm");
-	private static final DateTimeFormatter dateTimeDisplay = DateTimeFormat
-			.forPattern("dd/MM/YY HH:mm");
+	private static final DateTimeFormatter timeDisplay = DateTimeFormat.forPattern("HH:mm");
+	private static final DateTimeFormatter dateTimeDisplay = DateTimeFormat.forPattern("dd/MM/YY HH:mm");
 
 	// private List<Task> tasks;
 	private List<Task> tasks;
@@ -121,6 +120,7 @@ public class CommandFactory {
 	}
 
 	/* by default, display tasks which are not marked as deleted */
+	//@author A0105860L
 	private void populateTasksMapWithDefaultCriteria() {
 		ArrayList<Integer> undeletedTasksIDs = Criteria
 				.getAllUndeletedTasks(tasks);
@@ -199,6 +199,7 @@ public class CommandFactory {
 		}
 	}
 
+	//@author A0097784H
 	private void doUndo() {
 		logger.info("doUndo");
 		if (!undoStack.isEmpty()) {
@@ -291,13 +292,13 @@ public class CommandFactory {
 		doAdd(command);
 	}
 
+	//@author A0105860L
 	private void doAdd(Command command) {
 		assert (command.rawText != null);
 		Task newTask = new Task(command.rawText);
 		this.tasks.add(newTask);
 		this.tasksMap.put(tasksMap.size(), tasks.size() - OFFSET);
-		this.undoStack.push(new SimpleEntry<Integer, Command>(this.tasks.size()
-				- OFFSET, command));
+		this.undoStack.push(new SimpleEntry<Integer, Command>(this.tasks.size()- OFFSET, command));
 		syncTasks();
 	}
 
@@ -377,6 +378,7 @@ public class CommandFactory {
 		}
 	}
 	
+	//@author A0097784H
 	private void doEdit(Command command) {
 		String userInput = command.rawText;
 		assert (userInput != null);
@@ -468,6 +470,7 @@ public class CommandFactory {
 		return oldCommand;
 	}
 
+	//@author A0105860L
 	private void doDelete(Command command) {
 		String rawText = command.rawText;
 		assert (rawText != null);
@@ -479,13 +482,13 @@ public class CommandFactory {
 			task.setMarkAsDelete();
 			updateHashMapAfterDelete(displayId);
 
-			Command delCommand = commandWithPreviousIndex(command.command,
-					displayId);
-			this.undoStack.push(new SimpleEntry<Integer, Command>(realId,
-					delCommand));
+			Command delCommand = commandWithPreviousIndex(command.command, displayId);
+			this.undoStack.push(new SimpleEntry<Integer, Command>(realId, delCommand));
 			syncTasks();
 		}
 	}
+
+	//@author A0097784H
    /* Method to update task map with the original order of the deleted/done task */
 	private void updateHashMapAfterUndoDelete(int realId, int prevId) {
 		LinkedHashMap<Integer, Integer> beforeID = new LinkedHashMap<Integer, Integer>();
@@ -595,10 +598,8 @@ public class CommandFactory {
 			task.setTaskDone();
 			updateHashMapAfterDelete(displayId);
 
-			Command doneCommand = commandWithPreviousIndex(command.command,
-					displayId);
-			this.undoStack.push(new SimpleEntry<Integer, Command>(realId,
-					doneCommand));
+			Command doneCommand = commandWithPreviousIndex(command.command, displayId);
+			this.undoStack.push(new SimpleEntry<Integer, Command>(realId, doneCommand));
 			syncTasks();
 		}
 	}
@@ -771,6 +772,7 @@ public class CommandFactory {
 		System.out.println(outputString);
 	}
 
+	//@author A0105860L
 	private Integer getFakeIDbyRealId(int realid) {
 		Integer removalKey = null;
 		for (Entry<Integer, Integer> entry : tasksMap.entrySet()) {
@@ -801,6 +803,7 @@ public class CommandFactory {
 		this.tasksMap.putAll(temp);
 	}
 
+	//@author A0097784H
 	public int testGetDisplayId(int realId) {
 		return getDisplayId(realId);
 	}
