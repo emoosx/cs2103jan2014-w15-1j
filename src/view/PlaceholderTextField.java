@@ -9,17 +9,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.text.Document;
 
+//@author A0105860L-unused
+//now longer used from V0.3 onwards since we switched to javafx instead of Swing
 @SuppressWarnings("serial")
 public class PlaceholderTextField extends JTextField {
-
-//    public static void main(final String[] args) {
-//        final PlaceholderTextField tf = new PlaceholderTextField("");
-//        tf.setColumns(20);
-//        tf.setPlaceholder("All your base are belong to us!");
-//        final Font f = tf.getFont();
-//        tf.setFont(new Font(f.getName(), f.getStyle(), 30));
-//        JOptionPane.showMessageDialog(null, tf);
-//    }
 
     private String placeholder;
 

@@ -38,16 +38,13 @@ public class StorageHelper {
 	private StorageHelper() {
 		this.file = createOrGetFile(FILENAME);
 		this.gson = new GsonBuilder()
-				.registerTypeAdapter(DateTime.class,
-						new DateTimeTypeConverter())
+				.registerTypeAdapter(DateTime.class, new DateTimeTypeConverter())
 				.enableComplexMapKeySerialization().create();
 	}
 
 	public void writeTasks(List<Task> t) {
-		PandaLogger.getLogger().info(
-				"writeTasks: Length of Task array = " + t.size());
-		try (Writer writer = new OutputStreamWriter(new FileOutputStream(
-				this.file), "UTF-8")) {
+		PandaLogger.getLogger().info("writeTasks: Length of Task array = " + t.size());
+		try (Writer writer = new OutputStreamWriter(new FileOutputStream(this.file), "UTF-8")) {
 			gson.toJson(t, writer);
 		} catch (IOException e) {
 			throw new Error(ERROR_TASK_WRITE);
