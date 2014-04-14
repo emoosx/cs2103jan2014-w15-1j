@@ -24,6 +24,8 @@ import logic.Command;
 import logic.Command.COMMAND_TYPE;
 import logic.CommandFactory;
 
+//@author A0105860L-unused
+//now longer used from V0.3 onwards since we switched to javafx instead of Swing
 public class TaskPandaUI extends JFrame {
 
 	protected PlaceholderTextField inputField;

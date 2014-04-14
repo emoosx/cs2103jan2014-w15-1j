@@ -15,10 +15,11 @@ import common.PandaLogger;
 
 import core.Task;
 
+//@author A0105860L-unused
+//now longer used from V0.3 onwards since we switched to javafx instead of Swing
 @SuppressWarnings("serial")
 public class TaskTableModel extends AbstractTableModel {
 
-	// TODO delete marked column .. enabled only during development phase
 	private String[] columnNames = { "Task ID", "Description",
 			"Start Time", "End Time", "Tags" };//, "Marked", "Done"};
 	
@@ -77,11 +78,6 @@ public class TaskTableModel extends AbstractTableModel {
 		} else if(columnIndex == 4) {
 			return t.getTaskTags();
 		}
-//		} else if (columnIndex == 5) {
-//			return t.getMarkAsDelete();
-//		} else if (columnIndex == 6) {
-//			return t.getTaskDone();
-//		}
 		return null;
 	}
 

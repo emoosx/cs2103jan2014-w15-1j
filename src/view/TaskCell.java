@@ -18,6 +18,11 @@ import org.joda.time.format.DateTimeFormatter;
 
 import core.Task;
 
+//@author A0105860L
+
+/*
+ * class to control the UI of individual list cell
+ */
 public class TaskCell extends ListCell<Task> {
 
 	private static final int OFFSET = 1;
@@ -62,9 +67,9 @@ public class TaskCell extends ListCell<Task> {
 		configureCell();
 		configureGrid();
 		configureHBox();
-		configureIndex(); // id label
+		configureIndex(); 				// id label
 		configureHashtag();
-		configureDesc(); // description label
+		configureDesc();
 		configureTimestamp();
 		configureSeparator();
 		addControls();
@@ -119,7 +124,6 @@ public class TaskCell extends ListCell<Task> {
 		end.setId(END_ID);
 		end.getStyleClass().add(TIME_CLASS);
 	}
-
 	
 	private void configureSeparator() {
 		separator.setId(SEPARATOR_ID);
