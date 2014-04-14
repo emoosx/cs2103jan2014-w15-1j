@@ -53,6 +53,7 @@ public class PandaUI extends Application {
 	// app
 	public static final String APP_TITLE = "TaskPanda";
 	public static final String APP_ICON = "panda.png";
+	public static final String APP_TRAY_ICON = "panda_small.png";
 	public static final int APP_WIDTH = 500;
 	public static final int APP_HEIGHT = 700;
 	public static final String APP_SHORTCUT = "ctrl SPACE";
@@ -105,7 +106,6 @@ public class PandaUI extends Application {
 	ListView<Task> list = new ListView<Task>();
 	Label overdueLabel = new Label();
 	Text overdueText = new Text();
-//	Tooltip tooltip = new Tooltip(INVALID_COMMAND);
 
 	TextField inputField;
 
@@ -172,7 +172,7 @@ public class PandaUI extends Application {
 		
 		    java.awt.Image trayImage = null;
 		    try {
-		        trayImage = ImageIO.read(this.getClass().getClassLoader().getResourceAsStream(APP_ICON));
+		        trayImage = ImageIO.read(this.getClass().getClassLoader().getResourceAsStream(APP_TRAY_ICON));
 		    } catch(IOException e) {
 		    	System.err.println(TRAY_ICON_ERROR);
 		    }
